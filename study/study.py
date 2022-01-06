@@ -12,10 +12,9 @@ class Study(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=13121312, force_registration=True)
-        self.config.register_member(roles = [], study_in_progress = False)
+        self.config.register_member(cached_roles = [], study_in_progress = False)
         self.config.register_guild(exempt_roles = [], study_role = "", banned_roles = [])
 
-    @checks.mod_or_permissions(manage_messages=True)
     @commands.command()
     @commands.guild_only()
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -45,7 +44,7 @@ class Study(commands.Cog):
 
         study_role = discord.utils.get(ctx.guild.roles, id=study_role_id)
 
-        async with self.config.member(ctx.author).roles() as roles:
+        async with self.config.member(ctx.author).cached_roles() as cached_roles:
             for banned_role_id in banned_role_ids:
                 banned_role = discord.utils.get(ctx.guild.roles, id=banned_role_id)
                 if banned_role in ctx.author.roles:
@@ -55,23 +54,21 @@ class Study(commands.Cog):
                 return
 
             if await self.config.member(ctx.author).study_in_progress():
-                new_roles = []
+                new_roles = ctx.author.roles
 
-                for role_id in roles:
+                for role_id in cached_roles:
                     role = discord.utils.get(ctx.guild.roles, id=role_id)
                     if role and role not in ctx.author.roles and role not in new_roles:
                         new_roles.append(role)
 
-                for exempt_role_id in exempt_role_ids:
-                    exempt_role = discord.utils.get(ctx.guild.roles, id=exempt_role_id)
-                    if exempt_role in ctx.author.roles and exempt_role not in new_roles:
-                        new_roles.append(exempt_role)
+                try:
+                    await ctx.author.edit(roles=new_roles)
+                except:
+                    pass
+                else:
+                    await ctx.author.remove_roles(study_role)
+                    await self.config.member(ctx.author).study_in_progress.set(False)
 
-                print(*new_roles, sep = "\n")
-
-                await ctx.author.edit(roles=new_roles)
-                await ctx.author.remove_roles(study_role)
-                await self.config.member(ctx.author).study_in_progress.set(False)
                 await ctx.tick()
 
             else:
@@ -84,20 +81,20 @@ class Study(commands.Cog):
                     else:
                         user_exempt_roles.append(role)
 
-                if user_exempt_roles:
-                    try:
-                        await ctx.author.edit(roles=user_exempt_roles)
-                    except:
-                        pass
-
                 try:
-                    roles = user_roles
+                    cached_roles = user_roles
                 except:
                     return
+
+                try:
+                    await ctx.author.edit(roles=user_exempt_roles)
+                except:
+                    pass
                 else:
                     await ctx.author.add_roles(study_role)
                     await self.config.member(ctx.author).study_in_progress.set(True)
-                    await ctx.react_quietly("📝")
+
+                await ctx.react_quietly("📝")
                 
     """
     @checks.mod_or_permissions(manage_messages=True)
