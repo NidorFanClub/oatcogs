@@ -199,7 +199,7 @@ class Study(commands.Cog):
         else:
             for role in ctx.author.roles:
                 if role:
-                    role_list += str(role.name) + ": " + str(role.id) + "\n"
+                    current_role_list += str(role.name) + ": " + str(role.id) + "\n"
 
         async with self.config.member(member).roles() as roles:
             if not roles:
