@@ -73,10 +73,12 @@ class Study(commands.Cog):
                         cached_roles.append(role.id)
                         roles_to_remove.append(role)
 
-                print("\nCACHED ROLES:\n")
+                print(f"\nCACHED ROLES:\n")
+
                 print(*cached_roles, sep = "\n")
 
-                print("\nROLES TO REMOVE:\n")
+                print(f"\nROLES TO REMOVE:\n")
+
                 print(*roles_to_remove, sep = "\n")
 
                 try:
