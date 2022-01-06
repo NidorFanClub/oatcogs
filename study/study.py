@@ -197,10 +197,10 @@ class Study(commands.Cog):
         current_role_list = ""
         cached_role_list = ""
 
-        if not ctx.author.roles:
+        if not member.roles:
             current_role_list = "No current roles"
         else:
-            for role in ctx.author.roles:
+            for role in member.roles:
                 if role:
                     current_role_list += str(role.name) + ": " + str(role.id) + "\n"
 
