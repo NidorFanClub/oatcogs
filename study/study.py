@@ -17,11 +17,9 @@ class Study(commands.Cog):
 
     @commands.group(autohelp=False)
     @commands.guild_only()
-    async def study(self, ctx, *args):
+    async def study(self, ctx):
         """Temporary time-out for those who lack self control."""
-        if args:
-            pass
-        else:
+        if not ctx.invoked_subcommand:
             banned_role_ids = await self.config.guild(ctx.guild).banned_roles()
             exempt_role_ids = await self.config.guild(ctx.guild).exempt_roles()
             study_role_id = await self.config.guild(ctx.guild).study_role()
