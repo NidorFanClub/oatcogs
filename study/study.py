@@ -9,7 +9,7 @@ import typing
 
 class Study(commands.Cog):
     """Study stuff!"""
-    def __init__(self):
+    def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=13121312, force_registration=True)
         self.config.register_member(roles = [], study_in_progress = False)
