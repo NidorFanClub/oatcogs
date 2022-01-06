@@ -58,7 +58,7 @@ class Study(commands.Cog):
 
                 for role_id in roles:
                     role = discord.utils.get(ctx.guild.roles, id=role_id)
-                    if role:
+                    if role and role not in ctx.author.roles:
                         new_roles.append(role)
 
                 for exempt_role_id in exempt_role_ids:
@@ -134,7 +134,7 @@ class Study(commands.Cog):
                 if banned_role in member.roles:
                     for role_id in roles:
                         role = discord.utils.get(ctx.guild.roles, id=role_id)
-                        if role:
+                        if role and role not in ctx.author.roles:
                             new_roles.append(role)
 
                     for exempt_role_id in exempt_role_ids:
