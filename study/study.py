@@ -58,11 +58,11 @@ class Study(commands.Cog):
 
             else:
                 user_exempt_roles = []
-                roles.clear()
+                user_roles = []
 
                 for role in ctx.author.roles:
                     if role.id not in exempt_role_ids:
-                        roles.append(role.id)
+                        user_roles.append(role.id)
                     else:
                         user_exempt_roles.append(role)
 
@@ -72,9 +72,14 @@ class Study(commands.Cog):
                     except:
                         pass
 
-                await ctx.author.add_roles(study_role)
-                await self.config.member(ctx.author).study_in_progress.set(True)
-                await ctx.react_quietly("📝")
+                try:
+                    roles = user_roles
+                except:
+                    return
+                else:
+                    await ctx.author.add_roles(study_role)
+                    await self.config.member(ctx.author).study_in_progress.set(True)
+                    await ctx.react_quietly("📝")
                 
     @checks.mod_or_permissions(manage_messages=True)
     @commands.command()
@@ -120,11 +125,11 @@ class Study(commands.Cog):
                         pass
 
                     user_exempt_roles = []
-                    roles.clear()
+                    user_roles = []
 
                     for role in member.roles:
                         if role.id not in exempt_role_ids:
-                            roles.append(role.id)
+                            user_roles.append(role.id)
                         else:
                             user_exempt_roles.append(role)
 
@@ -134,9 +139,14 @@ class Study(commands.Cog):
                         except:
                             pass
 
-                    await member.add_roles(discord.utils.get(ctx.guild.roles, id=banned_role_ids[0]))
-                    await self.config.member(member).study_in_progress.set(False)
-                    await ctx.react_quietly("🚔")
+                    try:
+                        roles = user_roles
+                    except:
+                        return
+                    else:
+                        await member.add_roles(discord.utils.get(ctx.guild.roles, id=banned_role_ids[0]))
+                        await self.config.member(member).study_in_progress.set(False)
+                        await ctx.react_quietly("🚔")
                      
     @commands.group(autohelp=True)
     @commands.guild_only()
