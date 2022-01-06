@@ -191,20 +191,29 @@ class Study(commands.Cog):
         e = discord.Embed(title="", colour=member.color)
         e.set_author(name=member, icon_url=member.avatar_url)
 
-        role_list = ""
+        current_role_list = ""
+        cached_role_list = ""
+
+        if not ctx.author.roles:
+            current_role_list = "No current roles"
+        else:
+            for role in ctx.author.roles:
+                if role:
+                    role_list += str(role.name) + ": " + str(role.id) + "\n"
 
         async with self.config.member(member).roles() as roles:
             if not roles:
-                role_list = "No cached roles"
+                cached_role_list = "No cached roles"
             else:
                 for role_id in roles:
                     role = discord.utils.get(ctx.guild.roles, id = role_id)
                     if role:
-                        role_list += str(role.name) + ": " + str(role.id) + "\n"
+                        cached_role_list += str(role.name) + ": " + str(role.id) + "\n"
 
         studying = await self.config.member(member).study_in_progress()
 
-        e.add_field(name="Stored Roles", value=role_list, inline=False)
+        e.add_field(name="Current Roles", value=current_role_list, inline=False)
+        e.add_field(name="Stored Roles", value=cached_role_list, inline=False)
         e.add_field(name="Study Boolean", value=studying, inline=False)
 
         await ctx.send(embed=e)
