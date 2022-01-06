@@ -1,0 +1,10 @@
+{
+    "author" : ["moosey"],
+    "install_msg" : "moose!",
+    "name" : "moosetools",
+    "short" : "Various misc. cogs from moosey!",
+    "description" : "Miscellaneous functions that don't deserve their own cog.",
+    "tags" : ["fun"],
+    "requirements" : [],
+    "hidden" : false
+}

@@ -1,0 +1,10 @@
+{
+    "author" : ["moosey"],
+    "install_msg" : "moose!",
+    "name" : "study",
+    "short" : "test",
+    "description" : "test",
+    "tags" : ["fun"],
+    "requirements" : [],
+    "hidden" : false
+}
