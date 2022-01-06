@@ -17,49 +17,6 @@ class Autospoiler(commands.Cog):
         self.config = Config.get_conf(self, identifier=4128309349, force_registration=True)
         self.config.register_guild(filtered_words = [])
 
-    @commands.Cog.listener()
-    async def on_message(self, message: discord.Message):
-        if message.guild is None:
-            return
-
-        if await self.bot.cog_disabled_in_guild(self, message.guild):
-            return
-
-        valid_user = isinstance(message.author, discord.Member) and not message.author.bot
-        if not valid_user:
-            return
-
-        new_message = message.content
-
-        message_needs_spoiling = False
-
-        async with self.config.guild(message.guild).filtered_words() as filtered_words:
-            for word in filtered_words:
-                if word.lower() in new_message.lower():
-                    new_message.replace("|", "")
-                    new_message = "||" + new_message + "||"
-                    message_needs_spoiling = True
-                    break
-
-        if message_needs_spoiling:
-            try:
-                await message.delete()
-            except discord.HTTPException:
-                pass
-            e = discord.Embed(title="", description = f"{new_message}", colour=message.author.color)
-            e.set_author(name=message.author, icon_url=message.author.avatar_url)
-            e.timestamp = message.created_at
-
-            if message.reference:
-                original_message = await message.channel.fetch_message(id=message.reference.message_id)
-                await original_message.reply(embed=e, mention_author=False)
-            else:
-                await message.channel.send(embed=e)
-
-    @commands.Cog.listener()
-    async def on_message_edit(self, _prior, message):
-        await self.on_message(message)
-
     @commands.group(autohelp=True)
     @commands.guild_only()
     @checks.mod_or_permissions(manage_messages=True)
@@ -125,3 +82,49 @@ class Autospoiler(commands.Cog):
 
         e.timestamp = datetime.utcnow()
         await ctx.send(embed=e)
+
+    @commands.Cog.listener()
+    async def on_message(self, message: discord.Message):
+        if message.guild is None:
+            return
+
+        if await self.bot.cog_disabled_in_guild(self, message.guild):
+            return
+
+        valid_user = isinstance(message.author, discord.Member) and not message.author.bot
+        if not valid_user:
+            return
+
+        if await self.bot.is_automod_immune(message):
+            return
+
+        new_message = message.content
+
+        message_needs_spoiling = False
+
+        async with self.config.guild(message.guild).filtered_words() as filtered_words:
+            for word in filtered_words:
+                if word.lower() in new_message.lower():
+                    new_message.replace("|", "")
+                    new_message = "||" + new_message + "||"
+                    message_needs_spoiling = True
+                    break
+
+        if message_needs_spoiling:
+            try:
+                await message.delete()
+            except discord.HTTPException:
+                pass
+            e = discord.Embed(title="", description = f"{new_message}", colour=message.author.color)
+            e.set_author(name=message.author, icon_url=message.author.avatar_url)
+            e.timestamp = message.created_at
+
+            if message.reference:
+                original_message = await message.channel.fetch_message(id=message.reference.message_id)
+                await original_message.reply(embed=e, mention_author=False)
+            else:
+                await message.channel.send(embed=e)
+
+    @commands.Cog.listener()
+    async def on_message_edit(self, _prior, message):
+        await self.on_message(message)
