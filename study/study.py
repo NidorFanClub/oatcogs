@@ -15,7 +15,7 @@ class Study(commands.Cog):
         self.config.register_member(cached_roles = [], study_in_progress = False, locked = False)
         self.config.register_guild(exempt_roles = [], study_role = "", banned_roles = [])
 
-    @commands.group()
+    @commands.group(autohelp=False)
     @commands.guild_only()
     async def study(self, ctx):
         """Temporary time-out for those who lack self control."""
