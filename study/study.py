@@ -199,11 +199,11 @@ class Study(commands.Cog):
                 if role:
                     current_role_list += str(role.name) + ": " + str(role.id) + "\n"
 
-        async with self.config.member(member).roles() as roles:
-            if not roles:
+        async with self.config.member(member).cached_roles() as cached_roles:
+            if not cached_roles:
                 cached_role_list = "No cached roles"
             else:
-                for role_id in roles:
+                for role_id in cached_roles:
                     role = discord.utils.get(ctx.guild.roles, id = role_id)
                     if role:
                         cached_role_list += str(role.name) + ": " + str(role.id) + "\n"
@@ -223,8 +223,8 @@ class Study(commands.Cog):
         if not member:
             member = ctx.author
         await self.config.member(member).study_in_progress.set(False)
-        async with self.config.member(member).roles() as roles:
-            roles.clear()
+        async with self.config.member(member).cached_roles() as cached_roles:
+            cached_roles.clear()
         await ctx.tick()
 
     @checks.mod_or_permissions(manage_messages=True)
