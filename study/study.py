@@ -15,6 +15,7 @@ class Study(commands.Cog):
         self.config.register_member(cached_roles = [], study_in_progress = False)
         self.config.register_guild(exempt_roles = [], study_role = "", banned_roles = [])
 
+    @checks.mod_or_permissions(manage_messages=True)
     @commands.command()
     @commands.guild_only()
     @commands.cooldown(1, 3, commands.BucketType.user)
