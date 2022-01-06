@@ -46,15 +46,18 @@ class Study(commands.Cog):
                 return
 
             if await self.config.member(ctx.author).study_in_progress():
-                roles_to_apply = []
+                current_user_roles = ctx.author.roles
+                cached_user_roles = []
 
                 for role_id in cached_roles:
                     role = discord.utils.get(ctx.guild.roles, id=role_id)
-                    if role and role not in roles_to_apply:
-                        roles_to_apply.append(role)
+                    if role and role not in cached_user_roles:
+                        cached_user_roles.append(role)
+
+                user_roles = current_user_roles + [i for i in cached_user_roles if i not in current_user_roles]
 
                 try:
-                    await ctx.author.add_roles(roles_to_apply, atomic=True)
+                    await ctx.author.edit(roles=user_roles)
                 except Exception as e:
                     #to do: add role react on fail
                     print(f"\nFAILED: {e}\n")
@@ -66,23 +69,17 @@ class Study(commands.Cog):
                     await ctx.tick()
 
             else:
-                roles_to_remove = []
+                current_user_roles = ctx.author.roles
+                exempt_user_roles = []
 
                 for role in ctx.author.roles:
-                    if role.id not in exempt_role_ids and role not in roles_to_remove:
+                    if role.id in exempt_role_ids:
+                        exempt_user_roles.append(role)
+                    else:
                         cached_roles.append(role.id)
-                        roles_to_remove.append(role)
-
-                print(f"\nCACHED ROLES:\n")
-
-                print(*cached_roles, sep = "\n")
-
-                print(f"\nROLES TO REMOVE:\n")
-
-                print(*roles_to_remove, sep = "\n")
 
                 try:
-                    await ctx.author.remove_roles(roles_to_remove, atomic=True)
+                    await ctx.author.edit(roles=exempt_user_roles)
                 except Exception as e:
                     #to do: add role react on fail
                     print(f"\nFAILED: {e}\n")
