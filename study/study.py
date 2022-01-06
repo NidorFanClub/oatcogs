@@ -175,6 +175,7 @@ class Study(commands.Cog):
         await self.config.member(member).study_in_progress.set(False)
         async with self.config.member(member).roles() as roles:
             roles.clear()
+        await ctx.tick()
 
     @checks.mod_or_permissions(manage_messages=True)
     @studyset.command(name = "addstudyrole")
@@ -200,7 +201,7 @@ class Study(commands.Cog):
                 except:
                     pass
             await ctx.send(f"Added {roles_added} role(s) to the list of banned roles!")
-            await ctx.tick()
+        await ctx.tick()
 
     @checks.mod_or_permissions(manage_messages=True)
     @studyset.command(name = "removebannedrole")
@@ -214,7 +215,7 @@ class Study(commands.Cog):
                 except:
                     pass
             await ctx.send(f"Removed {roles_removed} role(s) from the list of banned roles!")
-            await ctx.tick()
+        await ctx.tick()
 
     @checks.mod_or_permissions(manage_messages=True)
     @studyset.command(name = "addexemptrole")
@@ -228,7 +229,7 @@ class Study(commands.Cog):
                 except:
                     pass
             await ctx.send(f"Added {roles_added} role(s) to the list of exempt roles!")
-            await ctx.tick()
+        await ctx.tick()
             
     @checks.mod_or_permissions(manage_messages=True)
     @studyset.command(name = "removeexemptrole")
@@ -242,21 +243,21 @@ class Study(commands.Cog):
                 except:
                     pass
             await ctx.send(f"Removed {roles_removed} role(s) from the list of exempt roles!")
-            await ctx.tick()
+        await ctx.tick()
             
     @checks.mod_or_permissions(manage_messages=True)
     @studyset.command(name = "clearexempt")
     async def studyset_clearexempt(self, ctx):
         async with self.config.guild(ctx.guild).exempt_roles() as exempt_roles:
             exempt_roles.clear()
-            await ctx.tick()
+        await ctx.tick()
 
     @checks.mod_or_permissions(manage_messages=True)
     @studyset.command(name = "clearbanned")
     async def studyset_clearbanned(self, ctx):
         async with self.config.guild(ctx.guild).banned_roles() as banned_roles:
             banned_roles.clear()
-            await ctx.tick()
+        await ctx.tick()
 
     @checks.mod_or_permissions(manage_messages=True)
     @studyset.command(name = "showsettings")
@@ -290,8 +291,9 @@ class Study(commands.Cog):
             study_role = discord.utils.get(ctx.guild.roles, id = study_role_id)
             study_list = str(study_role.name) + ": " + str(study_role.id) + "\n"
 
-            e.add_field(name="Study Role", value=study_list)
-            e.add_field(name="Exempt Roles", value=exempt_list)
-            e.add_field(name="Banned Roles", value=ban_list)
+            e.add_field(name="Study Role", value=study_list, inline=False)
+            e.add_field(name="Exempt Roles", value=exempt_list, inline=False)
+            e.add_field(name="Banned Roles", value=ban_list, inline=False)
 
             await ctx.send(embed=e)
+            await ctx.tick()
