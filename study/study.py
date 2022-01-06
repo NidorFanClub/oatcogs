@@ -20,67 +20,67 @@ class Study(commands.Cog):
     async def study(self, ctx, *args):
         """Temporary time-out for those who lack self control."""
         if args:
-            return
+            pass
+        else:
+            banned_role_ids = await self.config.guild(ctx.guild).banned_roles()
+            exempt_role_ids = await self.config.guild(ctx.guild).exempt_roles()
+            study_role_id = await self.config.guild(ctx.guild).study_role()
 
-        banned_role_ids = await self.config.guild(ctx.guild).banned_roles()
-        exempt_role_ids = await self.config.guild(ctx.guild).exempt_roles()
-        study_role_id = await self.config.guild(ctx.guild).study_role()
-
-        if not study_role_id:
-            return
-
-        study_role = discord.utils.get(ctx.guild.roles, id=study_role_id)
-
-        async with self.config.member(ctx.author).cached_roles() as cached_roles:
-            for banned_role_id in banned_role_ids:
-                banned_role = discord.utils.get(ctx.guild.roles, id=banned_role_id)
-                if banned_role in ctx.author.roles:
-                    return
-
-            if await self.config.member(ctx.author).study_in_progress() and study_role not in ctx.author.roles:
+            if not study_role_id:
                 return
 
-            if await self.config.member(ctx.author).study_in_progress():
-                current_user_roles = ctx.author.roles
-                cached_user_roles = []
+            study_role = discord.utils.get(ctx.guild.roles, id=study_role_id)
 
-                for role_id in cached_roles:
-                    role = discord.utils.get(ctx.guild.roles, id=role_id)
-                    if role and role not in cached_user_roles:
-                        cached_user_roles.append(role)
+            async with self.config.member(ctx.author).cached_roles() as cached_roles:
+                for banned_role_id in banned_role_ids:
+                    banned_role = discord.utils.get(ctx.guild.roles, id=banned_role_id)
+                    if banned_role in ctx.author.roles:
+                        return
 
-                user_roles = current_user_roles + [i for i in cached_user_roles if i not in current_user_roles]
+                if await self.config.member(ctx.author).study_in_progress() and study_role not in ctx.author.roles:
+                    return
 
-                try:
-                    await ctx.author.edit(roles=user_roles)
-                except:
-                    #to do: add role react on fail
-                    pass
-                else:
-                    cached_roles.clear()
-                    await ctx.author.remove_roles(study_role, atomic=True)
-                    await self.config.member(ctx.author).study_in_progress.set(False)
-                    await ctx.tick()
+                if await self.config.member(ctx.author).study_in_progress():
+                    current_user_roles = ctx.author.roles
+                    cached_user_roles = []
 
-            else:
-                current_user_roles = ctx.author.roles
-                exempt_user_roles = []
+                    for role_id in cached_roles:
+                        role = discord.utils.get(ctx.guild.roles, id=role_id)
+                        if role and role not in cached_user_roles:
+                            cached_user_roles.append(role)
 
-                for role in ctx.author.roles:
-                    if role.id in exempt_role_ids:
-                        exempt_user_roles.append(role)
+                    user_roles = current_user_roles + [i for i in cached_user_roles if i not in current_user_roles]
+
+                    try:
+                        await ctx.author.edit(roles=user_roles)
+                    except:
+                        #to do: add role react on fail
+                        pass
                     else:
-                        cached_roles.append(role.id)
+                        cached_roles.clear()
+                        await ctx.author.remove_roles(study_role, atomic=True)
+                        await self.config.member(ctx.author).study_in_progress.set(False)
+                        await ctx.tick()
 
-                try:
-                    await ctx.author.edit(roles=exempt_user_roles)
-                except:
-                    #to do: add role react on fail
-                    pass
                 else:
-                    await ctx.author.add_roles(study_role, atomic=True)
-                    await self.config.member(ctx.author).study_in_progress.set(True)
-                    await ctx.react_quietly("📝")
+                    current_user_roles = ctx.author.roles
+                    exempt_user_roles = []
+
+                    for role in ctx.author.roles:
+                        if role.id in exempt_role_ids:
+                            exempt_user_roles.append(role)
+                        else:
+                            cached_roles.append(role.id)
+
+                    try:
+                        await ctx.author.edit(roles=exempt_user_roles)
+                    except:
+                        #to do: add role react on fail
+                        pass
+                    else:
+                        await ctx.author.add_roles(study_role, atomic=True)
+                        await self.config.member(ctx.author).study_in_progress.set(True)
+                        await ctx.react_quietly("📝")
 
     @study.group(name = "set")
     @checks.mod_or_permissions(manage_messages=True)
