@@ -83,7 +83,7 @@ class Study(commands.Cog):
 
     @commands.group(autohelp=True)
     @commands.guild_only()
-    async def studyset(self, ctx: commands.Context) -> None::
+    async def studyset(self, ctx: commands.Context) -> None:
         f"Settings for study."
         pass
         
