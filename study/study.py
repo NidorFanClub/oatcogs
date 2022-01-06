@@ -168,7 +168,7 @@ class Study(commands.Cog):
             await ctx.send(embed=e)
             await ctx.tick()
 
-    @study_set.group(name = "add", aliases = ["set"])
+    @study_set.group(name = "add")
     @checks.mod_or_permissions(manage_messages=True)
     async def study_set_add(self, ctx: commands.Context) -> None:
         f"Add roles to the study settings."
