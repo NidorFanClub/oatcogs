@@ -64,7 +64,7 @@ class Study(commands.Cog):
                     if role.id not in exempt_role_ids:
                         roles.append(role.id)
                     else:
-                        user_exempt_roles.append(r)
+                        user_exempt_roles.append(role)
                 try:
                     await ctx.author.edit(roles=user_exempt_roles)
                 except:
