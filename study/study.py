@@ -189,7 +189,7 @@ class Study(commands.Cog):
             member = ctx.author
 
         e = discord.Embed(title="", colour=member.color)
-        e.set_author(name=member, icon_url=message.author.avatar_url)
+        e.set_author(name=member, icon_url=member.avatar_url)
 
         role_list = ""
 
