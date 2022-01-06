@@ -58,12 +58,12 @@ class Study(commands.Cog):
 
                 for role_id in roles:
                     role = discord.utils.get(ctx.guild.roles, id=role_id)
-                    if role and role not in ctx.author.roles:
+                    if role and role not in ctx.author.roles and role not in new_roles:
                         new_roles.append(role)
 
                 for exempt_role_id in exempt_role_ids:
                     exempt_role = discord.utils.get(ctx.guild.roles, id=exempt_role_id)
-                    if exempt_role in ctx.author.roles:
+                    if exempt_role in ctx.author.roles and exempt_role not in new_roles:
                         new_roles.append(exempt_role)
 
                 print(*new_roles, sep = "\n")
@@ -98,6 +98,7 @@ class Study(commands.Cog):
                     await self.config.member(ctx.author).study_in_progress.set(True)
                     await ctx.react_quietly("📝")
                 
+    """
     @checks.mod_or_permissions(manage_messages=True)
     @commands.command()
     async def arbitration(self, ctx: commands.Context, member: typing.Optional[discord.Member]):
@@ -178,6 +179,7 @@ class Study(commands.Cog):
                         await member.add_roles(discord.utils.get(ctx.guild.roles, id=banned_role_ids[0]))
                         await self.config.member(member).study_in_progress.set(False)
                         await ctx.react_quietly("🚔")
+    """
                      
     @commands.group(autohelp=True)
     @commands.guild_only()
