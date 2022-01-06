@@ -27,6 +27,20 @@ class Study(commands.Cog):
         if not study_role_id:
             return
 
+        if ctx.message.guild is None:
+            return
+
+        if await self.bot.cog_disabled_in_guild(self, ctx.message.guild):
+            return
+
+        valid_user = isinstance(ctx.message.author, discord.Member) and not ctx.message.author.bot
+
+        if not valid_user:
+            return
+
+        if await self.bot.is_automod_immune(ctx.message):
+            return
+
         study_role = discord.utils.get(ctx.guild.roles, id=study_role_id)
 
         async with self.config.member(ctx.author).roles() as roles:
@@ -89,6 +103,20 @@ class Study(commands.Cog):
         study_role_id = await self.config.guild(ctx.guild).study_role()
 
         if not banned_role_ids:
+            return
+
+        if ctx.message.guild is None:
+            return
+
+        if await self.bot.cog_disabled_in_guild(self, ctx.message.guild):
+            return
+
+        valid_user = isinstance(ctx.message.author, discord.Member) and not ctx.message.author.bot
+
+        if not valid_user:
+            return
+
+        if await self.bot.is_automod_immune(ctx.message):
             return
 
         try:
