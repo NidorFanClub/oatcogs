@@ -66,6 +66,8 @@ class Study(commands.Cog):
                     if exempt_role in ctx.author.roles:
                         new_roles.append(exempt_role)
 
+                print(*new_roles, sep = "\n")
+
                 await ctx.author.edit(roles=new_roles)
                 await ctx.author.remove_roles(study_role)
                 await self.config.member(ctx.author).study_in_progress.set(False)
