@@ -29,18 +29,9 @@ class Study(commands.Cog):
         if not study_role_id:
             return
 
-        if ctx.message.guild is None:
-            return
-
-        if await self.bot.cog_disabled_in_guild(self, ctx.message.guild):
-            return
-
         valid_user = isinstance(ctx.message.author, discord.Member) and not ctx.message.author.bot
 
         if not valid_user:
-            return
-
-        if await self.bot.is_automod_immune(ctx.message):
             return
 
         study_role = discord.utils.get(ctx.guild.roles, id=study_role_id)
@@ -65,12 +56,13 @@ class Study(commands.Cog):
                 try:
                     await ctx.author.edit(roles=new_roles)
                 except:
+                    #to do: add role react on fail
                     pass
                 else:
+                    cached_roles.clear()
                     await ctx.author.remove_roles(study_role)
                     await self.config.member(ctx.author).study_in_progress.set(False)
-
-                await ctx.tick()
+                    await ctx.tick()
 
             else:
                 user_exempt_roles = []
@@ -78,24 +70,18 @@ class Study(commands.Cog):
 
                 for role in ctx.author.roles:
                     if role.id not in exempt_role_ids:
-                        user_roles.append(role.id)
+                        cached_roles.append(role.id)
                     else:
                         user_exempt_roles.append(role)
-
-                try:
-                    cached_roles = user_roles
-                except:
-                    return
-
                 try:
                     await ctx.author.edit(roles=user_exempt_roles)
                 except:
+                    #to do: add role react on fail
                     pass
                 else:
                     await ctx.author.add_roles(study_role)
                     await self.config.member(ctx.author).study_in_progress.set(True)
-
-                await ctx.react_quietly("📝")
+                    await ctx.react_quietly("📝")
                 
     """
     @checks.mod_or_permissions(manage_messages=True)
