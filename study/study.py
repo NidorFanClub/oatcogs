@@ -183,18 +183,32 @@ class Study(commands.Cog):
         f"Settings for study."
         
     @checks.mod_or_permissions(manage_messages=True)
-    @studyset.command(name = "showroles")
-    async def studyset_showroles(self, ctx: commands.Context, member: typing.Optional[discord.Member]):
+    @studyset.command(name = "showuser")
+    async def studyset_showuser(self, ctx: commands.Context, member: typing.Optional[discord.Member]):
         if not member:
             member = ctx.author
+
+        e = discord.Embed(title="", colour=member.color)
+        e.set_author(name=member, icon_url=message.author.avatar_url)
+
+        role_list = ""
+
         async with self.config.member(member).roles() as roles:
-            role_string = ""
-            for role_id in roles:
-                role = discord.utils.get(ctx.guild.roles, id = role_id)
-                if role:
-                    role_string += str(role.name) + ": " + str(role.id) + "\n"
-            await ctx.send(role_string)
-            await ctx.tick()
+            if not roles:
+                role_list = "No cached roles"
+            else:
+                for role_id in roles:
+                    role = discord.utils.get(ctx.guild.roles, id = role_id)
+                    if role:
+                        role_list += str(role.name) + ": " + str(role.id) + "\n"
+
+        studying = await self.config.member(member).study_in_progress()
+
+        e.add_field(name="Stored Roles", value=role_list, inline=False)
+        e.add_field(name="Study Boolean", value=studying, inline=False)
+
+        await ctx.send(embed=e)
+        await ctx.tick()
             
     @checks.mod_or_permissions(manage_messages=True)
     @studyset.command(name = "reset")
