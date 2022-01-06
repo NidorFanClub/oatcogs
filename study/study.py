@@ -57,6 +57,7 @@ class Study(commands.Cog):
                     await ctx.author.add_roles(roles_to_apply, atomic=True)
                 except:
                     #to do: add role react on fail
+                    print("\FAILED:\n")
                     pass
                 else:
                     cached_roles.clear()
@@ -71,10 +72,18 @@ class Study(commands.Cog):
                     if role.id not in exempt_role_ids:
                         cached_roles.append(role.id)
                         roles_to_remove.append(role)
+
+                print("\nCACHED ROLES:\n")
+                print(*cached_roles, sep = "\n")
+
+                print("\nROLES TO REMOVE:\n")
+                print(*roles_to_remove, sep = "\n")
+
                 try:
                     await ctx.author.remove_roles(roles_to_remove, atomic=True)
                 except:
                     #to do: add role react on fail
+                    print("\FAILED:\n")
                     pass
                 else:
                     await ctx.author.add_roles(study_role, atomic=True)
