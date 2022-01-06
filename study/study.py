@@ -276,7 +276,7 @@ class Study(commands.Cog):
                         if banned_role:
                             ban_list += str(banned_role.name) + ": " + str(banned_role.id) + "\n"
 
-            study_role_id = await self.config.guild(ctx.guild).study_role
+            study_role_id = await self.config.guild(ctx.guild).study_role()
             study_role = discord.utils.get(ctx.guild.roles, id = study_role_id)
             study_list = str(study_role.name) + ": " + str(study_role.id) + "\n"
 
