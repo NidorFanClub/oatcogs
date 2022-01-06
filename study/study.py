@@ -80,19 +80,19 @@ class Study(commands.Cog):
                     await self.config.member(ctx.author).study_in_progress.set(True)
                     await ctx.react_quietly("📝")
 
-    @study.command(autohelp=True)
+    @study.group(name = "set")
     @checks.mod_or_permissions(manage_messages=True)
     async def study_set(self, ctx: commands.Context) -> None:
         f"Settings for study."
         pass
         
-    @studyset.group(name = "show", aliases = ["output", "display", "get"])
+    @study_set.group(name = "show", aliases = ["output", "display", "get"])
     @checks.mod_or_permissions(manage_messages=True)
     async def studyset_show(self, ctx: commands.Context) -> None:
         f"Display study settings and debug info."
         pass
 
-    @studyset_show.command(name = "user", aliases = ["member"])
+    @study_set_show.command(name = "user", aliases = ["member"])
     @checks.mod_or_permissions(manage_messages=True)
     async def studyset_show_user(self, ctx: commands.Context, member: typing.Optional[discord.Member]):
         if not member:
@@ -129,7 +129,7 @@ class Study(commands.Cog):
         await ctx.send(embed=e)
         await ctx.tick()
 
-    @studyset_show.command(name = "settings", aliases = ["roles"])
+    @study_set_show.command(name = "settings", aliases = ["roles"])
     @checks.mod_or_permissions(manage_messages=True)
     async def studyset_show_settings(self, ctx: commands.Context):
             e = discord.Embed(title="", colour=ctx.author.color)
@@ -168,19 +168,19 @@ class Study(commands.Cog):
             await ctx.send(embed=e)
             await ctx.tick()
 
-    @studyset.group(name = "add", aliases = ["set"])
+    @study_set.group(name = "add", aliases = ["set"])
     @checks.mod_or_permissions(manage_messages=True)
     async def studyset_add(self, ctx: commands.Context) -> None:
         f"Add roles to the study settings."
         pass
 
-    @studyset_add.command(name = "study", aliases = ["study_role", "studyrole"])
+    @study_set_add.command(name = "study", aliases = ["study_role", "studyrole"])
     @checks.mod_or_permissions(manage_messages=True)
     async def studyset_add_study(self, ctx, role: discord.Role):
         await self.config.guild(ctx.guild).study_role.set(role.id)
         await ctx.tick()
 
-    @studyset_add.command(name = "banned", aliases = ["banned_role", "bannedrole"])
+    @study_set_add.command(name = "banned", aliases = ["banned_role", "bannedrole"])
     @checks.mod_or_permissions(manage_messages=True)
     async def studyset_add_banned(self, ctx, roles: commands.Greedy[discord.Role]):
         if not roles:
@@ -198,7 +198,7 @@ class Study(commands.Cog):
             await ctx.send(f"Added {roles_added} role(s) to the list of banned roles!")
         await ctx.tick()
 
-    @studyset_add.command(name = "exempt", aliases = ["exempt_role", "exemptrole"])
+    @study_set_add.command(name = "exempt", aliases = ["exempt_role", "exemptrole"])
     @checks.mod_or_permissions(manage_messages=True)
     async def studyset_add_exempt(self, ctx, roles: commands.Greedy[discord.Role]):
         if not roles:
@@ -216,20 +216,20 @@ class Study(commands.Cog):
             await ctx.send(f"Added {roles_added} role(s) to the list of exempt roles!")
         await ctx.tick()
 
-    @studyset.group(name = "remove", aliases = ["delete", "del", "rem"])
+    @study_set.group(name = "remove", aliases = ["delete", "del", "rem"])
     @checks.mod_or_permissions(manage_messages=True)
     async def studyset_remove(self, ctx: commands.Context) -> None:
         f"Remove roles from the study settings."
         pass
 
-    @studyset_remove.command(name = "study", aliases = ["study_role", "studyrole"])
+    @study_set_remove.command(name = "study", aliases = ["study_role", "studyrole"])
     @checks.mod_or_permissions(manage_messages=True)
     async def studyset_remove_study(self, ctx, role: discord.Role):
         await self.config.guild(ctx.guild).study_role.set("")
         await ctx.tick()
 
 
-    @studyset_remove.command(name = "banned", aliases = ["banned_role", "bannedrole"])
+    @study_set_remove.command(name = "banned", aliases = ["banned_role", "bannedrole"])
     @checks.mod_or_permissions(manage_messages=True)
     async def studyset_remove_banned(self, ctx, roles: commands.Greedy[discord.Role]):
         if not roles:
@@ -247,7 +247,7 @@ class Study(commands.Cog):
             await ctx.send(f"Removed {roles_removed} role(s) from the list of banned roles!")
         await ctx.tick()
             
-    @studyset_remove.command(name = "exempt", aliases = ["exempt_role", "exemptrole"])
+    @study_set_remove.command(name = "exempt", aliases = ["exempt_role", "exemptrole"])
     @checks.mod_or_permissions(manage_messages=True)
     async def studyset_remove_exempt(self, ctx, roles: commands.Greedy[discord.Role]):
         if not roles:
@@ -265,27 +265,27 @@ class Study(commands.Cog):
             await ctx.send(f"Removed {roles_removed} role(s) from the list of exempt roles!")
         await ctx.tick()
 
-    @studyset.group(name = "clear", aliases = ["wipe"])
+    @study_set.group(name = "clear", aliases = ["wipe"])
     @checks.mod_or_permissions(manage_messages=True)
     async def studyset_clear(self, ctx: commands.Context) -> None:
         f"Clear data from the study settings."
         pass
 
-    @studyset_clear.command(name = "exempt", aliases = ["exempt_roles", "exemptroles"])
+    @study_set_clear.command(name = "exempt", aliases = ["exempt_roles", "exemptroles"])
     @checks.mod_or_permissions(manage_messages=True)
     async def studyset_clear_exempt(self, ctx):
         async with self.config.guild(ctx.guild).exempt_roles() as exempt_roles:
             exempt_roles.clear()
         await ctx.tick()
 
-    @studyset_clear.command(name = "banned", aliases = ["banned_roles", "bannedroles"])
+    @study_set_clear.command(name = "banned", aliases = ["banned_roles", "bannedroles"])
     @checks.mod_or_permissions(manage_messages=True)
     async def studyset_clear_banned(self, ctx):
         async with self.config.guild(ctx.guild).banned_roles() as banned_roles:
             banned_roles.clear()
         await ctx.tick()
 
-    @studyset.command(name = "reset")
+    @study_set.command(name = "reset")
     @checks.mod_or_permissions(manage_messages=True)
     async def studyset_reset(self, ctx, member: typing.Optional[discord.Member]):
         if not member:
