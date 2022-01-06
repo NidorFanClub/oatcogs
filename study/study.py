@@ -46,40 +46,38 @@ class Study(commands.Cog):
                 return
 
             if await self.config.member(ctx.author).study_in_progress():
-                new_roles = ctx.author.roles
+                roles_to_apply = []
 
                 for role_id in cached_roles:
                     role = discord.utils.get(ctx.guild.roles, id=role_id)
-                    if role and role not in ctx.author.roles and role not in new_roles:
-                        new_roles.append(role)
+                    if role and role not in roles_to_apply:
+                        roles_to_apply.append(role)
 
                 try:
-                    await ctx.author.edit(roles=new_roles)
+                    await ctx.author.add_roles(roles_to_apply, atomic=True)
                 except:
                     #to do: add role react on fail
                     pass
                 else:
                     cached_roles.clear()
-                    await ctx.author.remove_roles(study_role)
+                    await ctx.author.remove_roles(study_role, atomic=True)
                     await self.config.member(ctx.author).study_in_progress.set(False)
                     await ctx.tick()
 
             else:
-                user_exempt_roles = []
-                user_roles = []
+                roles_to_remove = []
 
                 for role in ctx.author.roles:
                     if role.id not in exempt_role_ids:
                         cached_roles.append(role.id)
-                    else:
-                        user_exempt_roles.append(role)
+                        roles_to_remove.append(role)
                 try:
-                    await ctx.author.edit(roles=user_exempt_roles)
+                    await ctx.author.remove_roles(roles_to_remove, atomic=True)
                 except:
                     #to do: add role react on fail
                     pass
                 else:
-                    await ctx.author.add_roles(study_role)
+                    await ctx.author.add_roles(study_role, atomic=True)
                     await self.config.member(ctx.author).study_in_progress.set(True)
                     await ctx.react_quietly("📝")
                 
