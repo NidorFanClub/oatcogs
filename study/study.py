@@ -17,17 +17,18 @@ class Study(commands.Cog):
 
     @commands.group(autohelp=False)
     @commands.guild_only()
-    async def study(self, ctx, member: typing.Optional[discord.Member]):
+    async def study(self, ctx):
         """Temporary time-out for those who lack self control."""
         if not ctx.invoked_subcommand:
-            if not member or not ctx.author.guild_permissions.administrator:
-                member = ctx.author
+            member = ctx.author
 
             banned_role_ids = await self.config.guild(ctx.guild).banned_roles()
             exempt_role_ids = await self.config.guild(ctx.guild).exempt_roles()
             study_role_id = await self.config.guild(ctx.guild).study_role()
 
-            if not study_role_id:
+            locked = await self.config.member(member).locked()
+
+            if not study_role_id or locked:
                 return
 
             study_role = discord.utils.get(ctx.guild.roles, id=study_role_id)
@@ -61,6 +62,7 @@ class Study(commands.Cog):
                         cached_roles.clear()
                         await member.remove_roles(study_role, atomic=True)
                         await self.config.member(member).study_in_progress.set(False)
+                        await self.config.member(member).locked.set(False)
                         await ctx.tick()
 
                 else:
@@ -81,14 +83,8 @@ class Study(commands.Cog):
                     else:
                         await member.add_roles(study_role, atomic=True)
                         await self.config.member(member).study_in_progress.set(True)
+                        await self.config.member(member).locked.set(False)
                         await ctx.react_quietly("📝")
-
-
-    @study.group(name = "Krik")
-    @checks.mod_or_permissions(manage_messages=True)
-    async def study_krik(self, ctx: commands.Context) -> None:
-        f"test for precedence."
-        pass
 
     @study.group(name = "set")
     @checks.mod_or_permissions(manage_messages=True)
@@ -289,3 +285,11 @@ class Study(commands.Cog):
         async with self.config.member(member).cached_roles() as cached_roles:
             cached_roles.clear()
         await ctx.tick()
+
+    @study_lock.command(name = "lock")
+    async def study_lock(self, ctx):
+        pass
+
+    @study_unlock.command(name = "unlock")
+    async def study_unlock(self, ctx):
+        pass
