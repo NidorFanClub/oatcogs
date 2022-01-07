@@ -83,6 +83,13 @@ class Study(commands.Cog):
                         await self.config.member(member).study_in_progress.set(True)
                         await ctx.react_quietly("📝")
 
+
+    @study.group(name = "Krik")
+    @checks.mod_or_permissions(manage_messages=True)
+    async def study_krik(self, ctx: commands.Context) -> None:
+        f"test for precedence."
+        pass
+
     @study.group(name = "set")
     @checks.mod_or_permissions(manage_messages=True)
     async def study_set(self, ctx: commands.Context) -> None:
