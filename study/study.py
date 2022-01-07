@@ -17,7 +17,7 @@ class Study(commands.Cog):
 
     @commands.group(autohelp=False)
     @commands.guild_only()
-    async def study(self, ctx, member: commands.Greedy[discord.Member] = ctx.author):
+    async def study(self, ctx, member: commands.Greedy[discord.Member] = []):
         """Temporary time-out for those who lack self control."""
         if not ctx.invoked_subcommand:
             if not member or ctx.author is not discord.Permissions.administrator:
