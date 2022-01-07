@@ -20,7 +20,7 @@ class Study(commands.Cog):
     async def study(self, ctx, member: commands.Greedy[discord.Member]):
         """Temporary time-out for those who lack self control."""
         if not ctx.invoked_subcommand:
-            if not member or ctx.author is not discord.Permissions.administrator
+            if not member or ctx.author is not discord.Permissions.administrator:
                 member = ctx.author
 
             banned_role_ids = await self.config.guild(ctx.guild).banned_roles()
