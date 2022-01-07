@@ -183,8 +183,8 @@ class Study(commands.Cog):
         await self.config.guild(ctx.guild).study_role.set(role.id)
         await ctx.tick()
 
-    @study_set_add.command(name = "banned", aliases = ["banned_role", "bannedrole"])
-    @checks.mod_or_permissions(manage_messages=True, require_var_positional=True)
+    @study_set_add.command(name = "banned", aliases = ["banned_role", "bannedrole"], require_var_positional=True)
+    @checks.mod_or_permissions(manage_messages=True)
     async def study_set_add_banned(self, ctx, roles: commands.Greedy[discord.Role]):
         async with self.config.guild(ctx.guild).banned_roles() as banned_roles:
             roles_added = 0
@@ -197,8 +197,8 @@ class Study(commands.Cog):
             await ctx.send(f"Added {roles_added} role(s) to the list of banned roles!")
         await ctx.tick()
 
-    @study_set_add.command(name = "exempt", aliases = ["exempt_role", "exemptrole"])
-    @checks.mod_or_permissions(manage_messages=True, require_var_positional=True)
+    @study_set_add.command(name = "exempt", aliases = ["exempt_role", "exemptrole"], require_var_positional=True)
+    @checks.mod_or_permissions(manage_messages=True)
     async def study_set_add_exempt(self, ctx, roles: commands.Greedy[discord.Role]):
 
         async with self.config.guild(ctx.guild).exempt_roles() as exempt_roles:
@@ -225,8 +225,8 @@ class Study(commands.Cog):
         await ctx.tick()
 
 
-    @study_set_remove.command(name = "banned", aliases = ["banned_role", "bannedrole"])
-    @checks.mod_or_permissions(manage_messages=True, require_var_positional=True)
+    @study_set_remove.command(name = "banned", aliases = ["banned_role", "bannedrole"], require_var_positional=True)
+    @checks.mod_or_permissions(manage_messages=True)
     async def study_set_remove_banned(self, ctx, roles: commands.Greedy[discord.Role]):
         async with self.config.guild(ctx.guild).banned_roles() as banned_roles:
             roles_removed = 0
@@ -239,8 +239,8 @@ class Study(commands.Cog):
             await ctx.send(f"Removed {roles_removed} role(s) from the list of banned roles!")
         await ctx.tick()
             
-    @study_set_remove.command(name = "exempt", aliases = ["exempt_role", "exemptrole"])
-    @checks.mod_or_permissions(manage_messages=True, require_var_positional=True)
+    @study_set_remove.command(name = "exempt", aliases = ["exempt_role", "exemptrole"], require_var_positional=True)
+    @checks.mod_or_permissions(manage_messages=True)
     async def study_set_remove_exempt(self, ctx, roles: commands.Greedy[discord.Role]):
         async with self.config.guild(ctx.guild).exempt_roles() as exempt_roles:
             roles_removed = 0
