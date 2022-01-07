@@ -286,10 +286,10 @@ class Study(commands.Cog):
             cached_roles.clear()
         await ctx.tick()
 
-    @study_lock.command(name = "lock")
+    @study.command(name = "lock")
     async def study_lock(self, ctx):
         pass
 
-    @study_unlock.command(name = "unlock")
+    @study.command(name = "unlock")
     async def study_unlock(self, ctx):
         pass
