@@ -91,88 +91,6 @@ class Study(commands.Cog):
     async def study_set(self, ctx: commands.Context) -> None:
         f"Settings for study."
         pass
-        
-    @study_set.group(name = "show", aliases = ["output", "display", "get"])
-    @checks.mod_or_permissions(manage_messages=True)
-    async def study_set_show(self, ctx: commands.Context) -> None:
-        f"Display study settings and debug info."
-        pass
-
-    @study_set_show.command(name = "user", aliases = ["member"])
-    @checks.mod_or_permissions(manage_messages=True)
-    async def study_set_show_user(self, ctx: commands.Context, member: typing.Optional[discord.Member]):
-        if not member:
-            member = ctx.author
-
-        e = discord.Embed(title="", colour=member.color)
-        e.set_author(name=member, icon_url=member.avatar_url)
-
-        current_role_list = ""
-        cached_role_list = ""
-
-        if not member.roles:
-            current_role_list = "No current roles"
-        else:
-            for role in member.roles:
-                if role:
-                    current_role_list += str(role.name) + ": " + str(role.id) + "\n"
-
-        async with self.config.member(member).cached_roles() as cached_roles:
-            if not cached_roles:
-                cached_role_list = "No cached roles"
-            else:
-                for role_id in cached_roles:
-                    role = discord.utils.get(ctx.guild.roles, id = role_id)
-                    if role:
-                        cached_role_list += str(role.name) + ": " + str(role.id) + "\n"
-
-        studying = await self.config.member(member).study_in_progress()
-
-        e.add_field(name="Current Roles", value=current_role_list, inline=False)
-        e.add_field(name="Stored Roles", value=cached_role_list, inline=False)
-        e.add_field(name="Study Boolean", value=studying, inline=False)
-
-        await ctx.send(embed=e)
-        await ctx.tick()
-
-    @study_set_show.command(name = "settings", aliases = ["roles"])
-    @checks.mod_or_permissions(manage_messages=True)
-    async def study_set_show_settings(self, ctx: commands.Context):
-            e = discord.Embed(title="", colour=ctx.author.color)
-            e.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
-
-            study_list = ""
-            exempt_list = ""
-            ban_list = ""
-
-            async with self.config.guild(ctx.guild).exempt_roles() as exempt_roles:
-                if not exempt_roles:
-                    exempt_list = "Empty"
-                else:
-                    for exempt_role_id in exempt_roles:
-                        exempt_role = discord.utils.get(ctx.guild.roles, id = exempt_role_id)
-                        if exempt_role:
-                            exempt_list += str(exempt_role.name) + ": " + str(exempt_role.id) + "\n"
-
-            async with self.config.guild(ctx.guild).banned_roles() as banned_roles:
-                if not banned_roles:
-                    ban_list = "Empty"
-                else:
-                    for banned_role_id in banned_roles:
-                        banned_role = discord.utils.get(ctx.guild.roles, id = banned_role_id)
-                        if banned_role:
-                            ban_list += str(banned_role.name) + ": " + str(banned_role.id) + "\n"
-
-            study_role_id = await self.config.guild(ctx.guild).study_role()
-            study_role = discord.utils.get(ctx.guild.roles, id = study_role_id)
-            study_list = str(study_role.name) + ": " + str(study_role.id) + "\n"
-
-            e.add_field(name="Study Role", value=study_list, inline=False)
-            e.add_field(name="Exempt Roles", value=exempt_list, inline=False)
-            e.add_field(name="Banned Roles", value=ban_list, inline=False)
-
-            await ctx.send(embed=e)
-            await ctx.tick()
 
     @study_set.group(name = "add")
     @checks.mod_or_permissions(manage_messages=True)
@@ -275,6 +193,88 @@ class Study(commands.Cog):
         async with self.config.guild(ctx.guild).banned_roles() as banned_roles:
             banned_roles.clear()
         await ctx.tick()
+
+    @study.group(name = "show", aliases = ["output", "display", "get"])
+    @checks.mod_or_permissions(manage_messages=True)
+    async def study_show(self, ctx: commands.Context) -> None:
+        f"Display study settings and debug info."
+        pass
+
+    @study_show.command(name = "user", aliases = ["member"])
+    @checks.mod_or_permissions(manage_messages=True)
+    async def study_show_user(self, ctx: commands.Context, member: typing.Optional[discord.Member]):
+        if not member:
+            member = ctx.author
+
+        e = discord.Embed(title="", colour=member.color)
+        e.set_author(name=member, icon_url=member.avatar_url)
+
+        current_role_list = ""
+        cached_role_list = ""
+
+        if not member.roles:
+            current_role_list = "No current roles"
+        else:
+            for role in member.roles:
+                if role:
+                    current_role_list += str(role.name) + ": " + str(role.id) + "\n"
+
+        async with self.config.member(member).cached_roles() as cached_roles:
+            if not cached_roles:
+                cached_role_list = "No cached roles"
+            else:
+                for role_id in cached_roles:
+                    role = discord.utils.get(ctx.guild.roles, id = role_id)
+                    if role:
+                        cached_role_list += str(role.name) + ": " + str(role.id) + "\n"
+
+        studying = await self.config.member(member).study_in_progress()
+
+        e.add_field(name="Current Roles", value=current_role_list, inline=False)
+        e.add_field(name="Stored Roles", value=cached_role_list, inline=False)
+        e.add_field(name="Study Boolean", value=studying, inline=False)
+
+        await ctx.send(embed=e)
+        await ctx.tick()
+
+    @study_show.command(name = "settings", aliases = ["roles"])
+    @checks.mod_or_permissions(manage_messages=True)
+    async def study_show_settings(self, ctx: commands.Context):
+            e = discord.Embed(title="", colour=ctx.author.color)
+            e.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
+
+            study_list = ""
+            exempt_list = ""
+            ban_list = ""
+
+            async with self.config.guild(ctx.guild).exempt_roles() as exempt_roles:
+                if not exempt_roles:
+                    exempt_list = "Empty"
+                else:
+                    for exempt_role_id in exempt_roles:
+                        exempt_role = discord.utils.get(ctx.guild.roles, id = exempt_role_id)
+                        if exempt_role:
+                            exempt_list += str(exempt_role.name) + ": " + str(exempt_role.id) + "\n"
+
+            async with self.config.guild(ctx.guild).banned_roles() as banned_roles:
+                if not banned_roles:
+                    ban_list = "Empty"
+                else:
+                    for banned_role_id in banned_roles:
+                        banned_role = discord.utils.get(ctx.guild.roles, id = banned_role_id)
+                        if banned_role:
+                            ban_list += str(banned_role.name) + ": " + str(banned_role.id) + "\n"
+
+            study_role_id = await self.config.guild(ctx.guild).study_role()
+            study_role = discord.utils.get(ctx.guild.roles, id = study_role_id)
+            study_list = str(study_role.name) + ": " + str(study_role.id) + "\n"
+
+            e.add_field(name="Study Role", value=study_list, inline=False)
+            e.add_field(name="Exempt Roles", value=exempt_list, inline=False)
+            e.add_field(name="Banned Roles", value=ban_list, inline=False)
+
+            await ctx.send(embed=e)
+            await ctx.tick()
 
     @study_set.command(name = "reset")
     @checks.mod_or_permissions(manage_messages=True)
