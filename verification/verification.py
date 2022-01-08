@@ -23,7 +23,15 @@ class Verification(commands.Cog):
     @commands.guild_only()
     @commands.command()
     async def button(self, ctx):
-        await ctx.send(content = "i love my vegan friends. especially muradok", components = [[self.bot.components_manager.add_callback(Button(style = ButtonStyle.green, label = "Approve", custom_id = "approve")),
-                                                                                               self.bot.components_manager.add_callback(Button(style = ButtonStyle.grey, emoji = bot.get_emoji(929343381409255454), custom_id = "sus"))
+
+        e = discord.Embed(description = f"muradok is the greatest btw")
+        e.add_field(name="Joined Discord on", value="June 15, 2016 11:32 AM\n(6 years ago)")
+        e.add_field(name="Joined this server on", value="January 24, 2021 6:47 AM\n(a year ago)")
+        e.set_footer(text="Member #1 | User ID: 192677766003556352")
+        e.set_author(name="moosey#9999", url="https://cdn.discordapp.com/avatars/192677766003556352/1c1bbd93c523d443bd3acc4ad2e525a3.png?size=1024")
+        e.set_thumbnail(url="https://cdn.discordapp.com/avatars/192677766003556352/1c1bbd93c523d443bd3acc4ad2e525a3.png?size=1024")
+
+        await ctx.send(embed = e, components = [[self.bot.components_manager.add_callback(Button(style = ButtonStyle.green, label = "Approve", custom_id = "approve")),
+                                                                                               self.bot.components_manager.add_callback(Button(style = ButtonStyle.grey, emoji = bot.get_emoji(929343381409255454), custom_id = "sus")),
                                                                                                self.bot.components_manager.add_callback(Button(style = ButtonStyle.red, label = "Ban", custom_id = "ban"))]])
 
