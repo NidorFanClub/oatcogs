@@ -1,0 +1,10 @@
+{
+    "author" : ["moosey"],
+    "install_msg" : "moose!",
+    "name" : "verification",
+    "short" : "Cog for approving members on public servers!",
+    "description" : "Do you hate shifty individuals? Me too! Vet them with verification.",
+    "tags" : ["fun"],
+    "requirements" : [],
+    "hidden" : false
+}
