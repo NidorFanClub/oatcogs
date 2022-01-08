@@ -6,6 +6,7 @@ from discord_components import (
     ButtonStyle,
     Select,
     SelectOption,
+    ComponentsBot
 )
 import asyncio
 import discord.utils 
