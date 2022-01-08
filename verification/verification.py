@@ -20,14 +20,14 @@ class Verification(commands.Cog):
     @commands.command()
     async def button(self, ctx):
         async def callback(interaction):
-            await interaction.send(content="Yay")
+            await ctx.send("test.")
 
         await ctx.send(
-            "Button callbacks!",
             components=[
-                self.bot.components_manager.add_callback(
-                    Button(style=ButtonStyle.blue, label="Click this"), callback
-                ),
+                [
+                    self.bot.components_manager.add_callback(Button(style=ButtonStyle.green, label="Approve"), callback),
+                    self.bot.components_manager.add_callback(Button(style=ButtonStyle.red, label="Banhammer"), callback)
+                ]
             ],
         )
 
