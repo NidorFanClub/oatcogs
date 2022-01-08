@@ -1,14 +1,7 @@
 from redbot.core import commands
 from redbot.core import Config
 from redbot.core import checks
-from discord_components import (
-    Button,
-    ButtonStyle,
-    Select,
-    SelectOption,
-    ComponentsBot,
-    DiscordComponents
-)
+from discord_components import DiscordComponents, Button, ButtonStyle, Select, SelectOption
 import asyncio
 import discord.utils 
 import discord.ext
