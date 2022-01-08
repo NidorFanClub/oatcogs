@@ -15,8 +15,8 @@ class Verification(commands.Cog):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1312420691312, force_registration=True)
 
-    @bot.event
-    async def on_button_click(interaction):
+    @commands.Cog.listener()
+    async def on_button_click(self, interaction):
         await interaction.respond(content="Button Clicked")
 
     @checks.mod_or_permissions(administrator=True)
