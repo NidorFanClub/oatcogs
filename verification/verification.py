@@ -17,7 +17,7 @@ class Verification(commands.Cog):
 
     @commands.Cog.listener()
     async def on_button_click(self, interaction):
-        await interaction.respond(content="Button Clicked")
+        await interaction.respond(content="hi vegan. you're cool. this button doesn't do anything yet.")
 
     @checks.mod_or_permissions(administrator=True)
     @commands.guild_only()
