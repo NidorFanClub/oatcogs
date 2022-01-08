@@ -20,8 +20,6 @@ class Verification(commands.Cog):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1312420691312, force_registration=True)
 
-    DiscordComponents(bot)
-
     @checks.mod_or_permissions(administrator=True)
     @commands.guild_only()
     @commands.command()
