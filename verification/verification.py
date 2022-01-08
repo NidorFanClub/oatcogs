@@ -6,7 +6,6 @@ from discord_components import (
     ButtonStyle,
     Select,
     SelectOption,
-    ComponentsBot
 )
 import asyncio
 import discord.utils 
@@ -20,6 +19,8 @@ class Verification(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1312420691312, force_registration=True)
+
+    DiscordComponents(bot)
 
     @checks.mod_or_permissions(administrator=True)
     @commands.guild_only()
