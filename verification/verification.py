@@ -22,7 +22,7 @@ class Verification(commands.Cog):
         async def callback(interaction):
             await interaction.send(content="Yay")
 
-        e = discord.Embed(description = f"**moosey#9999 has joined the server.")
+        e = discord.Embed(description = f"**moosey#9999** has joined the server.")
         e.add_field(name="Joined Discord on", value="June 15, 2016 11:32 AM\n(6 years ago)")
         e.add_field(name="Joined this server on", value="January 24, 2021 6:47 AM\n(a year ago)")
         e.set_footer(text="Member #1 | User ID: 192677766003556352")
