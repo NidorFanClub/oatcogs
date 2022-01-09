@@ -24,7 +24,7 @@ class Verification(commands.Cog):
             await ctx.send("hai")
             print(TEST)
             for button in buttons:
-                if button.id is not "lock":
+                if button.id != "lock":
                     button.disabled = not button.disabled
                 else:
                     button.emoji = "🔒"
