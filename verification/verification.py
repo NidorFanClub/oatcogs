@@ -22,11 +22,12 @@ class Verification(commands.Cog):
 
         if interaction.custom_id == "lock":
             print("TEST")
-            for button in buttons:
-                if button.id != "lock":
-                    button.disabled = not button.disabled
-                else:
-                    button.emoji = "🔒"
+            for action_bar in buttons:
+                for button in action_bar:
+                    if button.id != "lock":
+                        button.disabled = not button.disabled
+                    else:
+                        button.emoji = "🔒"
 
             await interaction.edit_origin(components = buttons)
 
