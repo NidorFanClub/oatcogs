@@ -18,16 +18,18 @@ class Verification(commands.Cog):
 
     @commands.Cog.listener()
     async def on_button_click(self, interaction):
-        components = interaction.message.components
+        buttons = interaction.message.components
 
         if interaction.custom_id is "lock":
-            for button in components:
-                if interaction.custom_id is not "lock":
+            for button in buttons:
+                if button.custom_id is not "lock":
                     button.disabled = not button.disabled
                 else:
-                    interaction.emoji = "🔒"
+                    button.emoji = "🔒"
 
-        await interaction.respond(content="hi vegan. you're cool. this button doesn't do anything yet.")
+            await interaction.edit_origin(components = buttons)
+
+        await interaction.respond(type = 6)
 
     @checks.mod_or_permissions(administrator=True)
     @commands.guild_only()
