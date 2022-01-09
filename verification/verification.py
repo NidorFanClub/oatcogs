@@ -24,7 +24,7 @@ class Verification(commands.Cog):
             for action_bar in buttons:
                 for button in action_bar:
                     if button.id == "lock":
-                        button.emoji = "🔓" if str(button.emoji) == "🔒" else button.emoji = "🔒"
+                        button.emoji = "🔓" if str(button.emoji) == "🔒" else "🔒"
                     else:
                         button.disabled = not button.disabled
             await interaction.edit_origin(components = buttons)
