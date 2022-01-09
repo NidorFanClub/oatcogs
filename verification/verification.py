@@ -21,18 +21,23 @@ class Verification(commands.Cog):
         buttons = interaction.message.components
 
         if interaction.custom_id == "lock":
-            print("TEST")
             for action_bar in buttons:
                 for button in action_bar:
-                    if button.id != "lock":
-                        button.disabled = not button.disabled
+                    if button.id == "lock":
+                        button.emoji = "🔓" if str(button.emoji) == "🔒" else button.emoji = "🔒"
                     else:
-                        if str(button.emoji) == "🔒":
-                            button.emoji = "🔓"
-                        else:
-                            button.emoji = "🔒"
-
+                        button.disabled = not button.disabled
             await interaction.edit_origin(components = buttons)
+
+        if interaction.custom_id == "approve":
+            pass
+
+        if interaction.custom_id == "sus":
+            pass
+
+        if interaction.custom_id == "ban":
+            pass
+
 
 
         #await interaction.respond(type = 6)
