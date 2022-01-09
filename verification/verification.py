@@ -20,7 +20,7 @@ class Verification(commands.Cog):
     async def on_button_click(self, interaction):
         buttons = interaction.message.components
 
-        if interaction.id is "lock":
+        if interaction.custom_id is "lock":
             for button in buttons:
                 if button.id is not "lock":
                     button.disabled = not button.disabled
