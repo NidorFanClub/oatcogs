@@ -21,7 +21,7 @@ class Verification(commands.Cog):
         buttons = interaction.message.components
 
         if interaction.custom_id == "lock":
-            print(TEST)
+            print("TEST")
             for button in buttons:
                 if button.id != "lock":
                     button.disabled = not button.disabled
