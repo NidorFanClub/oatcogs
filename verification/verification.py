@@ -27,7 +27,10 @@ class Verification(commands.Cog):
                     if button.id != "lock":
                         button.disabled = not button.disabled
                     else:
-                        button.emoji = "🔒"
+                        if button.emoji == "🔒"
+                            button.emoji = "🔓"
+                        else:
+                            button.emoji = "🔒"
 
             await interaction.edit_origin(components = buttons)
 
