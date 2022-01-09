@@ -29,7 +29,7 @@ class Verification(commands.Cog):
                     else:
                         if button.emoji == "🔒":
                             button.emoji = "🔓"
-                        else:
+                        elif button.emoji == "🔓":
                             button.emoji = "🔒"
 
             await interaction.edit_origin(components = buttons)
