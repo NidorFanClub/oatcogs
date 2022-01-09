@@ -20,7 +20,9 @@ class Verification(commands.Cog):
     async def on_button_click(self, interaction):
         buttons = interaction.message.components
 
-        if interaction.custom_id is "lock":
+        if interaction.custom_id == "lock":
+            await ctx.send("hai")
+            print(TEST)
             for button in buttons:
                 if button.id is not "lock":
                     button.disabled = not button.disabled
@@ -28,9 +30,9 @@ class Verification(commands.Cog):
                     button.emoji = "🔒"
 
             await interaction.edit_origin(components = buttons)
-            await ctx.send("hai")
 
-        await interaction.respond(type = 6)
+
+        #await interaction.respond(type = 6)
 
     @checks.mod_or_permissions(administrator=True)
     @commands.guild_only()
