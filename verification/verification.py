@@ -27,7 +27,7 @@ class Verification(commands.Cog):
                     if button.id != "lock":
                         button.disabled = not button.disabled
                     else:
-                        if button.emoji == "🔒"
+                        if button.emoji == "🔒":
                             button.emoji = "🔓"
                         else:
                             button.emoji = "🔒"
