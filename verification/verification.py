@@ -14,10 +14,10 @@ class Verification(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1312420691312, force_registration=True)
-        self.config.register_guild(verifier_channel = "", new_users = {}, buttons = [[Button(style = ButtonStyle.green, label = "Approve", custom_id = "approve", disabled = True),
-                                                                                      Button(style = ButtonStyle.grey, emoji = self.bot.get_emoji(929343381409255454), custom_id = "sus", disabled = True),
-                                                                                      Button(style = ButtonStyle.red, label = "Ban", custom_id = "ban", disabled = True),
-                                                                                      Button(style = ButtonStyle.blue, emoji = "🔓", custom_id = "lock", disabled = False)]])
+        self.config.register_guild(verifier_channel = "", new_users = {}, buttons = [Button(style = ButtonStyle.green, label = "Approve", custom_id = "approve", disabled = True),
+                                                                                     Button(style = ButtonStyle.grey, emoji = self.bot.get_emoji(929343381409255454), custom_id = "sus", disabled = True),
+                                                                                     Button(style = ButtonStyle.red, label = "Ban", custom_id = "ban", disabled = True),
+                                                                                     Button(style = ButtonStyle.blue, emoji = "🔓", custom_id = "lock", disabled = False)])
 
     @commands.Cog.listener()
     async def on_button_click(self, interaction):
@@ -36,5 +36,5 @@ class Verification(commands.Cog):
         e.set_thumbnail(url="https://cdn.discordapp.com/avatars/192677766003556352/1c1bbd93c523d443bd3acc4ad2e525a3.png?size=1024")
 
         async with self.config.guild(ctx.guild).buttons() as buttons:
-            await ctx.send(embed = e, components = buttons)
+            await ctx.send(embed = e, components = [buttons])
 
