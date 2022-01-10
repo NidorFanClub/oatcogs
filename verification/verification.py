@@ -24,29 +24,35 @@ class Verification(commands.Cog):
             return
 
         guild = member.guild
+
+        verifier_channel_id = await self.config.guild(guild).verifier_channel()
+
+        if not verifier_channel_id:
+            return
+
+        channel = discord.utils.get(guild.channels, id = verifier_channel_id)
+        
         avatar = member.avatar_url_as(static_format = "png")
         roles = member.roles[-1:0:-1]
 
-        channel = discord.utils.get(guild.channels, id = await self.config.guild(guild).verifier_channel())
-        
         await channel.send(f"{channel.id}, {member.guild.id}")
 
         cached_users = await self.config.guild(guild).cached_users()
 
-        invites_before_join = await self.config.guild(guild).invites()
-        invites_after_join = await member.guild.invites()
-
         invite_code = "Unknown"
         inviter = "unknown"
 
-        for invite in invites_before_join:
-            for invite_after in invites_after_join:
-                if invite.code == invite_after.code:
-                    if invite.uses < invite_after.uses:
-                        invite_code = invite.code
-                        inviter = invite.inviter
+        async with self.config.guild(guild).invites() as invites_before_join:
+            invites_after_join = await member.guild.invites()
 
-        invites = new_invites
+            for invite in invites_before_join:
+                for invite_after in invites_after_join:
+                    if invite.code == invite_after.code:
+                        if invite.uses < invite_after.uses:
+                            invite_code = invite.code
+                            inviter = invite.inviter
+
+            invites_before_join = invites_after_join
 
         if joined_at := member.joined_at:
             joined_at = joined_at.replace(tzinfo=datetime.timezone.utc)
