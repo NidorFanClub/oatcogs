@@ -18,7 +18,7 @@ class Verification(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1312420691312, force_registration=True)
-        self.config.register_guild(verifier_channel = None, cached_users = {}, cached_invites = {}W)
+        self.config.register_guild(verifier_channel = None, cached_users = {}, cached_invites = {})
 
     async def update_invites(self, guild: discord.Guild):
         async with self.config.guild(guild).cached_invites() as cached_invites:
