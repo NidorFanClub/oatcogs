@@ -199,7 +199,8 @@ class Verification(commands.Cog):
         else:
             return
 
-        for message in cached_users[f"{member.id}"]:
+        for message_id in cached_users[f"{member.id}"]:
+            message = discord.utils.get(member.guild.messages, id = int(message_id))
             await message.edit_origin(components = new_buttons)
 
 
