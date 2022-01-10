@@ -152,8 +152,9 @@ class Verification(commands.Cog):
             return
 
         if interaction.custom_id == "approve":
-
+            pass
         if interaction.custom_id == "sus":
+            pass
 
         if interaction.custom_id == "ban":
             member.ban()
