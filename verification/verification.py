@@ -154,10 +154,42 @@ class Verification(commands.Cog):
             return
 
         if interaction.custom_id == "approve":
-            await interaction.edit_origin(components = [[Button(style = ButtonStyle.green, label = f"Approved by {interaction.user.name}", custom_id = "approve", disabled = True)]],)
+            async with self.config.guild(member.guild).approved_roles() as approved_roles:
+                for approved_role_id in approved_roles:
+                    approved_role = discord.utils.get(member.guild.roles, id = int(approved_role_id))
+                    try:
+                        member.add_roles(approved_role)
+                    except:
+                        pass
+
+            async with self.config.guild(member.guild).remove_roles() as remove_roles:
+                for removed_role_id in removed_roles:
+                    removed_role = discord.utils.get(member.guild.roles, id = int(removed_role_id))
+                    try:
+                        member.remove_roles(removed_role)
+                    except:
+                        pass
+
+            await interaction.edit_origin(components = [[Button(style = ButtonStyle.green, label = f"Approved by {interaction.user.name}", custom_id = "approve", disabled = True)]])
 
         if interaction.custom_id == "sus":
-            pass
+            async with self.config.guild(member.guild).sus_roles() as sus_roles:
+                for sus_role_id in sus_roles:
+                    sus_role = discord.utils.get(member.guild.roles, id = int(sus_role_id))
+                    try:
+                        member.add_roles(sus_role)
+                    except:
+                        pass
+
+            async with self.config.guild(member.guild).remove_roles() as remove_roles:
+                for removed_role_id in removed_roles:
+                    removed_role = discord.utils.get(member.guild.roles, id = int(removed_role_id))
+                    try:
+                        member.remove_roles(removed_role)
+                    except:
+                        pass
+
+            await interaction.edit_origin(components = [[Button(style = ButtonStyle.green, label = f"Approved by {interaction.user.name}", custom_id = "approve", disabled = True)]])
 
         if interaction.custom_id == "ban":
             try:
@@ -166,7 +198,7 @@ class Verification(commands.Cog):
                 pass
             await modlog.create_case(self.bot, member.guild, datetime.now(tz = timezone.utc), "ban", member, interaction.user, reason = "troll in verification", until = None, channel = None)
 
-            await interaction.edit_origin(components = [[Button(style = ButtonStyle.red, label = f"Banned by {interaction.user.name}", custom_id = "ban", disabled = True)]],)
+            await interaction.edit_origin(components = [[Button(style = ButtonStyle.red, label = f"Banned by {interaction.user.name}", custom_id = "ban", disabled = True)]])
 
         if interaction.custom_id == "lock":
             for action_bar in buttons:
@@ -191,7 +223,7 @@ class Verification(commands.Cog):
 
     @verification.group(name = "add")
     @checks.mod_or_permissions(manage_messages=True)
-    async def verification_group(self, ctx: commands.Context) -> None:
+    async def verification_add(self, ctx: commands.Context) -> None:
         f"Add roles to the verification settings."
         pass
 
