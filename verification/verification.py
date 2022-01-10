@@ -15,7 +15,7 @@ class Verification(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1312420691312, force_registration=True)
-        self.config.register_guild(verifier_channel = None, cached_users = {}, cached_invites = {}, approved_roles = [], sus_roles = [], removed_roles = [], verifier_roles = [])
+        self.config.register_guild(verifier_channel = None, approval_channel = None, approval_message = "", cached_users = {}, cached_invites = {}, approved_roles = [], sus_roles = [], removed_roles = [], verifier_roles = [])
 
     async def get_user(self, message: discord.Message):
         async with self.config.guild(message.guild).cached_users() as cached_users:
@@ -167,6 +167,8 @@ class Verification(commands.Cog):
         verifier = False
         verifier_roles = await self.config.guild(member.guild).verifier_roles()
         approved_roles = await self.config.guild(member.guild).approved_roles()
+        approval_channel = await self.config.guild(member.guild).approval_channel()
+        approval_message = await self.config.guild(member.guild).approval_message()
 
         for verifier_role_id in verifier_roles:
             role = discord.utils.get(member.guild.roles, id = int(verifier_role_id))
@@ -187,6 +189,10 @@ class Verification(commands.Cog):
             await self.remove_roles(member, await self.config.guild(member.guild).removed_roles())
             await self.add_roles(member, await self.config.guild(member.guild).approved_roles())
             new_buttons = [[Button(style = ButtonStyle.green, label = f"Approved by {interaction.user.name}", custom_id = "approve", disabled = True)]]
+
+            if approval_channel is not None and approval_message is not None:
+                channel = discord.utils.get(member.guild.channels, id = int(approval_channel))
+                await channel.send(approval_message)
 
         elif interaction.custom_id == "sus":
             await self.remove_roles(member, await self.config.guild(member.guild).removed_roles())
@@ -307,8 +313,30 @@ class Verification(commands.Cog):
     @verification_set.command(name = "verifier_channel")
     @checks.mod_or_permissions(manage_messages=True)
     async def verification_set_verifier_channel(self, ctx, channel: discord.TextChannel):
-        await self.config.guild(ctx.guild).verifier_channel.set(channel.id)
+        try:
+            await self.config.guild(ctx.guild).verifier_channel.set(channel.id)
+        except:
+            return
+        else:
+            await ctx.tick()
+
+    @verification_set.command(name = "approval_channel")
+    @checks.mod_or_permissions(manage_messages=True)
+    async def verification_set_approval_channel(self, ctx, channel: discord.TextChannel):
+        try:
+            await self.config.guild(ctx.guild).approval_channel.set(channel.id)
+        except:
+            return
+        else:
+            await ctx.tick()
+
+    @verification_set.command(name = "approval_message", aliases = ["welcome_message", "approval_string", "welcome_string"])
+    @checks.mod_or_permissions(manage_messages=True)
+    async def verification_set_approval_message(self, ctx, *args):
+        approval_string = " ".join(args[:])
+        await self.config.guild(ctx.guild).approval_message.set(approval_string)
         await ctx.tick()
+
 
     @verification.command(name = "show", aliases = ["roles"])
     @checks.mod_or_permissions(manage_messages=True)
@@ -356,7 +384,9 @@ class Verification(commands.Cog):
                         if role:
                             removed_list += str(role.name) + ": " + str(role.id) + "\n"
 
+            approval_channel_id = await self.config.guild(ctx.guild).approval_channel()
             verifier_channel_id = await self.config.guild(ctx.guild).verifier_channel()
+            approval_channel = discord.utils.get(ctx.guild.channels, id = int(approval_channel_id))
             verifier_channel = discord.utils.get(ctx.guild.channels, id = int(verifier_channel_id))
 
             e.add_field(name="Verifier Channel", value=verifier_channel.name, inline=False)
