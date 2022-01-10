@@ -16,7 +16,7 @@ class Verification(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1312420691312, force_registration=True)
-        self.config.register_guild(verifier_channel = "", cached_users = {}, invites = {})
+        self.config.register_guild(verifier_channel = None, cached_users = {}, invites = {})
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
@@ -27,7 +27,7 @@ class Verification(commands.Cog):
         avatar = member.avatar_url_as(static_format = "png")
         roles = member.roles[-1:0:-1]
 
-        channel = discord.get_channel(await self.config.guild(guild).verifier_channel())
+        channel = discord.get_channel(int(await self.config.guild(guild).verifier_channel()))
 
         cached_users = await self.config.guild(guild).cached_users()
 
