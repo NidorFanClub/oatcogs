@@ -89,9 +89,9 @@ class Verification(commands.Cog):
         name = filter_invites(name)
 
         async with self.config.guild(guild).cached_users() as cached_users:
-            cached_users.setdefault(member.id, [])
+            cached_users.setdefault(int(member.id), [])
 
-            join_str = f"**{name}** joined the server for the {num2words(len(cached_users[member.id]) + 1, ordinal = True)} time!"
+            join_str = f"**{name}** joined the server for the {num2words(len(cached_users[int(member.id)]) + 1, ordinal = True)} time!"
 
         if inviter:
             invite_str = f"{invite_code} (created by {inviter})"
