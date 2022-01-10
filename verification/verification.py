@@ -64,7 +64,7 @@ class Verification(commands.Cog):
         invite = await self.find_invite(guild)
 
         if invite:
-            channel = discord.utils.get(guild.invites(), id = invite)
+            channel = discord.utils.get(await guild.invites(), id = invite)
             invite_code = invite.code
             inviter = invite.inviter
         else:
