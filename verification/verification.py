@@ -1,7 +1,9 @@
 from redbot.core import commands
 from redbot.core import Config
 from redbot.core import checks
+from redbot.core.utils.common_filters import filter_invites, filter_various_mentions, escape_spoilers_and_mass_mentions
 from discord_components import DiscordComponents, Button, ButtonStyle, Select, SelectOption
+from datetime import datetime, timedelta
 import asyncio
 import discord.utils 
 import discord.ext
@@ -14,7 +16,92 @@ class Verification(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1312420691312, force_registration=True)
-        self.config.register_guild(verifier_channel = "", new_users = {})
+        self.config.register_guild(verifier_channel = "", cached_users = {}, invites = {})
+
+    @commands.Cog.listener()
+    async on_member_join(self, member: discord.Member):
+        if member.guild.id != 802882189602979881:
+            return
+
+        guild = member.guild
+        avatar = member.avatar_url_as(static_format = "png")
+        roles = member.roles[-1:0:-1]
+
+        cached_users = await self.config.guild(guild).cached_users()
+
+        invites_before_join = await self.config.guild(guild).invites()
+        invites_after_join = await member.guild.invites()
+
+        invite_code = "Unknown"
+        inviter = "unknown"
+
+        for invite in invites_before_join:
+            for invite_after in invites_after_join:
+                if invite.code == invite_after.code:
+                    if invite.uses < invite_after.uses:
+                        invite_code = invite.code
+                        inviter = invite.inviter
+
+        invites = new_invites
+
+        if joined_at := member.joined_at:
+            joined_at = joined_at.replace(tzinfo=datetime.timezone.utc)
+
+        user_created = int(member.created_at.replace(tzinfo=datetime.timezone.utc).timestamp())
+
+        member_number = (sorted(guild.members, key=lambda m: m.joined_at or ctx.message.created_at).index(member) + 1)
+
+        created_on = "<t:{0}>\n(<t:{0}:R>)".format(user_created)
+
+        if joined_at is not None:
+            joined_on = "<t:{0}>\n(<t:{0}:R>)".format(int(joined_at.timestamp()))
+        else:
+            joined_on = "Unknown"
+
+        if any(a.type is discord.ActivityType.streaming for a in member.activities):
+            statusemoji = "\N{LARGE PURPLE CIRCLE}"
+        elif member.status.name == "online":
+            statusemoji = "\N{LARGE GREEN CIRCLE}"
+        elif member.status.name == "offline":
+            statusemoji = "\N{MEDIUM WHITE CIRCLE}\N{VARIATION SELECTOR-16}"
+        elif member.status.name == "dnd":
+            statusemoji = "\N{LARGE RED CIRCLE}"
+        elif member.status.name == "idle":
+            statusemoji = "\N{LARGE ORANGE CIRCLE}"
+
+        name = str(member)
+        name = " ~ ".join((name, member.nick)) if member.nick else name
+        name = filter_invites(name)
+
+        if member.id not in cached_users:
+            cached_users[member.id] = []
+
+        ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
+
+        join_str = f"**{name}** joined the server for the {ordinal(cached_users[member.id].count() + 1)} time!"
+        invite_str = f"{invite_code} (created by {inviter.name})"
+
+        if roles:
+            role_str = ", ".join([x.mention for x in roles])
+
+        e = discord.Embed(colour=member.colour)
+        e.add_field(name = "Joined Discord on", value = created_on)
+        e.add_field(name = "Joined this server on", value = joined_on)
+        e.add_field(name = "Joined server with invite", value = invite_str)
+        e.set_footer(text = f"Member #{member_number} | User ID: {member.id}")
+
+        if role_str is not None:
+            e.add_field(name = "Roles" if len(roles) > 1 else "Role", value = role_str, inline = False)
+
+        e.set_author(name=f"{statusemoji} {name}", url = avatar)
+        e.set_thumbnail(url = avatar)
+
+        message = await ctx.send(embed = e, components = [[Button(style = ButtonStyle.green, label = "Approve", custom_id = "approve", disabled = True),
+                                                          Button(style = ButtonStyle.grey, emoji = self.bot.get_emoji(929343381409255454), custom_id = "sus", disabled = True),
+                                                          Button(style = ButtonStyle.red, label = "Ban", custom_id = "ban", disabled = True),
+                                                          Button(style = ButtonStyle.blue, emoji = "🔓", custom_id = "lock", disabled = False)]])
+
+        cached_users[member.id].append(message.id)
 
     @commands.Cog.listener()
     async def on_button_click(self, interaction):
@@ -38,24 +125,5 @@ class Verification(commands.Cog):
         if interaction.custom_id == "ban":
             pass
 
-
-
         #await interaction.respond(type = 6)
-
-    @checks.mod_or_permissions(administrator=True)
-    @commands.guild_only()
-    @commands.command()
-    async def button(self, ctx):
-
-        e = discord.Embed(description = f"muradok is the greatest btw")
-        e.add_field(name="Joined Discord on", value="June 15, 2016 11:32 AM\n(6 years ago)")
-        e.add_field(name="Joined this server on", value="January 24, 2021 6:47 AM\n(a year ago)")
-        e.set_footer(text="Member #1 | User ID: 192677766003556352")
-        e.set_author(name="moosey#9999", url="https://cdn.discordapp.com/avatars/192677766003556352/1c1bbd93c523d443bd3acc4ad2e525a3.png?size=1024")
-        e.set_thumbnail(url="https://cdn.discordapp.com/avatars/192677766003556352/1c1bbd93c523d443bd3acc4ad2e525a3.png?size=1024")
-
-        await ctx.send(embed = e, components = [[Button(style = ButtonStyle.green, label = "Approve", custom_id = "approve", disabled = True),
-                                                 Button(style = ButtonStyle.grey, emoji = self.bot.get_emoji(929343381409255454), custom_id = "sus", disabled = True),
-                                                 Button(style = ButtonStyle.red, label = "Ban", custom_id = "ban", disabled = True),
-                                                 Button(style = ButtonStyle.blue, emoji = "🔓", custom_id = "lock", disabled = False)]])
 
