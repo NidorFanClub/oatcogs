@@ -124,7 +124,7 @@ class Verification(commands.Cog):
 
         async with self.config.guild(guild).cached_users() as cached_users:
             for key in cached_users:
-                channel.send(str(type(key)))
+                await channel.send(str(type(key)))
 
             cached_users[int(member.id)].append(int(message.id))
 
