@@ -146,7 +146,7 @@ class Verification(commands.Cog):
     async def on_button_click(self, interaction):
         buttons = interaction.message.components
 
-        member = get_user(interaction.message)
+        member = self.get_user(interaction.message)
 
         if not member:
             return
