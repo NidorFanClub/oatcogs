@@ -29,7 +29,10 @@ class Verification(commands.Cog):
                     if invite.code == invite_after.code:
                         if invite.uses < invite_after.uses:
                             invites_before_join = invites_after_join
+                            print("found the invite woohoo!", flush=True)
                             return invite
+
+        print("didnt find the invite woohoo!", flush=True)
 
         invites_before_join = invites_after_join
         return None
