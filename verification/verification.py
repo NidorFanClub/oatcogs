@@ -20,7 +20,7 @@ class Verification(commands.Cog):
         self.config.register_guild(verifier_channel = None, cached_users = {}, invites = {})
 
     async def find_invite(self, member: discord.Member):
-        async with self.config.guild(guild).invites() as invites_before_join:
+        async with self.config.guild(member.guild).invites() as invites_before_join:
             invites_after_join = await member.invites()
 
             for invite in invites_before_join:
