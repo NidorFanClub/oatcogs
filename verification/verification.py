@@ -164,27 +164,29 @@ class Verification(commands.Cog):
         if not interaction.user.top_role > member.top_role and not await self.bot.is_owner(interaction.user):
             return
 
+        cached_messages = await self.config.guild(member.guild).cached_messages()
+
         if interaction.custom_id == "approve":
             await self.remove_roles(member, await self.config.guild(member.guild).removed_roles())
             await self.add_roles(member, await self.config.guild(member.guild).approved_roles())
-            await interaction.edit_origin(components = [[Button(style = ButtonStyle.green, label = f"Approved by {interaction.user.name}", custom_id = "approve", disabled = True)]])
+            new_buttons = await message.components = [[Button(style = ButtonStyle.green, label = f"Approved by {interaction.user.name}", custom_id = "approve", disabled = True)]]
 
-        if interaction.custom_id == "sus":
+        elif interaction.custom_id == "sus":
             await self.remove_roles(member, await self.config.guild(member.guild).removed_roles())
             await self.add_roles(member, await self.config.guild(member.guild).sus_roles())
-            await interaction.edit_origin(components = [[Button(style = ButtonStyle.green, label = "Approve", custom_id = "approve", disabled = False),
-                                                         Button(style = ButtonStyle.grey, emoji = self.bot.get_emoji(929343381409255454), label = f"Sussed by {interaction.user.name}", custom_id = "sus", disabled = True),
-                                                         Button(style = ButtonStyle.red, label = "Ban", custom_id = "ban", disabled = False)]])
+            new_buttons = [[Button(style = ButtonStyle.green, label = "Approve", custom_id = "approve", disabled = False),
+                            Button(style = ButtonStyle.grey, emoji = self.bot.get_emoji(929343381409255454), label = f"Sussed by {interaction.user.name}", custom_id = "sus", disabled = True),
+                            Button(style = ButtonStyle.red, label = "Ban", custom_id = "ban", disabled = False)]])
 
-        if interaction.custom_id == "ban":
+        elif interaction.custom_id == "ban":
             try:
                 await member.ban(reason="troll in verification")
             except discord.NotFound:
                 pass
             await modlog.create_case(self.bot, member.guild, datetime.now(tz = timezone.utc), "ban", member, interaction.user, reason = "troll in verification", until = None, channel = None)
-            await interaction.edit_origin(components = [[Button(style = ButtonStyle.red, label = f"Banned by {interaction.user.name}", custom_id = "ban", disabled = True)]])
+            new_buttons = [Button(style = ButtonStyle.red, label = f"Banned by {interaction.user.name}", custom_id = "ban", disabled = True)]])
 
-        if interaction.custom_id == "lock":
+        elif interaction.custom_id == "lock":
             for action_bar in buttons:
                 for button in action_bar:
                     if button.id == "lock":
@@ -192,6 +194,15 @@ class Verification(commands.Cog):
                     else:
                         button.disabled = not button.disabled
             await interaction.edit_origin(components = buttons)
+            return
+
+        else:
+            return
+
+        for message in cached_messages[f"{member.id}"]:
+            await message.components = new_buttons
+
+
 
     @commands.group(name = "verification")
     @checks.mod_or_permissions(manage_messages=True)
