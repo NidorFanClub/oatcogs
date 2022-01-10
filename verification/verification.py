@@ -18,16 +18,16 @@ class Verification(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1312420691312, force_registration=True)
-        self.config.register_guild(verifier_channel = None, cached_users = {}, stored_invites = None)
+        self.config.register_guild(verifier_channel = None, cached_users = {})
+
+    invites = {}
 
     async def update_invites(self, guild: discord.Guild):
-        async with self.config.guild(guild).stored_invites() as stored_invites:
-            print(type(await guild.invites()), flush=True)
-            stored_invites = await guild.invites()
+        invites[guild.id] = await guild.invites()
 
     async def find_invite(self, guild: discord.Guild):
         invites_after_join = await guild.invites()
-        invites_before_join = await self.config.guild(guild).stored_invites()
+        invites_before_join = invites[guild.id]
 
         print(f"{invites_before_join}")
 
