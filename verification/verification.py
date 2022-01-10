@@ -28,11 +28,9 @@ class Verification(commands.Cog):
                     if invite.code == invite_after.code:
                         if invite.uses < invite_after.uses:
                             invites_before_join = invites_after_join
-                            print("Found invite")
                             return invite
 
         invites_before_join = invites_after_join
-        print("Returning")
         return None
 
     @commands.Cog.listener()
@@ -55,7 +53,7 @@ class Verification(commands.Cog):
 
         invite = await self.find_invite(member)
 
-        print("Trying to find invite code")
+        await channel.send(invite)
 
         if invite:
             invite_code = invite.code
