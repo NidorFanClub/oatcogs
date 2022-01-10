@@ -53,10 +53,10 @@ class Verification(commands.Cog):
 
         verifier_channel_id = await self.config.guild(guild).verifier_channel()
 
-        if not verifier_channel_id:
-            return
-
         channel = discord.utils.get(guild.channels, id = verifier_channel_id)
+
+        if not channel:
+            return
         
         avatar = member.avatar_url_as(static_format = "png")
         roles = member.roles[-1:0:-1]
