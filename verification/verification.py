@@ -23,7 +23,9 @@ class Verification(commands.Cog):
     async def update_invites(self, guild: discord.Guild):
         async with self.config.guild(guild).cached_invites() as cached_invites:
             for invite in await guild.invites():
-                cached_invites.append(invite.id)
+                if invite not in cached_invites:
+                    pass
+        cached_invites.clear()
 
     async def find_invite(self, guild: discord.Guild):
         invites_after_join = await guild.invites()
