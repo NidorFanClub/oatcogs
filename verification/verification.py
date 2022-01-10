@@ -166,11 +166,14 @@ class Verification(commands.Cog):
             try:
                 banned = await guild.fetch_ban(member)
             except discord.NotFound:
+                new_buttons = [[Button(style = ButtonStyle.red, label = f"Left or banned", custom_id = "ban", disabled = True)]]
                 banned = False
-            if banned:
-                new_buttons = [[Button(style = ButtonStyle.red, label = f"Banned", custom_id = "ban", disabled = True)]]
             else:
-                new_buttons = [[Button(style = ButtonStyle.red, label = f"Left the server", custom_id = "ban", disabled = True)]]
+                if banned:
+                    new_buttons = [[Button(style = ButtonStyle.red, label = f"Banned", custom_id = "ban", disabled = True)]]
+                else:
+                    new_buttons = [[Button(style = ButtonStyle.red, label = f"Left the server", custom_id = "ban", disabled = True)]]
+
             await interaction.edit_origin(components = new_buttons)
             return
 
