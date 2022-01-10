@@ -42,7 +42,6 @@ class Verification(commands.Cog):
         guild = member.guild
 
         verifier_channel_id = await self.config.guild(guild).verifier_channel()
-        cached_users = await self.config.guild(guild).cached_users()
 
         if not verifier_channel_id:
             return
@@ -89,10 +88,11 @@ class Verification(commands.Cog):
         name = " ~ ".join((name, member.nick)) if member.nick else name
         name = filter_invites(name)
 
-        if member.id not in cached_users:
-            cached_users[member.id] = []
+        async with self.config.guild(guild).cached_users() as cached_users:
+            if member.id not in cached_users:
+                cached_users[member.id] = []
 
-        join_str = f"**{name}** joined the server for the {num2words(len(cached_users[member.id]) + 1, ordinal = True)} time!"
+            join_str = f"**{name}** joined the server for the {num2words(len(cached_users[member.id]) + 1, ordinal = True)} time!"
 
         if inviter:
             invite_str = f"{invite_code} (created by {inviter})"
