@@ -175,7 +175,7 @@ class Verification(commands.Cog):
 
         for approved_role_id in approved_roles:
             role = discord.utils.get(member.guild.roles, id = int(approved_role_id))
-            if role in member.user.roles:
+            if role in member.roles:
                 return
 
         if not await self.bot.is_owner(interaction.user) and not verifier:
