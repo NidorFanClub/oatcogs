@@ -27,7 +27,7 @@ class Verification(commands.Cog):
 
     async def find_invite(self, guild: discord.Guild):
         invites_after_join = await guild.invites()
-        invites_before_join = await self.config.guild(guild).invites()
+        invites_before_join = await self.config.guild(guild).cached_invites()
 
         print(f"{invites_before_join}")
 
