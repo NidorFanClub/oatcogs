@@ -158,46 +158,58 @@ class Verification(commands.Cog):
     @commands.Cog.listener()
     async def on_button_click(self, interaction):
         buttons = interaction.message.components
+        guild = interaction.guild
 
         member = await self.get_user(interaction.message)
 
         if not member:
+            try:
+                banned = await member.guild.fetch_ban(member)
+            except discord.NotFound:
+                banned = False
+            if banned:
+                new_buttons = [[Button(style = ButtonStyle.red, label = f"Banned", custom_id = "ban", disabled = True)]]
+            else:
+                new_buttons = [[Button(style = ButtonStyle.red, label = f"Left the server", custom_id = "ban", disabled = True)]]
+            await interaction.edit_origin(components = new_buttons)
             return
 
         verifier = False
-        verifier_roles = await self.config.guild(member.guild).verifier_roles()
-        approved_roles = await self.config.guild(member.guild).approved_roles()
-        approval_channel = await self.config.guild(member.guild).approval_channel()
-        approval_message = await self.config.guild(member.guild).approval_message()
+        verifier_roles = await self.config.guild(guild).verifier_roles()
+        approved_roles = await self.config.guild(guild).approved_roles()
+        approval_channel = await self.config.guild(guild).approval_channel()
+        approval_message = await self.config.guild(guild).approval_message()
 
         for verifier_role_id in verifier_roles:
-            role = discord.utils.get(member.guild.roles, id = int(verifier_role_id))
+            role = discord.utils.get(guild.roles, id = int(verifier_role_id))
             if role in interaction.user.roles:
                 verifier = True
-
-        for approved_role_id in approved_roles:
-            role = discord.utils.get(member.guild.roles, id = int(approved_role_id))
-            if role in member.roles:
-                return
 
         if not await self.bot.is_owner(interaction.user) and not verifier:
             return
 
-        cached_users = await self.config.guild(member.guild).cached_users()
+        for approved_role_id in approved_roles:
+            role = discord.utils.get(guild.roles, id = int(approved_role_id))
+            if role in member.roles:
+                new_buttons = [[Button(style = ButtonStyle.green, label = f"Approved", custom_id = "approve", disabled = True)]]
+                await interaction.edit_origin(components = new_buttons)
+                return
+
+        cached_users = await self.config.guild(guild).cached_users()
 
         if interaction.custom_id == "approve":
-            await self.remove_roles(member, await self.config.guild(member.guild).removed_roles())
-            await self.add_roles(member, await self.config.guild(member.guild).approved_roles())
+            await self.remove_roles(member, await self.config.guild(guild).removed_roles())
+            await self.add_roles(member, await self.config.guild(guild).approved_roles())
             new_buttons = [[Button(style = ButtonStyle.green, label = f"Approved by {interaction.user.name}", custom_id = "approve", disabled = True)]]
 
             if approval_channel is not None and approval_message is not None:
-                channel = discord.utils.get(member.guild.channels, id = int(approval_channel))
+                channel = discord.utils.get(guild.channels, id = int(approval_channel))
                 msg = f"Welcome, {member.mention}! " + approval_message
                 await channel.send(msg)
 
         elif interaction.custom_id == "sus":
-            await self.remove_roles(member, await self.config.guild(member.guild).removed_roles())
-            await self.add_roles(member, await self.config.guild(member.guild).sus_roles())
+            await self.remove_roles(member, await self.config.guild(guild).removed_roles())
+            await self.add_roles(member, await self.config.guild(guild).sus_roles())
             new_buttons = [[Button(style = ButtonStyle.green, label = "Approve", custom_id = "approve", disabled = False),
                             Button(style = ButtonStyle.grey, emoji = self.bot.get_emoji(929343381409255454), label = f"Sussed by {interaction.user.name}", custom_id = "sus", disabled = True),
                             Button(style = ButtonStyle.red, label = "Ban", custom_id = "ban", disabled = False)]]
@@ -207,7 +219,7 @@ class Verification(commands.Cog):
                 await member.ban(reason="troll in verification")
             except discord.NotFound:
                 pass
-            await modlog.create_case(self.bot, member.guild, datetime.now(tz = timezone.utc), "ban", member, interaction.user, reason = "troll in verification", until = None, channel = None)
+            await modlog.create_case(self.bot, guild, datetime.now(tz = timezone.utc), "ban", member, interaction.user, reason = "troll in verification", until = None, channel = None)
             new_buttons = [[Button(style = ButtonStyle.red, label = f"Banned by {interaction.user.name}", custom_id = "ban", disabled = True)]]
 
         elif interaction.custom_id == "lock":
