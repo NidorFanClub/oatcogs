@@ -162,7 +162,7 @@ class Verification(commands.Cog):
                     except:
                         pass
 
-            async with self.config.guild(member.guild).remove_roles() as remove_roles:
+            async with self.config.guild(member.guild).removed_roles() as removed_roles:
                 for removed_role_id in removed_roles:
                     removed_role = discord.utils.get(member.guild.roles, id = int(removed_role_id))
                     try:
@@ -181,7 +181,7 @@ class Verification(commands.Cog):
                     except:
                         pass
 
-            async with self.config.guild(member.guild).remove_roles() as remove_roles:
+            async with self.config.guild(member.guild).removed_roles() as removed_roles:
                 for removed_role_id in removed_roles:
                     removed_role = discord.utils.get(member.guild.roles, id = int(removed_role_id))
                     try:
