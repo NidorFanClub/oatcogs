@@ -161,11 +161,12 @@ class Verification(commands.Cog):
         verifier = False
         verifier_roles = await self.config.guild(member.guild).verifier_roles()
 
+        print(f"Outside",flush=True)
         for verifier_role_id in verifier_roles:
             role = discord.utils.find(member.guild.roles, id = int(verifier_role_id))
-            print(f"Found role {role}")
+            print(f"Found role {role}",flush=True)
             if role in interaction.user.roles:
-                print(f"Found role {role} in the user roles")
+                print(f"Found role {role} in the user roles",flush=True)
                 verifier = True
 
         if not await self.bot.is_owner(interaction.user) and not verifier:
