@@ -158,7 +158,7 @@ class Verification(commands.Cog):
             pass
 
         if interaction.custom_id == "ban":
-            member.ban()
+            await member.ban()
 
         if interaction.custom_id == "lock":
             for action_bar in buttons:
