@@ -141,7 +141,7 @@ class Verification(commands.Cog):
         async with self.config.guild(guild).cached_users() as cached_users:
             cached_users[str(member.id)].append(int(message.id))
 
-    async def add_roles(self, role_list, member: discord.Member):
+    async def add_roles(self, member: discord.Member, role_list):
         for role_id in role_list:
             role = discord.utils.get(member.guild.roles, id = int(role_id))
             try:
@@ -149,7 +149,7 @@ class Verification(commands.Cog):
             except:
                 pass
 
-    async def remove_roles(self, role_list, member: discord.Member):
+    async def remove_roles(self, member: discord.Member, role_list):
         for role_id in role_list:
             role = discord.utils.get(member.guild.roles, id = int(role_id))
             try:
