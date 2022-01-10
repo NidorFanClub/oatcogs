@@ -225,7 +225,7 @@ class Verification(commands.Cog):
             for approved_role in roles:
                 try:
                     roles_added += 1
-                    approve_roles.append(approved_role.id)
+                    approved_roles.append(approved_role.id)
                 except:
                     pass
             await ctx.send(f"Added {roles_added} role(s) to the list of approved roles!")
