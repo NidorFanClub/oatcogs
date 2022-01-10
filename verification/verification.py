@@ -150,7 +150,7 @@ class Verification(commands.Cog):
         if not member:
             return
 
-        if not await is_allowed_by_hierarchy(self.bot, self.config, member.guild, interaction.user, member):
+        if not interaction.user.top_role > member.top_role:
             return
 
         if interaction.custom_id == "approve":
