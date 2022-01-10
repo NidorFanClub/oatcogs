@@ -386,14 +386,28 @@ class Verification(commands.Cog):
 
             approval_channel_id = await self.config.guild(ctx.guild).approval_channel()
             verifier_channel_id = await self.config.guild(ctx.guild).verifier_channel()
-            approval_channel = discord.utils.get(ctx.guild.channels, id = int(approval_channel_id))
-            verifier_channel = discord.utils.get(ctx.guild.channels, id = int(verifier_channel_id))
+            approval_message = await self.config.guild(ctx.guild).approval_message()
 
-            e.add_field(name="Verifier Channel", value=verifier_channel.name, inline=False)
+            if approval_channel_id is not None:
+                approval_channel = discord.utils.get(ctx.guild.channels, id = int(approval_channel_id))
+            else:
+                approval_channel = "None"
+
+            if verifier_channel_id is not None:
+                verifier_channel = discord.utils.get(ctx.guild.channels, id = int(verifier_channel_id))
+            else:
+                verifier_channel = "None"
+
+            if not approval_message:
+                approval_message = "None"
+
+            e.add_field(name="Verifier Channel", value=verifier_channel, inline=False)
+            e.add_field(name="Approval Channel", value=approval_channel, inline=False)
             e.add_field(name="Approved Roles", value=approved_list, inline=False)
             e.add_field(name="Sus Roles", value=sus_list, inline=False)
             e.add_field(name="Removed Roles", value=removed_list, inline=False)
             e.add_field(name="Verifier Roles", value=verifier_list, inline=False)
+            e.add_field(name="Welcome Message", value=approval_message, inline=False)
 
             await ctx.send(embed=e)
             await ctx.tick()
