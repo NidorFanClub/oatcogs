@@ -320,6 +320,7 @@ class Verification(commands.Cog):
                 if not approved_roles:
                     approved_list = "Empty"
                 else:
+                    approved_list = ""
                     for role_id in approved_roles:
                         role = discord.utils.get(ctx.guild.roles, id = role_id)
                         if role:
@@ -329,6 +330,7 @@ class Verification(commands.Cog):
                 if not sus_roles:
                     sus_list = "Empty"
                 else:
+                    sus_list = ""
                     for role_id in sus_roles:
                         role = discord.utils.get(ctx.guild.roles, id = role_id)
                         if role:
@@ -338,6 +340,7 @@ class Verification(commands.Cog):
                 if not verifier_roles:
                     verifier_list = "Empty"
                 else:
+                    verifier_lsit = ""
                     for role_id in verifier_roles:
                         role = discord.utils.get(ctx.guild.roles, id = role_id)
                         if role:
@@ -347,6 +350,7 @@ class Verification(commands.Cog):
                 if not removed_roles:
                     removed_list = "Empty"
                 else:
+                    removed_list = ""
                     for role_id in removed_roles:
                         role = discord.utils.get(ctx.guild.roles, id = role_id)
                         if role:
@@ -356,7 +360,7 @@ class Verification(commands.Cog):
             verifier_channel = discord.utils.get(ctx.guild.channels, id = int(verifier_channel_id))
 
             e.add_field(name="Verifier Channel", value=verifier_channel.name, inline=False)
-            e.add_field(name="Approved Roles", value=exempt_list, inline=False)
+            e.add_field(name="Approved Roles", value=approved_list, inline=False)
             e.add_field(name="Sus Roles", value=sus_list, inline=False)
             e.add_field(name="Removed Roles", value=removed_list, inline=False)
             e.add_field(name="Verifier Roles", value=verifier_list, inline=False)
