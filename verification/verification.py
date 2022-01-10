@@ -18,12 +18,12 @@ class Verification(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1312420691312, force_registration=True)
-        self.config.register_guild(verifier_channel = None, cached_users = {}, invites_before_join = [])
+        self.config.register_guild(verifier_channel = None, cached_users = {}, invites = [])
 
     async def find_invite(self, member: discord.Member):
         invites_after_join = await member.guild.invites()
 
-        async with self.config.guild(member.guild).invites_before_join() as invites_before_join:
+        async with self.config.guild(member.guild).invites() as invites_before_join:
 
             for invite in invites_before_join:
                 for invite_after in invites_after_join:
@@ -125,9 +125,6 @@ class Verification(commands.Cog):
                                                                Button(style = ButtonStyle.blue, emoji = "🔒", custom_id = "lock", disabled = False)]])
 
         async with self.config.guild(guild).cached_users() as cached_users:
-            for key in cached_users:
-                await channel.send(type(key))
-
             cached_users[str(member.id)].append(int(message.id))
 
     @commands.Cog.listener()
