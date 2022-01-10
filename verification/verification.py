@@ -18,7 +18,7 @@ class Verification(commands.Cog):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1312420691312, force_registration=True)
         self.config.clear()
-        self.config.register_guild(verifier_channel = None, cached_users = {}, invites = None)
+        self.config.register_guild(verifier_channel = None, cached_users = {})
 
     async def find_invite(self, member: discord.Member):
         invites_after_join = await member.guild.invites()
