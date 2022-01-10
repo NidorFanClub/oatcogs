@@ -310,9 +310,9 @@ class Verification(commands.Cog):
         await self.config.guild(ctx.guild).verifier_channel.set(channel.id)
         await ctx.tick()
 
-    @verification_show.command(name = "settings", aliases = ["roles"])
+    @verification.command(name = "show", aliases = ["roles"])
     @checks.mod_or_permissions(manage_messages=True)
-    async def verification_show_settings(self, ctx: commands.Context):
+    async def verification_show(self, ctx: commands.Context):
             e = discord.Embed(title="", colour=ctx.author.color)
             e.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
 
