@@ -165,6 +165,8 @@ class Verification(commands.Cog):
                 pass
             await modlog.create_case(self.bot, member.guild, datetime.now(tz = timezone.utc), "ban", member, interaction.user, reason = "troll in verification", until = None, channel = None)
 
+            await interaction.edit_origin(components = [[Button(style = ButtonStyle.red, label = "Banned", custom_id = "ban", disabled = True)]],)
+
         if interaction.custom_id == "lock":
             for action_bar in buttons:
                 for button in action_bar:
