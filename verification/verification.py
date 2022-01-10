@@ -27,7 +27,9 @@ class Verification(commands.Cog):
         avatar = member.avatar_url_as(static_format = "png")
         roles = member.roles[-1:0:-1]
 
-        channel = discord.get_channel(int(await self.config.guild(guild).verifier_channel()))
+        channel = discord.utils.get(ctx.guild.channels, id = await self.config.guild(guild).verifier_channel())
+        
+        await channel.send(f"{channel.id}, {member.guild.id}")
 
         cached_users = await self.config.guild(guild).cached_users()
 
