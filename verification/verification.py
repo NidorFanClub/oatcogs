@@ -20,6 +20,14 @@ class Verification(commands.Cog):
         self.config = Config.get_conf(self, identifier=1312420691312, force_registration=True)
         self.config.register_guild(verifier_channel = None, cached_users = {}, cached_invites = {})
 
+    async def get_user(self, message: discord.Message):
+        async with self.config.guild(guild).cached_users() as cached_users:
+            for user_id, cached_message_id in cached_users():
+                if cached_message_id == message.id:
+                    user = discord.utils.get(guild.members, id = user_id)
+                    return user
+        return None
+
     async def update_invites(self, guild: discord.Guild):
         async with self.config.guild(guild).cached_invites() as cached_invites:
             for invite in await guild.invites():
@@ -103,7 +111,7 @@ class Verification(commands.Cog):
             join_str = f"**{name}** joined the server for the {num2words(len(cached_users[str(member.id)]) + 1, ordinal = True)} time!"
 
         if invite:
-            invite_str = f"<{invite.url}> (by {invite.inviter})"
+            invite_str = f"<{invite.url}> ({invite.inviter})"
         else:
             invite_str = None
 
@@ -138,14 +146,17 @@ class Verification(commands.Cog):
     async def on_button_click(self, interaction):
         buttons = interaction.message.components
 
+        member = get_user(interaction.message)
+
+        if not member:
+            return
+
         if interaction.custom_id == "approve":
-            pass
 
         if interaction.custom_id == "sus":
-            pass
 
         if interaction.custom_id == "ban":
-            pass
+            member.ban()
 
         if interaction.custom_id == "lock":
             for action_bar in buttons:
