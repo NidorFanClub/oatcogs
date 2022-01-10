@@ -163,7 +163,9 @@ class Verification(commands.Cog):
 
         for verifier_role_id in verifier_roles:
             role = discord.utils.find(member.guild.roles, id = int(verifier_role_id))
+            print(f"Found role {role}")
             if role in interaction.user.roles:
+                print(f"Found role {role} in the user roles")
                 verifier = True
 
         if not await self.bot.is_owner(interaction.user) and not verifier:
