@@ -310,3 +310,56 @@ class Verification(commands.Cog):
         await self.config.guild(ctx.guild).verifier_channel.set(channel.id)
         await ctx.tick()
 
+    @verification_show.command(name = "settings", aliases = ["roles"])
+    @checks.mod_or_permissions(manage_messages=True)
+    async def verification_show_settings(self, ctx: commands.Context):
+            e = discord.Embed(title="", colour=ctx.author.color)
+            e.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
+
+            async with self.config.guild(ctx.guild).approved_roles() as approved_roles:
+                if not approved_roles:
+                    approved_list = "Empty"
+                else:
+                    for role_id in approved_roles:
+                        role = discord.utils.get(ctx.guild.roles, id = role_id)
+                        if role:
+                            approved_list += str(role.name) + ": " + str(role.id) + "\n"
+
+            async with self.config.guild(ctx.guild).sus_roles() as sus_roles:
+                if not sus_roles:
+                    sus_list = "Empty"
+                else:
+                    for role_id in sus_roles:
+                        role = discord.utils.get(ctx.guild.roles, id = role_id)
+                        if role:
+                            sus_list += str(role.name) + ": " + str(role.id) + "\n"
+
+            async with self.config.guild(ctx.guild).verifier_roles() as verifier_roles:
+                if not verifier_roles:
+                    verifier_list = "Empty"
+                else:
+                    for role_id in verifier_roles:
+                        role = discord.utils.get(ctx.guild.roles, id = role_id)
+                        if role:
+                            verifier_list += str(role.name) + ": " + str(role.id) + "\n"
+
+            async with self.config.guild(ctx.guild).removed_roles() as removed_roles:
+                if not removed_roles:
+                    removed_list = "Empty"
+                else:
+                    for role_id in removed_roles:
+                        role = discord.utils.get(ctx.guild.roles, id = role_id)
+                        if role:
+                            removed_list += str(role.name) + ": " + str(role.id) + "\n"
+
+            verifier_channel_id = await self.config.guild(ctx.guild).verifier_channel()
+            verifier_channel = discord.utils.get(ctx.guild.channels, id = int(verifier_channel_id))
+
+            e.add_field(name="Verifier Channel", value=verifier_channel.name, inline=False)
+            e.add_field(name="Approved Roles", value=exempt_list, inline=False)
+            e.add_field(name="Sus Roles", value=sus_list, inline=False)
+            e.add_field(name="Removed Roles", value=removed_list, inline=False)
+            e.add_field(name="Verifier Roles", value=verifier_list, inline=False)
+
+            await ctx.send(embed=e)
+            await ctx.tick()
