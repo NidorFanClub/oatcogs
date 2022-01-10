@@ -20,7 +20,7 @@ class Verification(commands.Cog):
         self.config = Config.get_conf(self, identifier=1312420691312, force_registration=True)
         self.config.register_guild(verifier_channel = None, cached_users = {}, invites = {})
 
-    async def update_invites(self, guild:discord.Guild):
+    async def update_invites(self, guild: discord.Guild):
         async with self.config.guild(guild).invites() as invites:
             invites[str(guild.id)] = await member.guild.invites()
 
@@ -44,7 +44,7 @@ class Verification(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
-        await update_invites(member.guild)
+        await self.update_invites(member.guild)
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
@@ -71,7 +71,7 @@ class Verification(commands.Cog):
         else:
             invite_code = inviter = None
 
-        await update_invites(member.guild)
+        await self.update_invites(guild)
 
         if joined_at := member.joined_at:
             joined_at = joined_at.replace(tzinfo=datetime.timezone.utc)
