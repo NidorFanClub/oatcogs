@@ -16,7 +16,7 @@ class Verification(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1312420691312, force_registration=True)
-        self.config.register_guild(verifier_channel = None, cached_users = {}, cached_invites = {})
+        self.config.register_guild(verifier_channel = None, cached_users = {}, cached_invites = {}, approved_roles = [], sus_roles = [], removed_roles = [])
 
     async def get_user(self, message: discord.Message):
         async with self.config.guild(message.guild).cached_users() as cached_users:
@@ -154,7 +154,8 @@ class Verification(commands.Cog):
             return
 
         if interaction.custom_id == "approve":
-            pass
+            await interaction.edit_origin(components = [[Button(style = ButtonStyle.green, label = f"Approved by {interaction.user.name}", custom_id = "approve", disabled = True)]],)
+
         if interaction.custom_id == "sus":
             pass
 
@@ -165,7 +166,7 @@ class Verification(commands.Cog):
                 pass
             await modlog.create_case(self.bot, member.guild, datetime.now(tz = timezone.utc), "ban", member, interaction.user, reason = "troll in verification", until = None, channel = None)
 
-            await interaction.edit_origin(components = [[Button(style = ButtonStyle.red, label = "Banned", custom_id = "ban", disabled = True)]],)
+            await interaction.edit_origin(components = [[Button(style = ButtonStyle.red, label = f"Banned by {interaction.user.name}", custom_id = "ban", disabled = True)]],)
 
         if interaction.custom_id == "lock":
             for action_bar in buttons:
@@ -175,8 +176,6 @@ class Verification(commands.Cog):
                     else:
                         button.disabled = not button.disabled
             await interaction.edit_origin(components = buttons)
-
-        #await interaction.respond(type = 6)
 
     @commands.group(name = "verification")
     @checks.mod_or_permissions(manage_messages=True)
@@ -189,6 +188,63 @@ class Verification(commands.Cog):
     async def verification_set(self, ctx: commands.Context) -> None:
         f"Adjust or debug verification settings."
         pass
+
+    @verification.group(name = "add")
+    @checks.mod_or_permissions(manage_messages=True)
+    async def verification_group(self, ctx: commands.Context) -> None:
+        f"Add roles to the verification settings."
+        pass
+
+    @verification_add.command(name = "approved_roles", require_var_positional=True)
+    @checks.mod_or_permissions(manage_messages=True)
+    async def verification_add_approved_roles(self, ctx, roles: commands.Greedy[discord.Role]):
+        async with self.config.guild(ctx.guild).approved_roles() as approved_roles:
+            roles_added = 0
+            for approved_role in roles:
+                try:
+                    roles_added += 1
+                    approve_roles.append(approved_role.id)
+                except:
+                    pass
+            await ctx.send(f"Added {roles_added} role(s) to the list of approved roles!")
+        await ctx.tick()
+
+    @verification_add.command(name = "sus_roles", require_var_positional=True)
+    @checks.mod_or_permissions(manage_messages=True)
+    async def verification_add_sus_roles(self, ctx, roles: commands.Greedy[discord.Role]):
+        async with self.config.guild(ctx.guild).sus_roles() as sus_roles:
+            roles_added = 0
+            for sus_role in roles:
+                try:
+                    roles_added += 1
+                    sus_roles.append(sus_role.id)
+                except:
+                    pass
+            await ctx.send(f"Added {roles_added} role(s) to the list of sus roles!")
+        await ctx.tick()
+
+    @verification_add.command(name = "removed_roles", require_var_positional=True)
+    @checks.mod_or_permissions(manage_messages=True)
+    async def verification_add_removed_roles(self, ctx, roles: commands.Greedy[discord.Role]):
+        async with self.config.guild(ctx.guild).removed_roles() as removed_roles:
+            roles_added = 0
+            for removed_role in roles:
+                try:
+                    roles_added += 1
+                    removed_roles.append(removed_role.id)
+                except:
+                    pass
+            await ctx.send(f"Added {roles_added} role(s) to the list of removed roles!")
+        await ctx.tick()
+
+    @verification.command(name = "clear")
+    @checks.mod_or_permissions(manage_messages=True)
+    async def verification_clear(self, ctx: commands.Context)
+        f"Clear roles from the verification settings."
+        await self.config.guild(ctx.guild).approved_roles().clear()
+        await self.config.guild(ctx.guild).removed_roles().clear()
+        await self.config.guild(ctx.guild).banned_roles().clear()
+        await self.config.guild(ctx.guild).verifier_channel.set(None)
 
     @verification_set.command(name = "verifier_channel")
     @checks.mod_or_permissions(manage_messages=True)
