@@ -65,10 +65,8 @@ class Verification(commands.Cog):
 
         if invite_id:
             invite = discord.utils.get(await guild.invites(), id = invite_id)
-            invite_code = invite.code
-            inviter = invite.inviter
         else:
-            invite_code = inviter = None
+            invite = None
 
         await self.update_invites(guild)
 
@@ -107,8 +105,8 @@ class Verification(commands.Cog):
 
             join_str = f"**{name}** joined the server for the {num2words(len(cached_users[str(member.id)]) + 1, ordinal = True)} time!"
 
-        if inviter:
-            invite_str = f"{invite_code} (created by {inviter})"
+        if invite:
+            invite_str = f"<{invite.url}> (created by {invite.inviter})"
         else:
             invite_str = None
 
