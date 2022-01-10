@@ -28,11 +28,11 @@ class Verification(commands.Cog):
                     if invite.code == invite_after.code:
                         if invite.uses < invite_after.uses:
                             invites_before_join = invites_after_join
-                            print("Found invite")
+                            await print("Found invite")
                             return invite
 
         invites_before_join = invites_after_join
-        print("Returning")
+        await print("Returning")
         return None
 
     @commands.Cog.listener()
