@@ -1,5 +1,4 @@
 from redbot.core import Config, checks, commands, modlog
-from redbot.core.utils.common_filters import filter_invites, filter_various_mentions, escape_spoilers_and_mass_mentions
 from discord_components import DiscordComponents, Button, ButtonStyle, Select, SelectOption
 import asyncio
 from datetime import datetime, timezone, timedelta
@@ -99,15 +98,11 @@ class Verification(commands.Cog):
         elif member.status.name == "idle":
             statusemoji = "\N{LARGE ORANGE CIRCLE}"
 
-        name = str(member)
-        name = " ~ ".join((name, member.nick)) if member.nick else name
-        name = filter_invites(name)
-
         async with self.config.guild(guild).cached_users() as cached_users:
             if str(member.id) not in cached_users:
                 cached_users[str(member.id)] = []
 
-            join_str = f"**{name}** joined the server for the {num2words(len(cached_users[str(member.id)]) + 1, ordinal = True)} time!"
+            join_str = f"**{member.mention}** joined the server for the {num2words(len(cached_users[str(member.id)]) + 1, ordinal = True)} time!"
 
         if invite:
             invite_str = f"<{invite.url}> ({invite.inviter})"
@@ -130,7 +125,7 @@ class Verification(commands.Cog):
             e.add_field(name = "Roles" if len(roles) > 1 else "Role", value = role_str, inline = False)
 
         e.set_footer(text = f"Member #{member_number} | User ID: {member.id}")
-        e.set_author(name=f"{statusemoji} {name}", url = avatar)
+        e.set_author(name=f"{statusemoji} {member.name}", url = avatar)
         e.set_thumbnail(url = avatar)
 
         message = await channel.send(embed = e, components = [[Button(style = ButtonStyle.green, label = "Approve", custom_id = "approve", disabled = True),
@@ -180,7 +175,7 @@ class Verification(commands.Cog):
             await interaction.edit_origin(components = [[Button(style = ButtonStyle.green, label = "Approve", custom_id = "approve", disabled = False),
                                                          Button(style = ButtonStyle.grey, emoji = self.bot.get_emoji(929343381409255454), label = f"Sussed by {interaction.user.name}", custom_id = "sus", disabled = True),
                                                          Button(style = ButtonStyle.red, label = "Ban", custom_id = "ban", disabled = False),
-                                                         Button(style = ButtonStyle.blue, emoji = "🔒", custom_id = "lock", disabled = False)]])
+                                                         Button(style = ButtonStyle.blue, emoji = "🔓", custom_id = "lock", disabled = False)]])
 
         if interaction.custom_id == "ban":
             try:
