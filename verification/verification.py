@@ -18,13 +18,12 @@ class Verification(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1312420691312, force_registration=True)
-        self.config.register_guild(verifier_channel = None, cached_users = {}, invites = {})
+        self.config.register_guild(verifier_channel = None, cached_users = {}, cached_invites = [])
 
     async def find_invite(self, member: discord.Member):
         invites_after_join = await member.guild.invites()
 
-        async with self.config.guild(member.guild).invites() as invites_before_join:
-
+        async with self.config.guild(member.guild).cached_invites() as invites_before_join:
             for invite in invites_before_join:
                 for invite_after in invites_after_join:
                     if invite.code == invite_after.code:
@@ -34,6 +33,11 @@ class Verification(commands.Cog):
 
         invites_before_join = invites_after_join
         return None
+
+    @commands.Cog.listener()
+    async def on_member_remove(member):
+        async with self.config.guild(member.guild).cached_invites() as cached_invites:
+            cached_invites = member.guild.invites()
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
