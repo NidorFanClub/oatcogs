@@ -61,10 +61,10 @@ class Verification(commands.Cog):
         avatar = member.avatar_url_as(static_format = "png")
         roles = member.roles[-1:0:-1]
 
-        invite = await self.find_invite(guild)
+        invite_id = await self.find_invite(guild)
 
         if invite:
-            channel = discord.utils.get(await guild.invites(), id = invite)
+            invite = discord.utils.get(await guild.invites(), id = invite_id)
             invite_code = invite.code
             inviter = invite.inviter
         else:
