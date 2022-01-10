@@ -34,10 +34,7 @@ class Verification(commands.Cog):
             for invite_before_id in invites_before_join:
                 if invite_before_id == invite_after.code:
                     if invites_before_join[invite_before_id] < invite_after.uses:
-                        print("match for the invite!", flush=True)
                         return invite_before_id
-                    else:
-                        print("not a match for the invite!", flush=True)
         return None
 
     @commands.Cog.listener()
