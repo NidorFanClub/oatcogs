@@ -90,13 +90,10 @@ class Verification(commands.Cog):
         name = filter_invites(name)
 
         async with self.config.guild(guild).cached_users() as cached_users:
-            cached_users = {}
-            cached_users = defaultdict(int)
+            if str(member.id) not in cached_users:
+                cached_users[str(member.id)] = []
 
-            if int(member.id) not in cached_users:
-                cached_users[int(member.id)] = []
-
-            join_str = f"**{name}** joined the server for the {num2words(len(cached_users[int(member.id)]) + 1, ordinal = True)} time!"
+            join_str = f"**{name}** joined the server for the {num2words(len(cached_users[str(member.id)]) + 1, ordinal = True)} time!"
 
         if inviter:
             invite_str = f"{invite_code} (created by {inviter})"
@@ -131,7 +128,7 @@ class Verification(commands.Cog):
             for key in cached_users:
                 await channel.send(type(key))
 
-            cached_users[int(member.id)].append(int(message.id))
+            cached_users[str(member.id)].append(int(message.id))
 
     @commands.Cog.listener()
     async def on_button_click(self, interaction):
