@@ -56,7 +56,7 @@ class Verification(commands.Cog):
         if invite:
             invite_code = invite.code
             inviter = invite.inviter
-        else
+        else:
             invite_code = inviter = None
 
         if joined_at := member.joined_at:
