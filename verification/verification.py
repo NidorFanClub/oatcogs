@@ -20,7 +20,7 @@ class Verification(commands.Cog):
         self.config = Config.get_conf(self, identifier=1312420691312, force_registration=True)
         self.config.register_guild(verifier_channel = None, cached_users = {})
 
-    invites = {}
+    global invites = {}
 
     async def update_invites(self, guild: discord.Guild):
         invites[guild.id] = await guild.invites()
