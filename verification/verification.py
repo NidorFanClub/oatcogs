@@ -199,7 +199,7 @@ class Verification(commands.Cog):
         else:
             return
 
-        interaction.edit_origin(components = new_buttons)
+        await interaction.edit_origin(components = new_buttons)
 
 
 
