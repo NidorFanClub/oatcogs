@@ -15,7 +15,7 @@ class Verification(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1312420691312, force_registration=True)
-        self.config.register_guild(verifier_channel = None, cached_users = {}, cached_invites = {}, approved_roles = [], sus_roles = [], removed_roles = [])
+        self.config.register_guild(verifier_channel = None, cached_users = {}, cached_invites = {}, approved_roles = [], sus_roles = [], removed_roles = [], verifier_roles = [])
 
     async def get_user(self, message: discord.Message):
         async with self.config.guild(message.guild).cached_users() as cached_users:
@@ -158,7 +158,14 @@ class Verification(commands.Cog):
         if not member:
             return
 
-        if not interaction.user.top_role > member.top_role and not await self.bot.is_owner(interaction.user):
+        verifier = False
+
+        for verifier_role_id in await self.config.guild(member.guild).verifier_roles():
+            role = discord.utils.find(member.guild.roles, id = int(verifier_role))
+            if role in interaction.user.roles:
+                verifier = True
+
+        if not await self.bot.is_owner(interaction.user) and not verifier:
             return
 
         cached_users = await self.config.guild(member.guild).cached_users()
@@ -258,6 +265,20 @@ class Verification(commands.Cog):
                 except:
                     pass
             await ctx.send(f"Added {roles_added} role(s) to the list of removed roles!")
+        await ctx.tick()
+
+    @verification_add.command(name = "verfier_roles", require_var_positional=True)
+    @checks.mod_or_permissions(manage_messages=True)
+    async def verification_add_verfier_roles(self, ctx, roles: commands.Greedy[discord.Role]):
+        async with self.config.guild(ctx.guild).verfier_roles() as verfier_roles:
+            roles_added = 0
+            for verifier_role in roles:
+                try:
+                    roles_added += 1
+                    verifier_roles.append(sus_role.id)
+                except:
+                    pass
+            await ctx.send(f"Added {roles_added} role(s) to the list of verifier roles!")
         await ctx.tick()
 
     @verification.command(name = "clear")
