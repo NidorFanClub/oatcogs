@@ -176,7 +176,7 @@ class Verification(commands.Cog):
             await self.add_roles(member, await self.config.guild(member.guild).sus_roles())
             new_buttons = [[Button(style = ButtonStyle.green, label = "Approve", custom_id = "approve", disabled = False),
                             Button(style = ButtonStyle.grey, emoji = self.bot.get_emoji(929343381409255454), label = f"Sussed by {interaction.user.name}", custom_id = "sus", disabled = True),
-                            Button(style = ButtonStyle.red, label = "Ban", custom_id = "ban", disabled = False)]])
+                            Button(style = ButtonStyle.red, label = "Ban", custom_id = "ban", disabled = False)]]
 
         elif interaction.custom_id == "ban":
             try:
@@ -184,7 +184,7 @@ class Verification(commands.Cog):
             except discord.NotFound:
                 pass
             await modlog.create_case(self.bot, member.guild, datetime.now(tz = timezone.utc), "ban", member, interaction.user, reason = "troll in verification", until = None, channel = None)
-            new_buttons = [Button(style = ButtonStyle.red, label = f"Banned by {interaction.user.name}", custom_id = "ban", disabled = True)]])
+            new_buttons = [[Button(style = ButtonStyle.red, label = f"Banned by {interaction.user.name}", custom_id = "ban", disabled = True)]]
 
         elif interaction.custom_id == "lock":
             for action_bar in buttons:
