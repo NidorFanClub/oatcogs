@@ -19,6 +19,20 @@ class Verification(commands.Cog):
         self.config = Config.get_conf(self, identifier=1312420691312, force_registration=True)
         self.config.register_guild(verifier_channel = None, cached_users = {}, invites = {})
 
+    async def find_invite(self, ctx):
+        async with self.config.guild(guild).invites() as invites_before_join:
+            invites_after_join = await ctx.guild.invites()
+
+            for invite in invites_before_join:
+                for invite_after in invites_after_join:
+                    if invite.code == invite_after.code:
+                        if invite.uses < invite_after.uses:
+                            invites_before_join = invites_after_join
+                            return invite
+
+        invites_before_join = invites_after_join
+        return None
+
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
         if member.guild.id != 802882189602979881:
@@ -27,6 +41,7 @@ class Verification(commands.Cog):
         guild = member.guild
 
         verifier_channel_id = await self.config.guild(guild).verifier_channel()
+        cached_users = await self.config.guild(guild).cached_users()
 
         if not verifier_channel_id:
             return
@@ -36,22 +51,13 @@ class Verification(commands.Cog):
         avatar = member.avatar_url_as(static_format = "png")
         roles = member.roles[-1:0:-1]
 
-        cached_users = await self.config.guild(guild).cached_users()
+        invite = find_invite()
 
-        inviter = None
-        invite_str = None
-
-        async with self.config.guild(guild).invites() as invites_before_join:
-            invites_after_join = await member.guild.invites()
-
-            for invite in invites_before_join:
-                for invite_after in invites_after_join:
-                    if invite.code == invite_after.code:
-                        if invite.uses < invite_after.uses:
-                            invite_code = invite.code
-                            inviter = invite.inviter
-
-            invites_before_join = invites_after_join
+        if invite:
+            invite_code = invite.code
+            inviter = invite.inviter
+        else
+            invite_code = inviter = None
 
         if joined_at := member.joined_at:
             joined_at = joined_at.replace(tzinfo=datetime.timezone.utc)
@@ -112,22 +118,13 @@ class Verification(commands.Cog):
         message = await channel.send(embed = e, components = [[Button(style = ButtonStyle.green, label = "Approve", custom_id = "approve", disabled = True),
                                                                Button(style = ButtonStyle.grey, emoji = self.bot.get_emoji(929343381409255454), custom_id = "sus", disabled = True),
                                                                Button(style = ButtonStyle.red, label = "Ban", custom_id = "ban", disabled = True),
-                                                               Button(style = ButtonStyle.blue, emoji = "🔓", custom_id = "lock", disabled = False)]])
+                                                               Button(style = ButtonStyle.blue, emoji = "🔒", custom_id = "lock", disabled = False)]])
 
         cached_users[member.id].append(message.id)
 
     @commands.Cog.listener()
     async def on_button_click(self, interaction):
         buttons = interaction.message.components
-
-        if interaction.custom_id == "lock":
-            for action_bar in buttons:
-                for button in action_bar:
-                    if button.id == "lock":
-                        button.emoji = "🔓" if str(button.emoji) == "🔒" else "🔒"
-                    else:
-                        button.disabled = not button.disabled
-            await interaction.edit_origin(components = buttons)
 
         if interaction.custom_id == "approve":
             pass
@@ -137,6 +134,15 @@ class Verification(commands.Cog):
 
         if interaction.custom_id == "ban":
             pass
+
+        if interaction.custom_id == "lock":
+            for action_bar in buttons:
+                for button in action_bar:
+                    if button.id == "lock":
+                        button.emoji = "🔒" if str(button.emoji) == "🔓" else "🔓"
+                    else:
+                        button.disabled = not button.disabled
+            await interaction.edit_origin(components = buttons)
 
         #await interaction.respond(type = 6)
 
