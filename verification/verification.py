@@ -169,7 +169,7 @@ class Verification(commands.Cog):
         if interaction.custom_id == "approve":
             await self.remove_roles(member, await self.config.guild(member.guild).removed_roles())
             await self.add_roles(member, await self.config.guild(member.guild).approved_roles())
-            new_buttons = await message.components = [[Button(style = ButtonStyle.green, label = f"Approved by {interaction.user.name}", custom_id = "approve", disabled = True)]]
+            new_buttons = [[Button(style = ButtonStyle.green, label = f"Approved by {interaction.user.name}", custom_id = "approve", disabled = True)]]
 
         elif interaction.custom_id == "sus":
             await self.remove_roles(member, await self.config.guild(member.guild).removed_roles())
