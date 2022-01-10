@@ -38,7 +38,7 @@ class Verification(commands.Cog):
         return None
 
     @commands.Cog.listener()
-    async def on_member_remove(self, member:discord.Member):
+    async def on_member_remove(self, member: discord.Member):
         async with self.config.guild(member.guild).cached_invites() as cached_invites:
             cached_invites = await member.guild.invites()
 
