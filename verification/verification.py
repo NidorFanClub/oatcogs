@@ -21,7 +21,7 @@ class Verification(commands.Cog):
 
     async def find_invite(self, member: discord.Member):
         async with self.config.guild(member.guild).invites() as invites_before_join:
-            invites_after_join = await member.invites()
+            invites_after_join = await member.guild.invites()
 
             for invite in invites_before_join:
                 for invite_after in invites_after_join:
