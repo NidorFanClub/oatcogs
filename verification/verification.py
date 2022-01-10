@@ -19,7 +19,7 @@ class Verification(commands.Cog):
         self.config.register_guild(verifier_channel = "", cached_users = {}, invites = {})
 
     @commands.Cog.listener()
-    async on_member_join(self, member: discord.Member):
+    async def on_member_join(self, member: discord.Member):
         if member.guild.id != 802882189602979881:
             return
 
