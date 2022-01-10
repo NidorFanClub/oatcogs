@@ -267,10 +267,10 @@ class Verification(commands.Cog):
             await ctx.send(f"Added {roles_added} role(s) to the list of removed roles!")
         await ctx.tick()
 
-    @verification_add.command(name = "verfier_roles", require_var_positional=True)
+    @verification_add.command(name = "verifier_roles", require_var_positional=True)
     @checks.mod_or_permissions(manage_messages=True)
-    async def verification_add_verfier_roles(self, ctx, roles: commands.Greedy[discord.Role]):
-        async with self.config.guild(ctx.guild).verfier_roles() as verfier_roles:
+    async def verification_add_verifier_roles(self, ctx, roles: commands.Greedy[discord.Role]):
+        async with self.config.guild(ctx.guild).verifier_roles() as verifier_roles:
             roles_added = 0
             for verifier_role in roles:
                 try:
@@ -288,6 +288,7 @@ class Verification(commands.Cog):
         await self.config.guild(ctx.guild).approved_roles().clear()
         await self.config.guild(ctx.guild).removed_roles().clear()
         await self.config.guild(ctx.guild).banned_roles().clear()
+        await self.config.guild(ctx.guild).verifier_roles().clear()
         await self.config.guild(ctx.guild).verifier_channel.set(None)
 
     @verification_set.command(name = "verifier_channel")
