@@ -1,6 +1,4 @@
-from redbot.core import commands
-from redbot.core import Config
-from redbot.core import checks
+from redbot.core import Config, checks, commands, modlog
 from redbot.core.utils.common_filters import filter_invites, filter_various_mentions, escape_spoilers_and_mass_mentions
 from discord_components import DiscordComponents, Button, ButtonStyle, Select, SelectOption
 import asyncio
@@ -152,13 +150,20 @@ class Verification(commands.Cog):
         if not member:
             return
 
+        if not await is_allowed_by_hierarchy(self.bot, self.config, member.guild, interaction.user, member):
+            return
+
         if interaction.custom_id == "approve":
             pass
         if interaction.custom_id == "sus":
             pass
 
         if interaction.custom_id == "ban":
-            await member.ban()
+            try:
+                await member.ban(reason="troll in verification")
+            except discord.NotFound:
+                pass
+            await modlog.create_case(self.bot, member.guild, datetime.now(tz = timezone.utc), "ban", member, interaction.user, reason = "troll in verification", until = None, channel = None)
 
         if interaction.custom_id == "lock":
             for action_bar in buttons:
