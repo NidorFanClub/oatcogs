@@ -23,7 +23,7 @@ class Verification(commands.Cog):
     async def update_invites(self, guild: discord.Guild):
         async with self.config.guild(guild).invites() as invites:
             for invite in await guild.invites():
-                invites[invite.code] = invite.uses
+                invites[invite.code] = {uses = invite.uses, inviter = invite.inviter}
 
     async def find_invite(self, guild: discord.Guild):
         invites_after_join = await guild.invites()
@@ -33,10 +33,10 @@ class Verification(commands.Cog):
 
         for invite_after in invites_after_join:
             print(f"invite_after join: {invite_after.code}, {type(invite_after.code)}", flush=True)
-            for invite_before_code, invite_before_uses in invites_before_join.items():
-                print(f"invite_before join: {invite_before_code}, {type(invite_before_uses)}", flush=True)
-                if invite_before_code == invite_after.code:
-                    if invite_before_uses < invite_after.uses:
+            for code, invite_before in invites_before_join.items():
+                print(f"invite_before join: {invite_before.code}, {type(invite_before.uses)}", flush=True)
+                if code == invite_after.code:
+                    if invite_before.uses < invite_after.uses:
                         print("match for the invite!", flush=True)
                         return invite_before
                     else:
