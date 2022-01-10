@@ -150,7 +150,7 @@ class Verification(commands.Cog):
         if not member:
             return
 
-        if not interaction.user.top_role > member.top_role:
+        if not interaction.user.top_role > member.top_role and not await bot.is_owner(interaction.user):
             return
 
         if interaction.custom_id == "approve":
