@@ -164,7 +164,7 @@ class Verification(commands.Cog):
         if not interaction.user.top_role > member.top_role and not await self.bot.is_owner(interaction.user):
             return
 
-        cached_messages = await self.config.guild(member.guild).cached_messages()
+        cached_users = await self.config.guild(member.guild).cached_users()
 
         if interaction.custom_id == "approve":
             await self.remove_roles(member, await self.config.guild(member.guild).removed_roles())
@@ -199,7 +199,7 @@ class Verification(commands.Cog):
         else:
             return
 
-        for message in cached_messages[f"{member.id}"]:
+        for message in cached_users[f"{member.id}"]:
             await message.edit_origin(components = new_buttons)
 
 
