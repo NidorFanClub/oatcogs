@@ -51,7 +51,7 @@ class Verification(commands.Cog):
         avatar = member.avatar_url_as(static_format = "png")
         roles = member.roles[-1:0:-1]
 
-        invite = find_invite(member)
+        invite = await find_invite(member)
 
         if invite:
             invite_code = invite.code
