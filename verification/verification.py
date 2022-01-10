@@ -200,7 +200,7 @@ class Verification(commands.Cog):
             return
 
         for message in cached_messages[f"{member.id}"]:
-            await message.components = new_buttons
+            await message.edit_origin(components = new_buttons)
 
 
 
