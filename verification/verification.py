@@ -192,7 +192,8 @@ class Verification(commands.Cog):
 
             if approval_channel is not None and approval_message is not None:
                 channel = discord.utils.get(member.guild.channels, id = int(approval_channel))
-                await channel.send(approval_message)
+                msg = f"Welcome, {member}! " + approval_message
+                await channel.send(msg)
 
         elif interaction.custom_id == "sus":
             await self.remove_roles(member, await self.config.guild(member.guild).removed_roles())
