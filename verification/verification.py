@@ -37,7 +37,7 @@ class Verification(commands.Cog):
     @commands.Cog.listener()
     async def on_member_remove(self, member:discord.Member):
         async with self.config.guild(member.guild).cached_invites() as cached_invites:
-            cached_invites = member.guild.invites()
+            cached_invites = await member.guild.invites()
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
