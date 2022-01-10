@@ -164,7 +164,7 @@ class Verification(commands.Cog):
 
         if not member:
             try:
-                banned = await member.guild.fetch_ban(member)
+                banned = await guild.fetch_ban(member)
             except discord.NotFound:
                 banned = False
             if banned:
