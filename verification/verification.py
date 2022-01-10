@@ -163,7 +163,7 @@ class Verification(commands.Cog):
                 await member.ban(reason="troll in verification")
             except discord.NotFound:
                 pass
-            await modlog.create_case(self.bot, member.guild, datetime.now(tz = timezone.utc), "ban", member, interaction.user, reason = "troll in verification", until = None, channel = None)
+            await modlog.create_case(self.bot, member.guild, interaction.message.created_at.replace(tz = timezone.utc), "ban", member, interaction.user, reason = "troll in verification", until = None, channel = None)
 
         if interaction.custom_id == "lock":
             for action_bar in buttons:
