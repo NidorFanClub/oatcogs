@@ -28,11 +28,11 @@ class Verification(commands.Cog):
                     if invite.code == invite_after.code:
                         if invite.uses < invite_after.uses:
                             invites_before_join = invites_after_join
-                            await print("Found invite")
+                            print("Found invite")
                             return invite
 
         invites_before_join = invites_after_join
-        await print("Returning")
+        print("Returning")
         return None
 
     @commands.Cog.listener()
@@ -54,6 +54,8 @@ class Verification(commands.Cog):
         roles = member.roles[-1:0:-1]
 
         invite = await self.find_invite(member)
+
+        print("Trying to find invite code")
 
         if invite:
             invite_code = invite.code
