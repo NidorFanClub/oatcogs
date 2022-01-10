@@ -20,9 +20,9 @@ class Verification(commands.Cog):
         self.config = Config.get_conf(self, identifier=1312420691312, force_registration=True)
         self.config.register_guild(verifier_channel = None, cached_users = {}, cached_invites = [])
 
-    async def find_invite(self, member: discord.Member):
-        invites_after_join = await member.guild.invites()
-        invites_before_join = await self.config.guild(member.guild).cached_invites()
+    async def find_invite(self, guild: discord.Guild):
+        invites_after_join = await guild.invites()
+        invites_before_join = await self.config.guild(guild).cached_invites()
 
         for invite_after in invites_after_join:
             print(f"invite_after join: {invite_after.code}, {type(invite_after.code)}", flush=True)
@@ -58,7 +58,7 @@ class Verification(commands.Cog):
         avatar = member.avatar_url_as(static_format = "png")
         roles = member.roles[-1:0:-1]
 
-        invite = await self.find_invite(member)
+        invite = await self.find_invite(guild)
 
         if invite:
             invite_code = invite.code
