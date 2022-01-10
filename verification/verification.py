@@ -159,9 +159,10 @@ class Verification(commands.Cog):
             return
 
         verifier = False
+        verifier_roles = await self.config.guild(member.guild).verifier_roles()
 
-        for verifier_role_id in await self.config.guild(member.guild).verifier_roles():
-            role = discord.utils.find(member.guild.roles, id = int(verifier_role))
+        for verifier_role_id in verifier_roles:
+            role = discord.utils.find(member.guild.roles, id = int(verifier_role_id))
             if role in interaction.user.roles:
                 verifier = True
 
