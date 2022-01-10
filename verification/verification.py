@@ -123,7 +123,8 @@ class Verification(commands.Cog):
                                                                Button(style = ButtonStyle.blue, emoji = "🔒", custom_id = "lock", disabled = False)]])
 
         async with self.config.guild(guild).cached_users() as cached_users:
-            cached_users[member.id].append(message.id)
+            await channel.send(cached_users)
+            cached_users[int(member.id)].append(message.id)
 
     @commands.Cog.listener()
     async def on_button_click(self, interaction):
