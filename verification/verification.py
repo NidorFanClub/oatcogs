@@ -202,7 +202,7 @@ class Verification(commands.Cog):
         for message_id in cached_users[f"{member.id}"]:
             channel = discord.utils.get(member.guild.channels, id = int(await self.config.guild(member.guild).verifier_channel()))
             message = await channel.fetch_message(message_id)
-            await message.edit_origin(components = new_buttons)
+            await message.components = new_buttons
 
 
 
