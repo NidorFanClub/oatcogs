@@ -103,7 +103,7 @@ class Verification(commands.Cog):
         else:
             role_str = None
 
-        e = discord.Embed(colour=member.colour)
+        e = discord.Embed(description = join_str, colour=member.colour)
         e.add_field(name = "Joined Discord on", value = created_on)
         e.add_field(name = "Joined this server on", value = joined_on)
 
@@ -113,7 +113,6 @@ class Verification(commands.Cog):
         if role_str is not None:
             e.add_field(name = "Roles" if len(roles) > 1 else "Role", value = role_str, inline = False)
 
-        e.set_description(text = join_str)
         e.set_footer(text = f"Member #{member_number} | User ID: {member.id}")
         e.set_author(name=f"{statusemoji} {name}", url = avatar)
         e.set_thumbnail(url = avatar)
