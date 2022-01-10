@@ -129,3 +129,21 @@ class Verification(commands.Cog):
 
         #await interaction.respond(type = 6)
 
+    @commands.group(name = "verfication")
+    @checks.mod_or_permissions(manage_messages=True)
+    async def study_remove(self, ctx: commands.Context) -> None:
+        f"Adjust or debug verification settings."
+        pass
+
+    @verification.group(name = "set")
+    @checks.mod_or_permissions(manage_messages=True)
+    async def verification_set(self, ctx: commands.Context) -> None:
+        f"Adjust or debug verification settings."
+        pass
+
+    @verification_set.command(name = "verifier_channel")
+    @checks.mod_or_permissions(manage_messages=True)
+    async def verification_set_verifier_channel(self, ctx, channel: discord.Channel):
+        await self.config.guild(guild).verifier_channel.set(channel.id)
+        await ctx.tick()
+
