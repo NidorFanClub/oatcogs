@@ -63,6 +63,7 @@ class Verification(commands.Cog):
 
         async with self.config.guild(member.guild).cached_invites() as cached_invites:
             cached_invites = await member.guild.invites()
+            await channel.send(cached_invites)
 
         if invite:
             invite_code = invite.code
