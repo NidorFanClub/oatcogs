@@ -27,6 +27,8 @@ class Verification(commands.Cog):
         avatar = member.avatar_url_as(static_format = "png")
         roles = member.roles[-1:0:-1]
 
+        channel = discord.get_channel(await self.config.guild(guild).verifier_channel())
+
         cached_users = await self.config.guild(guild).cached_users()
 
         invites_before_join = await self.config.guild(guild).invites()
@@ -96,10 +98,10 @@ class Verification(commands.Cog):
         e.set_author(name=f"{statusemoji} {name}", url = avatar)
         e.set_thumbnail(url = avatar)
 
-        message = await ctx.send(embed = e, components = [[Button(style = ButtonStyle.green, label = "Approve", custom_id = "approve", disabled = True),
-                                                          Button(style = ButtonStyle.grey, emoji = self.bot.get_emoji(929343381409255454), custom_id = "sus", disabled = True),
-                                                          Button(style = ButtonStyle.red, label = "Ban", custom_id = "ban", disabled = True),
-                                                          Button(style = ButtonStyle.blue, emoji = "🔓", custom_id = "lock", disabled = False)]])
+        message = await channel.send(embed = e, components = [[Button(style = ButtonStyle.green, label = "Approve", custom_id = "approve", disabled = True),
+                                                               Button(style = ButtonStyle.grey, emoji = self.bot.get_emoji(929343381409255454), custom_id = "sus", disabled = True),
+                                                               Button(style = ButtonStyle.red, label = "Ban", custom_id = "ban", disabled = True),
+                                                               Button(style = ButtonStyle.blue, emoji = "🔓", custom_id = "lock", disabled = False)]])
 
         cached_users[member.id].append(message.id)
 
