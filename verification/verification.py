@@ -10,6 +10,7 @@ import discord.ext
 import discord
 import os
 import typing
+from num2words import num2words
 
 class Verification(commands.Cog):
     """Cog for approving members on public servers."""
@@ -84,15 +85,15 @@ class Verification(commands.Cog):
         if member.id not in cached_users:
             cached_users[member.id] = []
 
-        ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
-
-        join_str = f"**{name}** joined the server for the {ordinal(len(cached_users[member.id]) + 1)} time!"
+        join_str = f"**{name}** joined the server for the {num2words(len(cached_users[member.id]) + 1, ordinal = True)} time!"
 
         if inviter:
             invite_str = f"{invite_code} (created by {inviter})"
 
         if roles:
             role_str = ", ".join([x.mention for x in roles])
+        else:
+            role_str = None
 
         e = discord.Embed(colour=member.colour)
         e.add_field(name = "Joined Discord on", value = created_on)
