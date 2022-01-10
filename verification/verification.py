@@ -24,7 +24,7 @@ class Verification(commands.Cog):
         invites_after_join = await member.guild.invites()
         invites_before_join = await self.config.guild(member.guild).cached_invites()
 
-        for invite in cached_invites:
+        for invite in invites_before_join:
             print(f"invite_before join: {invite.code}, {type(invite.code)}", flush=True)
             for invite_after in invites_after_join:
                 print(f"invite_after join: {invite.code}, {type(invite.code)}", flush=True)
