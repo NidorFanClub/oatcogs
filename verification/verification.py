@@ -178,7 +178,7 @@ class Verification(commands.Cog):
             await self.remove_roles(member, await self.config.guild(member.guild).removed_roles())
             await self.add_roles(member, await self.config.guild(member.guild).sus_roles())
             await interaction.edit_origin(components = [[Button(style = ButtonStyle.green, label = "Approve", custom_id = "approve", disabled = False),
-                                                         Button(style = ButtonStyle.grey, emoji = self.bot.get_emoji(929343381409255454), label = f"Sussed by {interaction.user.name}" custom_id = "sus", disabled = True),
+                                                         Button(style = ButtonStyle.grey, emoji = self.bot.get_emoji(929343381409255454), label = f"Sussed by {interaction.user.name}", custom_id = "sus", disabled = True),
                                                          Button(style = ButtonStyle.red, label = "Ban", custom_id = "ban", disabled = False),
                                                          Button(style = ButtonStyle.blue, emoji = "🔒", custom_id = "lock", disabled = False)]])
 
