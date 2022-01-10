@@ -20,6 +20,10 @@ class Verification(commands.Cog):
         self.config = Config.get_conf(self, identifier=1312420691312, force_registration=True)
         self.config.register_guild(verifier_channel = None, cached_users = {}, invites = {})
 
+    async def update_invites(self, guild:discord.Guild):
+        async with self.config.guild(guild).invites() as invites:
+                invites[guild.id] = await member.guild.invites()
+
     async def find_invite(self, guild: discord.Guild):
         invites_after_join = await guild.invites()
         invites_before_join = await self.config.guild(guild).invites()
@@ -28,7 +32,7 @@ class Verification(commands.Cog):
 
         for invite_after in invites_after_join:
             print(f"invite_after join: {invite_after.code}, {type(invite_after.code)}", flush=True)
-            for invite_before in invites_before_join[guild]:
+            for invite_before in invites_before_join[guild.id]:
                 print(f"invite_before join: {invite_before.code}, {type(invite_before.code)}", flush=True)
                 if invite_before.code == invite_after.code:
                     if invite_before.uses < invite_after.uses:
@@ -40,8 +44,7 @@ class Verification(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
-        async with self.config.guild(member.guild).invites_before_join() as invites_before_join:
-            invites_before_join[member.guild] = await member.guild.invites()
+        await update_invites(member.guild)
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
@@ -67,6 +70,8 @@ class Verification(commands.Cog):
             inviter = invite.inviter
         else:
             invite_code = inviter = None
+
+        await update_invites(member.guild)
 
         if joined_at := member.joined_at:
             joined_at = joined_at.replace(tzinfo=datetime.timezone.utc)
