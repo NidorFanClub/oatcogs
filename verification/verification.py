@@ -24,8 +24,7 @@ class Verification(commands.Cog):
         async with self.config.guild(guild).cached_invites() as cached_invites:
             for invite in await guild.invites():
                 if invite not in cached_invites:
-                    pass
-        cached_invites.clear()
+                    cached_invites.append(invite.id)
 
     async def find_invite(self, guild: discord.Guild):
         invites_after_join = await guild.invites()
@@ -34,10 +33,8 @@ class Verification(commands.Cog):
         print(f"{invites_before_join}")
 
         for invite_after in invites_after_join:
-            print(f"invite_after join: {invite_after.code}", flush=True)
             for invite_before_id in invites_before_join:
                 invite_before = discord.utils.get(await guild.invites(), id = invite_before_id)
-                print(f"invite_before join: {invite_before.code}", flush=True)
                 if invite_before.code == invite_after.code:
                     if invite_before.uses < invite_after.uses:
                         print("match for the invite!", flush=True)
