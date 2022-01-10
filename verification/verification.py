@@ -21,10 +21,10 @@ class Verification(commands.Cog):
         self.config.register_guild(verifier_channel = None, cached_users = {}, cached_invites = {})
 
     async def get_user(self, message: discord.Message):
-        async with self.config.guild(guild).cached_users() as cached_users:
+        async with self.config.guild(message.guild).cached_users() as cached_users:
             for user_id, cached_message_id in cached_users():
                 if cached_message_id == message.id:
-                    user = discord.utils.get(guild.members, id = user_id)
+                    user = discord.utils.get(message.guild.members, id = user_id)
                     return user
         return None
 
