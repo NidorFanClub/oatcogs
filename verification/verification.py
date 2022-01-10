@@ -44,6 +44,10 @@ class Verification(commands.Cog):
         return None
 
     @commands.Cog.listener()
+    async def on_invite_create(self, invite: discord.Invite):
+        await self.update_invites(invite.guild)
+
+    @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
         await self.update_invites(member.guild)
 
