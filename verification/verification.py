@@ -35,11 +35,10 @@ class Verification(commands.Cog):
         avatar = member.avatar_url_as(static_format = "png")
         roles = member.roles[-1:0:-1]
 
-        await channel.send(f"{channel.id}, {member.guild.id}")
-
         cached_users = await self.config.guild(guild).cached_users()
 
         inviter = None
+        invite_str = None
 
         async with self.config.guild(guild).invites() as invites_before_join:
             invites_after_join = await member.guild.invites()
