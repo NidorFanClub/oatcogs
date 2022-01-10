@@ -160,9 +160,10 @@ class Verification(commands.Cog):
         buttons = interaction.message.components
         guild = interaction.guild
 
-        member = await self.get_user(interaction.message)
+        user = await self.get_user(interaction.message)
+        member = discord.utils.get(guild.members, id = user.id)
 
-        if not member in guild.members:
+        if not user in guild.members:
             try:
                 banned = await guild.fetch_ban(member)
             except discord.NotFound:
