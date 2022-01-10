@@ -177,3 +177,10 @@ class Verification(commands.Cog):
         await self.config.guild(ctx.guild).verifier_channel.set(channel.id)
         await ctx.tick()
 
+    @verification_set.command(name = "update_invites")
+    @checks.mod_or_permissions(manage_messages=True)
+    async def verification_set_update_invites(self, member: discord.Member):
+        await self.config.guild(member.guild).cached_invites.set(await member.guild.invites())
+        await ctx.tick()
+        print(await self.config.guild(member.guild).cached_invites())
+
