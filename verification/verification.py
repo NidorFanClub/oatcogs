@@ -22,7 +22,7 @@ class Verification(commands.Cog):
             for user_id, cached_messages in cached_users.items():
                 for cached_message_id in cached_messages:
                     if cached_message_id == message.id:
-                        user = discord.utils.get(message.guild.members, id = int(user_id))
+                        user = await self.bot.fetch_user(int(user_id))
                         return user
         return None
 
@@ -162,10 +162,10 @@ class Verification(commands.Cog):
 
         member = await self.get_user(interaction.message)
 
-        if not member:
+        if not member in guild.members:
             try:
                 banned = await guild.fetch_ban(member)
-            except discord.NotFound:
+            except:
                 new_buttons = [[Button(style = ButtonStyle.red, label = f"Left or banned", custom_id = "ban", disabled = True)]]
                 banned = False
             else:
