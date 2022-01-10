@@ -11,6 +11,7 @@ import discord
 import os
 import typing
 from num2words import num2words
+from collections import defaultdict
 
 class Verification(commands.Cog):
     """Cog for approving members on public servers."""
@@ -89,6 +90,9 @@ class Verification(commands.Cog):
         name = filter_invites(name)
 
         async with self.config.guild(guild).cached_users() as cached_users:
+            cached_users = {}
+            cached_users = defaultdict(int)
+
             if int(member.id) not in cached_users:
                 cached_users[int(member.id)] = []
 
@@ -125,7 +129,7 @@ class Verification(commands.Cog):
 
         async with self.config.guild(guild).cached_users() as cached_users:
             for key in cached_users:
-                await channel.send(str(type(key)))
+                await channel.send(type(key))
 
             cached_users[int(member.id)].append(int(message.id))
 
