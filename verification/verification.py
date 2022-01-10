@@ -34,7 +34,7 @@ class Verification(commands.Cog):
         for invite_after in invites_after_join:
             print(f"invite_after join: {invite_after.code}", flush=True)
             for invite_before_id in invites_before_join:
-                invite_before = discord.utils.get(guild.invites(), id = invite_before_id)
+                invite_before = discord.utils.get(await guild.invites(), id = invite_before_id)
                 print(f"invite_before join: {invite_before.code}", flush=True)
                 if invite_before.code == invite_after.code:
                     if invite_before.uses < invite_after.uses:
