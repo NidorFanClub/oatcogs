@@ -89,7 +89,7 @@ class Verification(commands.Cog):
         name = filter_invites(name)
 
         async with self.config.guild(guild).cached_users() as cached_users:
-            if not cached_users.has_key(member.id)
+            if not cached_users.has_key(member.id):
                 cached_users[member.id] = []
 
             join_str = f"**{name}** joined the server for the {num2words(len(cached_users[member.id]) + 1, ordinal = True)} time!"
