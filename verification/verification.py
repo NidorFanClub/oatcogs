@@ -340,7 +340,7 @@ class Verification(commands.Cog):
                 if not verifier_roles:
                     verifier_list = "Empty"
                 else:
-                    verifier_lsit = ""
+                    verifier_list = ""
                     for role_id in verifier_roles:
                         role = discord.utils.get(ctx.guild.roles, id = role_id)
                         if role:
