@@ -18,27 +18,24 @@ class Verification(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1312420691312, force_registration=True)
-        self.config.register_guild(verifier_channel = None, cached_users = {}, cached_invites = [])
+        self.config.register_guild(verifier_channel = None, cached_users = {}, cached_invites = {}W)
 
     async def update_invites(self, guild: discord.Guild):
         async with self.config.guild(guild).cached_invites() as cached_invites:
             for invite in await guild.invites():
                 if invite.id not in cached_invites:
-                    cached_invites.append(invite.id)
+                    cached_invites[invite.id] = invite.uses
 
     async def find_invite(self, guild: discord.Guild):
         invites_after_join = await guild.invites()
         invites_before_join = await self.config.guild(guild).cached_invites()
 
-        print(f"{invites_before_join}")
-
         for invite_after in invites_after_join:
             for invite_before_id in invites_before_join:
-                invite_before = discord.utils.get(await guild.invites(), id = invite_before_id)
-                if invite_before.code == invite_after.code:
-                    if invite_before.uses < invite_after.uses:
+                if invite_before_id == invite_after.code:
+                    if invite_before_join[invite_before_id] < invite_after.uses:
                         print("match for the invite!", flush=True)
-                        return invite_before
+                        return invite_before_id
                     else:
                         print("not a match for the invite!", flush=True)
         return None
