@@ -31,7 +31,7 @@ class Verification(commands.Cog):
                             return invite
 
         invites_before_join = invites_after_join
-        await ctx.send("Returning")
+        print("Returning")
         return None
 
     @commands.Cog.listener()
