@@ -49,9 +49,6 @@ class Verification(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
-        if member.guild.id != 802882189602979881:
-            return
-
         guild = member.guild
 
         verifier_channel_id = await self.config.guild(guild).verifier_channel()
