@@ -22,6 +22,7 @@ class Verification(commands.Cog):
 
     async def update_invites(self, guild: discord.Guild):
         async with self.config.guild(guild).invites() as invites:
+            print(type(await guild.invites()), flush=True)
             invites[str(guild.id)] = await guild.invites()
 
     async def find_invite(self, guild: discord.Guild):
