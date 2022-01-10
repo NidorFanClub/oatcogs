@@ -23,20 +23,18 @@ class Verification(commands.Cog):
     async def find_invite(self, member: discord.Member):
         invites_after_join = await member.guild.invites()
 
-        async with self.config.guild(member.guild).cached_invites() as invites_before_join:
-            for invite in invites_before_join:
+        async with self.config.guild(member.guild).cached_invites() as cached_invites:
+            for invite in cached_invites:
                 print(f"invite_before join: {invite.code}, {type(invite.code)}", flush=True)
                 for invite_after in invites_after_join:
                     print(f"invite_after join: {invite.code}, {type(invite.code)}", flush=True)
                     if invite.code == invite_after.code:
                         if invite.uses < invite_after.uses:
-                            invites_before_join = invites_after_join
                             print("found the invite woohoo!", flush=True)
                             return invite
 
         print("didnt find the invite woohoo!", flush=True)
 
-        invites_before_join = invites_after_join
         return None
 
     @commands.Cog.listener()
@@ -62,6 +60,9 @@ class Verification(commands.Cog):
         roles = member.roles[-1:0:-1]
 
         invite = await self.find_invite(member)
+
+        async with self.config.guild(member.guild).cached_invites() as cached_invites:
+            cached_invites = await member.guild.invites()
 
         if invite:
             invite_code = invite.code
