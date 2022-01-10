@@ -22,7 +22,7 @@ class Verification(commands.Cog):
             for user_id, cached_messages in cached_users.items():
                 for cached_message_id in cached_messages:
                     if cached_message_id == message.id:
-                        user = discord.utils.get(message.guild.members, id = int(user_id))
+                        user = self.bot.fetch_user(user_id)
                         return user
         return None
 
