@@ -18,17 +18,17 @@ class Verification(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1312420691312, force_registration=True)
-        self.config.register_guild(verifier_channel = None, cached_users = {}, cached_invites = [])
+        self.config.register_guild(verifier_channel = None, cached_users = {}, invites = {})
 
     async def find_invite(self, guild: discord.Guild):
         invites_after_join = await guild.invites()
-        invites_before_join = await self.config.guild(guild).cached_invites()
+        invites_before_join[guild] = await self.config.guild(guild).cached_invites()
 
         print(f"{invites_before_join}")
 
         for invite_after in invites_after_join:
             print(f"invite_after join: {invite_after.code}, {type(invite_after.code)}", flush=True)
-            for invite_before in invites_before_join:
+            for invite_before in invites_before_join[guild]:
                 print(f"invite_before join: {invite_before.code}, {type(invite_before.code)}", flush=True)
                 if invite_before.code == invite_after.code:
                     if invite_before.uses < invite_after.uses:
@@ -40,8 +40,8 @@ class Verification(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
-        async with self.config.guild(member.guild).cached_invites() as cached_invites:
-            cached_invites = await member.guild.invites()
+        async with self.config.guild(member.guild).invites_before_join() as invites_before_join:
+            invites_before_join[member.guild] = await member.guild.invites()
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
@@ -176,12 +176,4 @@ class Verification(commands.Cog):
     async def verification_set_verifier_channel(self, ctx, channel: discord.TextChannel):
         await self.config.guild(ctx.guild).verifier_channel.set(channel.id)
         await ctx.tick()
-
-    @verification_set.command(name = "update_invites")
-    @checks.mod_or_permissions(manage_messages=True)
-    async def verification_set_update_invites(self, member: discord.Member):
-        invites = await member.guild.invites()
-        await self.config.guild(member.guild).cached_invites.set(invites)
-        await ctx.tick()
-        print(await self.config.guild(member.guild).cached_invites())
 
