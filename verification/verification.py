@@ -24,14 +24,14 @@ class Verification(commands.Cog):
         invites_after_join = await member.guild.invites()
         invites_before_join = await self.config.guild(member.guild).cached_invites()
 
-        for invite in invites_before_join:
-            print(f"invite_before join: {invite.code}, {type(invite.code)}", flush=True)
-            for invite_after in invites_after_join:
-                print(f"invite_after join: {invite.code}, {type(invite.code)}", flush=True)
-                if invite.code == invite_after.code:
-                    if invite.uses < invite_after.uses:
+        for invite_after in invites_after_join:
+            print(f"invite_after join: {invite_after.code}, {type(invite_after.code)}", flush=True)
+            for invite_before in invites_before_join:
+                print(f"invite_before join: {invite_before.code}, {type(invite_before.code)}", flush=True)
+                if invite_before.code == invite_after.code:
+                    if invite_before.uses < invite_after.uses:
                         print("match for the invite!", flush=True)
-                        return invite
+                        return invite_before
                     else:
                         print("not a match for the invite!", flush=True)
         return None
