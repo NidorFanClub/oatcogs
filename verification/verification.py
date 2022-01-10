@@ -75,9 +75,9 @@ class Verification(commands.Cog):
         await self.update_invites(guild)
 
         if joined_at := member.joined_at:
-            joined_at = joined_at.replace(tzinfo=datetime.timezone.utc)
+            joined_at = joined_at.replace(tzinfo=timezone.utc)
 
-        user_created = int(member.created_at.replace(tzinfo=datetime.timezone.utc).timestamp())
+        user_created = int(member.created_at.replace(tzinfo=timezone.utc).timestamp())
 
         member_number = (sorted(guild.members, key=lambda m: m.joined_at or ctx.message.created_at).index(member) + 1)
 
