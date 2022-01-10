@@ -69,6 +69,8 @@ class Verification(commands.Cog):
 
         if invite_id:
             invite = discord.utils.get(await guild.invites(), id = invite_id)
+        elif guild.vanity_invite():
+            invite = await guild.vanity_invite()
         else:
             invite = None
 
