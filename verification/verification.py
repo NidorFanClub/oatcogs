@@ -144,6 +144,6 @@ class Verification(commands.Cog):
     @verification_set.command(name = "verifier_channel")
     @checks.mod_or_permissions(manage_messages=True)
     async def verification_set_verifier_channel(self, ctx, channel: discord.TextChannel):
-        await self.config.guild(guild).verifier_channel.set(channel.id)
+        await self.config.guild(ctx.guild).verifier_channel.set(channel.id)
         await ctx.tick()
 
