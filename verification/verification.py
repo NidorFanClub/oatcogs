@@ -22,10 +22,11 @@ class Verification(commands.Cog):
 
     async def get_user(self, message: discord.Message):
         async with self.config.guild(message.guild).cached_users() as cached_users:
-            for user_id, cached_message_id in cached_users.items():
-                if cached_message_id == message.id:
-                    user = discord.utils.get(message.guild.members, id = user_id)
-                    return user
+            for user_id, cached_messages in cached_users.items():
+                for cached_message_id in cached_messages:
+                    if cached_message_id == message.id:
+                        user = discord.utils.get(message.guild.members, id = int(user_id))
+                        return user
         return None
 
     async def update_invites(self, guild: discord.Guild):
