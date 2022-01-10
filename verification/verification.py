@@ -39,9 +39,6 @@ class Verification(commands.Cog):
 
         cached_users = await self.config.guild(guild).cached_users()
 
-        invite_code = "Unknown"
-        inviter = "unknown"
-
         async with self.config.guild(guild).invites() as invites_before_join:
             invites_after_join = await member.guild.invites()
 
@@ -89,7 +86,9 @@ class Verification(commands.Cog):
         ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
 
         join_str = f"**{name}** joined the server for the {ordinal(len(cached_users[member.id]) + 1)} time!"
-        invite_str = f"{invite_code} (created by {inviter.name})"
+
+        if inviter:
+            invite_str = f"{invite_code} (created by {inviter})"
 
         if roles:
             role_str = ", ".join([x.mention for x in roles])
@@ -97,12 +96,14 @@ class Verification(commands.Cog):
         e = discord.Embed(colour=member.colour)
         e.add_field(name = "Joined Discord on", value = created_on)
         e.add_field(name = "Joined this server on", value = joined_on)
-        e.add_field(name = "Joined server with invite", value = invite_str)
-        e.set_footer(text = f"Member #{member_number} | User ID: {member.id}")
+
+        if join_str is not None:
+            e.add_field(name = "Joined server with invite", value = invite_str)
 
         if role_str is not None:
             e.add_field(name = "Roles" if len(roles) > 1 else "Role", value = role_str, inline = False)
 
+        e.set_footer(text = f"Member #{member_number} | User ID: {member.id}")
         e.set_author(name=f"{statusemoji} {name}", url = avatar)
         e.set_thumbnail(url = avatar)
 
