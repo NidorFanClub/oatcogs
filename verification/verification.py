@@ -239,7 +239,7 @@ class Verification(commands.Cog):
 
     @verification.command(name = "clear")
     @checks.mod_or_permissions(manage_messages=True)
-    async def verification_clear(self, ctx: commands.Context)
+    async def verification_clear(self, ctx: commands.Context):
         f"Clear roles from the verification settings."
         await self.config.guild(ctx.guild).approved_roles().clear()
         await self.config.guild(ctx.guild).removed_roles().clear()
