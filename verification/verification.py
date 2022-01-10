@@ -88,7 +88,7 @@ class Verification(commands.Cog):
 
         ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
 
-        join_str = f"**{name}** joined the server for the {ordinal(len(cached_users[member.id].count()) + 1)} time!"
+        join_str = f"**{name}** joined the server for the {ordinal(len(cached_users[member.id]) + 1)} time!"
         invite_str = f"{invite_code} (created by {inviter.name})"
 
         if roles:
