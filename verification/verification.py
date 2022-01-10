@@ -22,7 +22,7 @@ class Verification(commands.Cog):
 
     async def get_user(self, message: discord.Message):
         async with self.config.guild(message.guild).cached_users() as cached_users:
-            for user_id, cached_message_id in cached_users():
+            for user_id, cached_message_id in cached_users:
                 if cached_message_id == message.id:
                     user = discord.utils.get(message.guild.members, id = user_id)
                     return user
