@@ -141,6 +141,22 @@ class Verification(commands.Cog):
         async with self.config.guild(guild).cached_users() as cached_users:
             cached_users[str(member.id)].append(int(message.id))
 
+    async def add_roles(self, role_list, member: discord.Member):
+        for role_id in role_list:
+            role = discord.utils.get(member.guild.roles, id = int(role_id))
+            try:
+                await member.add_roles(role)
+            except:
+                pass
+
+    async def remove_roles(self, role_list, member: discord.Member):
+        for role_id in role_list:
+            role = discord.utils.get(member.guild.roles, id = int(role_id))
+            try:
+                await member.remove_roles(role)
+            except:
+                pass
+
     @commands.Cog.listener()
     async def on_button_click(self, interaction):
         buttons = interaction.message.components
@@ -154,40 +170,14 @@ class Verification(commands.Cog):
             return
 
         if interaction.custom_id == "approve":
-            async with self.config.guild(member.guild).approved_roles() as approved_roles:
-                for approved_role_id in approved_roles:
-                    approved_role = discord.utils.get(member.guild.roles, id = int(approved_role_id))
-                    try:
-                        member.add_roles(approved_role)
-                    except:
-                        pass
-
-            async with self.config.guild(member.guild).removed_roles() as removed_roles:
-                for removed_role_id in removed_roles:
-                    removed_role = discord.utils.get(member.guild.roles, id = int(removed_role_id))
-                    try:
-                        member.remove_roles(removed_role)
-                    except:
-                        pass
+            add_roles(member, await self.config.guild(member.guild).approved_roles())
+            remove_roles(member, await self.config.guild(member.guild).removed_roles())
 
             await interaction.edit_origin(components = [[Button(style = ButtonStyle.green, label = f"Approved by {interaction.user.name}", custom_id = "approve", disabled = True)]])
 
         if interaction.custom_id == "sus":
-            async with self.config.guild(member.guild).sus_roles() as sus_roles:
-                for sus_role_id in sus_roles:
-                    sus_role = discord.utils.get(member.guild.roles, id = int(sus_role_id))
-                    try:
-                        member.add_roles(sus_role)
-                    except:
-                        pass
-
-            async with self.config.guild(member.guild).removed_roles() as removed_roles:
-                for removed_role_id in removed_roles:
-                    removed_role = discord.utils.get(member.guild.roles, id = int(removed_role_id))
-                    try:
-                        member.remove_roles(removed_role)
-                    except:
-                        pass
+            add_roles(member, await self.config.guild(member.guild).sus_roles())
+            remove_roles(member, await self.config.guild(member.guild).removed_roles())
 
             await interaction.edit_origin(components = [[Button(style = ButtonStyle.green, label = f"Approved by {interaction.user.name}", custom_id = "approve", disabled = True)]])
 
