@@ -129,9 +129,9 @@ class Verification(commands.Cog):
 
         #await interaction.respond(type = 6)
 
-    @commands.group(name = "verfication")
+    @commands.group(name = "verification")
     @checks.mod_or_permissions(manage_messages=True)
-    async def study_remove(self, ctx: commands.Context) -> None:
+    async def verification(self, ctx: commands.Context) -> None:
         f"Adjust or debug verification settings."
         pass
 
