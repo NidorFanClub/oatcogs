@@ -95,6 +95,8 @@ class Verification(commands.Cog):
 
         if inviter:
             invite_str = f"{invite_code} (created by {inviter})"
+        else:
+            invite_str = None
 
         if roles:
             role_str = ", ".join([x.mention for x in roles])
@@ -105,7 +107,7 @@ class Verification(commands.Cog):
         e.add_field(name = "Joined Discord on", value = created_on)
         e.add_field(name = "Joined this server on", value = joined_on)
 
-        if join_str is not None:
+        if invite_str is not None:
             e.add_field(name = "Joined server with invite", value = invite_str)
 
         if role_str is not None:
