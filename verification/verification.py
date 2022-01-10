@@ -34,7 +34,7 @@ class Verification(commands.Cog):
         for invite_after in invites_after_join:
             print(f"invite_after join: {invite_after.code}, {type(invite_after.code)}", flush=True)
             for code, invite_before in invites_before_join.items():
-                print(f"invite_before join: {code}, {type(invite_before["users"])}", flush=True)
+                print(f"invite_before join: {code}, {type(invite_before['users'])}", flush=True)
                 if code == invite_after.code:
                     if invite_before["uses"] < invite_after.uses:
                         print("match for the invite!", flush=True)
