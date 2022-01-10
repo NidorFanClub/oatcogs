@@ -106,7 +106,7 @@ class Verification(commands.Cog):
             join_str = f"**{name}** joined the server for the {num2words(len(cached_users[str(member.id)]) + 1, ordinal = True)} time!"
 
         if invite:
-            invite_str = f"<{invite.url}> (created by {invite.inviter})"
+            invite_str = f"<{invite.url}> (by {invite.inviter})"
         else:
             invite_str = None
 
@@ -117,10 +117,10 @@ class Verification(commands.Cog):
 
         e = discord.Embed(description = join_str, colour=member.colour)
         e.add_field(name = "Joined Discord on", value = created_on)
-        e.add_field(name = "Joined this server on", value = joined_on)
+        e.add_field(name = "Joined server on", value = joined_on)
 
         if invite_str is not None:
-            e.add_field(name = "Joined server with invite", value = invite_str)
+            e.add_field(name = "Joined with invite", value = invite_str)
 
         if role_str is not None:
             e.add_field(name = "Roles" if len(roles) > 1 else "Role", value = role_str, inline = False)
