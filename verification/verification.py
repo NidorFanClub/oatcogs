@@ -39,6 +39,8 @@ class Verification(commands.Cog):
 
         cached_users = await self.config.guild(guild).cached_users()
 
+        inviter = None
+
         async with self.config.guild(guild).invites() as invites_before_join:
             invites_after_join = await member.guild.invites()
 
