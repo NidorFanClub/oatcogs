@@ -105,7 +105,7 @@ class Verification(commands.Cog):
             if str(member.id) not in cached_users:
                 cached_users[str(member.id)] = []
 
-            times_joined = len(cached_users[str(member.id))
+            times_joined = len(cached_users[str(member.id)])
 
             join_str = f"**{member.mention}** joined the server"
 
