@@ -105,7 +105,14 @@ class Verification(commands.Cog):
             if str(member.id) not in cached_users:
                 cached_users[str(member.id)] = []
 
-            join_str = f"**{member.mention}** joined the server for the {num2words(len(cached_users[str(member.id)]) + 1, ordinal = True)} time!"
+            times_joined = len(cached_users[str(member.id))
+
+            join_str = f"**{member.mention}** joined the server"
+
+            if times_joined > 0:
+                join_str = join_str + f" for the {num2words((times_joined + 1), ordinal = True)} time!"
+            else:
+                join_str = join_str + "!"
 
         if invite:
             invite_str = f"<{invite.url}> ({invite.inviter})"
