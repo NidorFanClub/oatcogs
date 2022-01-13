@@ -172,7 +172,7 @@ class Verification(commands.Cog):
             try:
                 banned = await guild.fetch_ban(user)
             except discord.NotFound:
-                new_buttons = [[Button(style = ButtonStyle.red, label = f"Left Server", custom_id = "ban", disabled = True)]]
+                new_buttons = [[Button(style = ButtonStyle.red, label = f"Left server", custom_id = "ban", disabled = True)]]
             else:
                 new_buttons = [[Button(style = ButtonStyle.red, label = f"Banned", custom_id = "ban", disabled = True)]]
 
