@@ -210,7 +210,7 @@ class Verification(commands.Cog):
                             Button(style = ButtonStyle.red, label = "Ban", custom_id = "ban_check", disabled = False)]]
 
         elif interaction.custom_id == "approve_check":
-            new_buttons = [[Button(style = ButtonStyle.green, label = "Confirm Approve?", custom_id = "approve", disabled = False),
+            new_buttons = [[Button(style = ButtonStyle.green, label = "Confirm approval?", custom_id = "approve", disabled = False),
                             Button(style = ButtonStyle.red, label = "Cancel", custom_id = "cancel", disabled = False)]]
 
         elif interaction.custom_id == "approve":
@@ -224,7 +224,7 @@ class Verification(commands.Cog):
                 await channel.send(msg)
 
         elif interaction.custom_id == "sus_check":
-            new_buttons = [[Button(style = ButtonStyle.green, label = "Confirm Sus?", custom_id = "sus", disabled = False),
+            new_buttons = [[Button(style = ButtonStyle.green, label = "Confirm sussy baka?", custom_id = "sus", disabled = False),
                             Button(style = ButtonStyle.red, label = "Cancel", custom_id = "cancel", disabled = False)]]
 
         elif interaction.custom_id == "sus":
@@ -233,7 +233,7 @@ class Verification(commands.Cog):
             new_buttons = [[Button(style = ButtonStyle.grey, emoji = self.bot.get_emoji(929343381409255454), label = f"Sussed by {interaction.user.name}", custom_id = "sus", disabled = True)]]
 
         elif interaction.custom_id == "ban_check":
-            new_buttons = [[Button(style = ButtonStyle.green, label = "Confirm Ban?", custom_id = "ban", disabled = False),
+            new_buttons = [[Button(style = ButtonStyle.green, label = "Confirm banning?", custom_id = "ban", disabled = False),
                             Button(style = ButtonStyle.red, label = "Cancel", custom_id = "cancel", disabled = False)]]
 
         elif interaction.custom_id == "ban":
