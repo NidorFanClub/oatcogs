@@ -138,10 +138,9 @@ class Verification(commands.Cog):
         e.set_author(name=f"{statusemoji} {member.name}", url = avatar)
         e.set_thumbnail(url = avatar)
 
-        message = await channel.send(embed = e, components = [[Button(style = ButtonStyle.green, label = "Approve", custom_id = "approve", disabled = True),
-                                                               Button(style = ButtonStyle.grey, emoji = self.bot.get_emoji(929343381409255454), custom_id = "sus", disabled = True),
-                                                               Button(style = ButtonStyle.red, label = "Ban", custom_id = "ban", disabled = True),
-                                                               Button(style = ButtonStyle.blue, emoji = "🔒", custom_id = "lock", disabled = False)]])
+        message = await channel.send(embed = e, components = [[Button(style = ButtonStyle.green, label = "Approve", custom_id = "approve_check", disabled = False),
+                                                               Button(style = ButtonStyle.grey, emoji = self.bot.get_emoji(929343381409255454), custom_id = "sus_check", disabled = False),
+                                                               Button(style = ButtonStyle.red, label = "Ban", custom_id = "ban_check", disabled = False)]])
 
         async with self.config.guild(guild).cached_users() as cached_users:
             cached_users[str(member.id)].append(int(message.id))
@@ -173,7 +172,7 @@ class Verification(commands.Cog):
             try:
                 banned = await guild.fetch_ban(user)
             except discord.NotFound:
-                new_buttons = [[Button(style = ButtonStyle.red, label = f"Left", custom_id = "ban", disabled = True)]]
+                new_buttons = [[Button(style = ButtonStyle.red, label = f"Left Server", custom_id = "ban", disabled = True)]]
             else:
                 new_buttons = [[Button(style = ButtonStyle.red, label = f"Banned", custom_id = "ban", disabled = True)]]
 
@@ -205,7 +204,16 @@ class Verification(commands.Cog):
 
         cached_users = await self.config.guild(guild).cached_users()
 
-        if interaction.custom_id == "approve":
+        if interaction.custom_id == "cancel":
+            new_buttons = [[Button(style = ButtonStyle.green, label = "Approve", custom_id = "approve_check", disabled = False),
+                            Button(style = ButtonStyle.grey, emoji = self.bot.get_emoji(929343381409255454), custom_id = "sus_check", disabled = False),
+                            Button(style = ButtonStyle.red, label = "Ban", custom_id = "ban_check", disabled = False)]]
+
+        elif interaction.custom_id == "approve_check":
+            new_buttons = [[Button(style = ButtonStyle.green, label = "Confirm Approve?", custom_id = "approve", disabled = False),
+                            Button(style = ButtonStyle.red, label = "Cancel", custom_id = "cancel", disabled = False)]]
+
+        elif interaction.custom_id == "approve":
             await self.remove_roles(member, await self.config.guild(guild).removed_roles())
             await self.add_roles(member, await self.config.guild(guild).approved_roles())
             new_buttons = [[Button(style = ButtonStyle.green, label = f"Approved by {interaction.user.name}", custom_id = "approve", disabled = True)]]
@@ -215,12 +223,18 @@ class Verification(commands.Cog):
                 msg = f"Welcome, {member.mention}! " + approval_message
                 await channel.send(msg)
 
+        elif interaction.custom_id == "sus_check":
+            new_buttons = [[Button(style = ButtonStyle.green, label = "Confirm Sus?", custom_id = "sus", disabled = False),
+                            Button(style = ButtonStyle.red, label = "Cancel", custom_id = "cancel", disabled = False)]]
+
         elif interaction.custom_id == "sus":
             await self.remove_roles(member, await self.config.guild(guild).removed_roles())
             await self.add_roles(member, await self.config.guild(guild).sus_roles())
-            new_buttons = [[Button(style = ButtonStyle.green, label = "Approve", custom_id = "approve", disabled = False),
-                            Button(style = ButtonStyle.grey, emoji = self.bot.get_emoji(929343381409255454), label = f"Sussed by {interaction.user.name}", custom_id = "sus", disabled = True),
-                            Button(style = ButtonStyle.red, label = "Ban", custom_id = "ban", disabled = False)]]
+            new_buttons = [[Button(style = ButtonStyle.grey, emoji = self.bot.get_emoji(929343381409255454), label = f"Sussed by {interaction.user.name}", custom_id = "sus", disabled = True)]]
+
+        elif interaction.custom_id == "ban_check":
+            new_buttons = [[Button(style = ButtonStyle.green, label = "Confirm Ban?", custom_id = "ban", disabled = False),
+                            Button(style = ButtonStyle.red, label = "Cancel", custom_id = "cancel", disabled = False)]]
 
         elif interaction.custom_id == "ban":
             try:
