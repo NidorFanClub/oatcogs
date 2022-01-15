@@ -76,6 +76,9 @@ class Wordle(commands.Cog):
                 file = discord.File(canvas, filename = "wordle.png")
                 await ctx.send(file = file)
 
+        await ctx.send("A winner is you!")
+        return
+
     async def get_word(self):
         return random.choice(open(f"{bundled_data_path(self)}/words.txt").read().splitlines())
 
@@ -106,8 +109,6 @@ class Wordle(commands.Cog):
 
         cell_rows = [list(target_word) for row in range(cell_row_count)]
 
-        print(f"{cell_rows}", flush=True)
-
         for y, cell_row in enumerate(cell_rows):
             for x, letter in enumerate(cell_row):
                 start_x = canvas_padding + (cell_width * x) + (cell_gap * x)
@@ -116,9 +117,9 @@ class Wordle(commands.Cog):
                 end_y = start_y + cell_height
 
                 if y < len(guesses):
-                    if guesses[len(guesses) - 1][x] == letter:
+                    if guesses[y][x] == letter:
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_green)
-                    elif guesses[len(guesses) - 1][x] in target_word:
+                    elif guesses[y][x] in target_word:
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_yellow)
                     else:
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_grey)
