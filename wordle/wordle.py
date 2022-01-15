@@ -41,6 +41,7 @@ class Wordle(commands.Cog):
     # Clear Sans 32pt (#d0ccc6)
 
     @commands.command()
+    @commands.max_concurrency(1, per = commands.BucketType.user, wait = False)
     @commands.guild_only()
     async def wordle(self, ctx):
         f"Play a game of Wordle!"
