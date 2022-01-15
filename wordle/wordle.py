@@ -109,10 +109,10 @@ class Wordle(commands.Cog):
                 end_x = start_x + cell_width
                 end_y = start_y + cell_height
 
-                if guess[y] is not None:
-                    if guess[y][x] == letter:
+                if guesses[y] is not None:
+                    if guesses[y][x] == letter:
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_green)
-                    elif guess[y][x] in target_word:
+                    elif guesses[y][x] in target_word:
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_yellow)
                     else:
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_grey)
