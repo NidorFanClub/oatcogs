@@ -116,6 +116,8 @@ class Wordle(commands.Cog):
             for x, letter in enumerate(cell_row):
                 start_x = canvas_padding + (cell_width * x) + (cell_gap * x)
                 start_y = canvas_padding + (cell_height * y) + (cell_gap * y)
+                font_x = start_x + (cell_width / 2)
+                font_y = start_y + (cell_height / 2)
                 end_x = start_x + cell_width
                 end_y = start_y + cell_height
 
@@ -126,7 +128,7 @@ class Wordle(commands.Cog):
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_yellow)
                     else:
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_grey)
-                    frame.text([((start_x + (cell_width / 2)), (start_y + (cell_height / 2)))], guesses[y][x], fill = font_color, font = font, anchor = "mm")
+                    frame.text([(font_x, font_y)], guesses[y][x], fill = font_color, font = font, anchor = "mm")
 
                 else:
                     frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_bg, cell_white, cell_border_width)
