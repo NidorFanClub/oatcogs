@@ -111,9 +111,9 @@ class Wordle(commands.Cog):
                 end_y = start_y + cell_height
 
                 if y < len(guesses):
-                    if guesses[len(guesses)][x] == letter:
+                    if guesses[len(guesses) - 1][x] == letter:
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_green)
-                    elif guesses[len(guesses)][x] in target_word:
+                    elif guesses[len(guesses) - 1][x] in target_word:
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_yellow)
                     else:
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_grey)
