@@ -52,7 +52,7 @@ class Wordle(commands.Cog):
         file = discord.File(canvas, filename = "wordle.png")
         await ctx.send(file = file)
 
-        def check(message: discord.Message):
+        async def check(message: discord.Message):
             if message.content.lower() == "stop":
                 await ctx.send("Stopping game. Goodbye!")
                 return
