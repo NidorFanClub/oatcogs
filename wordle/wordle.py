@@ -56,7 +56,7 @@ class Wordle(commands.Cog):
         file = discord.File(canvas, filename = "wordle.png")
         await ctx.send(file = file)
 
-        while len(guesses) <= 6 and target_word not in guesses:
+        while len(guesses) < 6 and target_word not in guesses:
             try:
                 guess = await self.bot.wait_for("message", check = MessagePredicate.same_context(ctx), timeout=120.0)
             except asyncio.TimeoutError:
