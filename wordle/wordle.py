@@ -56,7 +56,7 @@ class Wordle(commands.Cog):
             try:
                 guess = await ctx.bot.wait_for("message", timeout=120.0)
             except asyncio.TimeoutError:
-                break
+                return
 
             if guess.content.lower() == "stop":
                 await ctx.send("Stopping game. Goodbye!")
