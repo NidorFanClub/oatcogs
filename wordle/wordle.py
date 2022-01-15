@@ -28,6 +28,7 @@ class Wordle(commands.Cog):
     # 5 pixel gaps between cells
     # 2 pixel border (#797063)
     # Colors for cell:
+        # Default (#121213)
         # Grey (#2c3032)
         # Yellow (#917f2f)
         # Green (#42713e)
@@ -48,6 +49,7 @@ class Wordle(commands.Cog):
 
         cell_bg = (0, 0, 0, 0)
         cell_border = (121, 112, 99, 255)
+        cell_default = (18, 18, 19, 255)
         cell_grey = (44, 48, 50, 255)
         cell_yellow = (145, 127, 47, 255)
         cell_green = (66, 113, 62, 255)
@@ -71,7 +73,7 @@ class Wordle(commands.Cog):
                 end_x = start_x + cell_width
                 end_y = start_y + cell_height
 
-                frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_bg, cell_border, cell_border_width)
+                frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_default, cell_border, cell_border_width)
 
         canvas.resize((canvas_width * 2, canvas_height * 2))
 
