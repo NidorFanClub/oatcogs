@@ -32,8 +32,8 @@ class Wordle(commands.Cog):
         # Grey (#2c3032)
         # Yellow (#917f2f)
         # Green (#42713e)
-        # Discord Dark (#2f3136)
-        # Discord Grey (#40444b)
+        # Discord Dark (#292b2f)
+        # Discord Grey (#2f3136)
     # Clear Sans 32pt
 
     @commands.command()
@@ -55,8 +55,8 @@ class Wordle(commands.Cog):
         cell_grey = (44, 48, 50, 255)
         cell_yellow = (145, 127, 47, 255)
         cell_green = (66, 113, 62, 255)
-        cell_discord_dark = (47, 49, 54, 255)
-        cell_discord_grey = (64, 68, 75, 255)
+        cell_discord_dark = (41, 43, 47, 255)
+        cell_discord_grey = (47, 49, 54, 255)
 
         cell_border_width = 2
         cell_gap = 5
