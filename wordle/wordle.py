@@ -45,8 +45,6 @@ class Wordle(commands.Cog):
         f"Play a game of Wordle!"
         target_word = await self.get_word()
 
-        print(target_word, flush=True)
-
         re.sub(r'\W+', '', target_word)
 
         guesses = []
@@ -79,7 +77,7 @@ class Wordle(commands.Cog):
                 await ctx.send(file = file)
 
     async def get_word(self):
-        return random.choice(open(f"{bundled_data_path(self)}/words.txt").readlines())
+        return random.choice(open(f"{bundled_data_path(self)}/words.txt").splitlines())
 
     async def draw_canvas(self, ctx, target_word, guesses):
         canvas_width = 350
@@ -117,8 +115,7 @@ class Wordle(commands.Cog):
                 end_x = start_x + cell_width
                 end_y = start_y + cell_height
 
-                if y < len(guesses) and x < guesses[len(guesses) - 1]:
-                    print(f"Finding {guesses[len(guesses) - 1][x]}", flush=True)
+                if y < len(guesses):
                     if guesses[len(guesses) - 1][x] == letter:
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_green)
                     elif guesses[len(guesses) - 1][x] in target_word:
