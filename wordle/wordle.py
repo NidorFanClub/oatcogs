@@ -137,7 +137,7 @@ class Wordle(commands.Cog):
                 if y < len(guesses):
                     if guesses[y][x] == letter:
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_green)
-                    elif guesses[y][x] in target_word and (len(re.findall(guesses[y][x], guesses[y][:x])) <= len(re.findall(guesses[y][x], target_word))):
+                    elif guesses[y][x] in target_word and (len(re.findall(guesses[y][x], guesses[y][:x])) < len(re.findall(guesses[y][x], target_word))):
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_yellow)
                     else:
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_grey)
