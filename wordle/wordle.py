@@ -1,5 +1,5 @@
 from redbot.core import commands
-from redbot.core import Config
+from redbot.core import Config, bank
 from redbot.core import checks
 from redbot.core.utils.predicates import MessagePredicate
 from redbot.core.data_manager import bundled_data_path
@@ -22,23 +22,15 @@ AVATAR_FORMAT = "webp" if pil_features.check("webp_anim") else "jpg"
 
 class Wordle(commands.Cog):
     """Wordle -- now in Discord!"""
+
+    default_guild_settings = {"WIN_AMOUNT": 2000}
+    default_member_settings = {"played": 0, "total_wins": 0, "streak": 0, "max_streak": 0}
+
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier = 8234834580, force_registration=True)
-        #self.config.register_guild()
-
-    # 350x420 canvas (10 px padding)
-    # 62x62 cells
-    # 5 pixel gaps between cells
-    # 2 pixel border (#797063)
-    # Colors for cell:
-        # Default (#121213)
-        # Grey (#2c3032)
-        # Yellow (#917f2f)
-        # Green (#42713e)
-        # Discord Dark (#292b2f)
-        # Discord Grey (#2f3136)
-    # Clear Sans 32pt (#d0ccc6)
+        self.config.register_guild(**self.default_guild_settings)
+        self.config.register_member(**self.default_member_settings)
 
     @commands.command()
     @commands.max_concurrency(1, per = commands.BucketType.user, wait = False)
@@ -53,11 +45,18 @@ class Wordle(commands.Cog):
 
         await ctx.send("Welcome to Wordle! Try deciphering the random five letter word. Type `stop` at any time to cancel the game.")
 
+        played = await self.config.member(ctx.author).played() + 1
+        total_wins = await self.config.member(ctx.author).total_wins()
+        streak = await self.config.member(ctx.author).streak()
+        max_streak = await self.config.member(ctx.author).max_streak()
+
+        await self.config.member(ctx.author).played.set(played)
+
         canvas = await self.draw_canvas(ctx, target_word, guesses)
         file = discord.File(canvas, filename = "wordle.png")
         await ctx.send(file = file)
 
-        while len(guesses) < 6 or target_word not in guesses:
+        while len(guesses) <= 6 and target_word not in guesses:
             try:
                 guess = await self.bot.wait_for("message", check = MessagePredicate.same_context(ctx), timeout=120.0)
             except asyncio.TimeoutError:
@@ -76,7 +75,19 @@ class Wordle(commands.Cog):
                     file = discord.File(canvas, filename = "wordle.png")
                     await ctx.send(file = file)
 
-        await ctx.send("A winner is you!")
+        if target_word in guesses:
+            await ctx.send(f"A winner is you! You've been awarded {await self.config.guild(ctx.guild).WIN_AMOUNT()} {await bank.get_currency_name(ctx.guild)}!")
+            await self.config.member(ctx.author).total_wins.set(total_wins + 1)
+            await self.config.member(ctx.author).streak.set(streak + 1)
+            if streak + 1 > max_streak:
+                await self.config.member(ctx.author).max_streak.set(streak + 1)
+            try:
+                await bank.deposit_credits(author, await self.config.guild(guild).WIN_AMOUNT())
+            except:
+                pass
+        else:
+            await ctx.send(f"The word was `{target_word}`. Better luck next time!")
+            await self.config.member(ctx.author).streak.set(0)
         return
 
     async def get_word(self):
