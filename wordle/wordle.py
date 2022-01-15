@@ -49,8 +49,6 @@ class Wordle(commands.Cog):
 
         re.sub(r'\W+', '', target_word)
 
-        print(f"\n{target_word}", flush=True)
-
         guesses = []
 
         await ctx.send("Welcome to Wordle! Try deciphering the random five letter word. Type `stop` at any time to cancel the game.")
@@ -75,8 +73,6 @@ class Wordle(commands.Cog):
                 await ctx.send("Stopping game. Goodbye!")
                 return
             else:
-                print(f"Appending {guess.content}", flush=True)
-
                 guesses.append(guess.content)
                 canvas = await self.draw_canvas(ctx, target_word, guesses)
                 file = discord.File(canvas, filename = "wordle.png")
@@ -119,7 +115,7 @@ class Wordle(commands.Cog):
                 end_x = start_x + cell_width
                 end_y = start_y + cell_height
 
-                if y < len(guesses):
+                if y < len(guesses) and x < guesses[len(guesses) - 1]:
                     print(f"Finding {guesses[len(guesses) - 1][x]}", flush=True)
                     if guesses[len(guesses) - 1][x] == letter:
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_green)
