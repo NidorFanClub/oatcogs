@@ -9,6 +9,7 @@ import discord.ext
 import discord
 import random
 import os
+import re
 
 try:
     from PIL import Image, ImageColor, ImageDraw, ImageFilter, ImageFont, ImageOps
@@ -43,6 +44,12 @@ class Wordle(commands.Cog):
     async def wordle(self, ctx):
         f"Play a game of Wordle!"
         target_word = await self.get_word()
+
+        print(target_word, flush=True)
+
+        re.sub(r'\W+', '', target_word)
+
+        print(f"\n{target_word}", flush=True)
 
         guesses = []
 
