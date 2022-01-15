@@ -36,7 +36,7 @@ class Wordle(commands.Cog):
     @commands.guild_only()
     async def wordle(self, ctx):
         f"Play a game of Wordle!"
-        wordle_game = await self.draw_canvas(None, None)
+        wordle_game = await self.draw_canvas(ctx, None, None)
         file = discord.File(wordle_game, filename = "world.png")
         await ctx.send(file = file)
 
