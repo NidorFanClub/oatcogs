@@ -52,25 +52,26 @@ class Wordle(commands.Cog):
         file = discord.File(canvas, filename = "wordle.png")
         await ctx.send(file = file)
 
-        while len(guesses) < 6 or target_word not in guesses:
-            try:
-                guess = await ctx.bot.wait_for("message", timeout=120.0)
-            except asyncio.TimeoutError:
-                return
-
-            if guess.content.lower() == "stop":
+        def check(message: discord.Message):
+            if message.content.lower() == "stop":
                 await ctx.send("Stopping game. Goodbye!")
                 return
-            elif (len(guess.content) != 5):
+            elif (len(message.content) != 5):
                 await ctx.send("Your guess must be exactly 5 characters.")
-            elif guess.content not in open(f"{bundled_data_path(self)}/words.txt").read():
+            elif message.content not in open(f"{bundled_data_path(self)}/words.txt").read():
                 await ctx.send("Your guess must be a valid English word.")
 
-            guesses.append(guess.content)
-
-            canvas = await self.draw_canvas(ctx, target_word, guesses)
-            file = discord.File(canvas, filename = "wordle.png")
-            await ctx.send(file = file)
+        while len(guesses) < 6 or target_word not in guesses:
+            try:
+                guess = await ctx.bot.wait_for("message", check = check, timeout=120.0)
+            except asyncio.TimeoutError:
+                await ctx.send("Stopping game. Goodbye!")
+                return
+            else:
+                guesses.append(guess.content)
+                canvas = await self.draw_canvas(ctx, target_word, guesses)
+                file = discord.File(canvas, filename = "wordle.png")
+                await ctx.send(file = file)
 
     async def get_word(self):
         return random.choice(open(f"{bundled_data_path(self)}/words.txt").readlines())
@@ -110,9 +111,9 @@ class Wordle(commands.Cog):
                 end_y = start_y + cell_height
 
                 if y < len(guesses):
-                    if guesses[y][x] == letter:
+                    if guesses[len(guesses)][x] == letter:
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_green)
-                    elif guesses[y][x] in target_word:
+                    elif guesses[len(guesses)][x] in target_word:
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_yellow)
                     else:
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_grey)
