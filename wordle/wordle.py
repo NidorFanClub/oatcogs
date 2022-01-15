@@ -73,10 +73,8 @@ class Wordle(commands.Cog):
 
                 frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_bg, cell_border, cell_border_width)
 
-        canvas.paste(frame)
-
         file = BytesIO()
-        frame.save(file, "PNG", quality = 100)
+        canvas.save(file, "PNG", quality = 100)
         file.seek(0)
         return file
 
