@@ -97,7 +97,7 @@ class Wordle(commands.Cog):
         cell_discord_grey = (47, 49, 54, 255)
 
         font_file = f"{bundled_data_path(self)}/HelveticaNeue.ttf"
-        font_color = (82, 80, 78, 255)
+        font_color = (208, 204, 198, 255)
         font = ImageFont.truetype(font_file, 32)
 
         cell_border_width = 2
@@ -128,7 +128,7 @@ class Wordle(commands.Cog):
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_yellow)
                     else:
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_grey)
-                    frame.text(xy = (font_x, font_y), text = guesses[y][x], fill = font_color, font = font, anchor = "mm")
+                    frame.text(xy = (font_x, font_y), text = guesses[y][x].upper(), fill = font_color, font = font, anchor = "mm")
 
                 else:
                     frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_bg, cell_white, cell_border_width)
