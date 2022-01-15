@@ -56,13 +56,17 @@ class Wordle(commands.Cog):
         await ctx.send(file = file)
 
         async def check(message: discord.Message):
-            if message.content.lower() == "stop":
+            if message.author.id != ctx.author.id and message.channel.id != ctx.channel.id:
+            elif message.content.lower() == "stop":
                 await ctx.send("Stopping game. Goodbye!")
-                return
             elif (len(message.content) != 5):
                 await ctx.send("Your guess must be exactly 5 characters.")
             elif message.content not in open(f"{bundled_data_path(self)}/words.txt").read():
                 await ctx.send("Your guess must be a valid English word.")
+            else:
+                return True
+
+            return False
 
         while len(guesses) < 6 or target_word not in guesses:
             try:
