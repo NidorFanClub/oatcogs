@@ -76,7 +76,7 @@ class Wordle(commands.Cog):
                 await ctx.send("Stopping game. Goodbye!")
                 return
             else:
-                guesses.append(guess.content)
+                guesses.append(guess.content.lower())
                 canvas = await self.draw_canvas(ctx, target_word, guesses)
                 file = discord.File(canvas, filename = "wordle.png")
                 await ctx.send(file = file)
@@ -85,7 +85,7 @@ class Wordle(commands.Cog):
         return
 
     async def get_word(self):
-        return random.choice(open(f"{bundled_data_path(self)}/words.txt").read().splitlines())
+        return random.choice(open(f"{bundled_data_path(self)}/words.txt").read().splitlines()).lower()
 
     async def draw_canvas(self, ctx, target_word, guesses):
         canvas_width = 350
