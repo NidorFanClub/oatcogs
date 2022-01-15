@@ -50,6 +50,7 @@ class Wordle(commands.Cog):
         canvas_padding = 10
 
         cell_bg = (0, 0, 0, 0)
+        cell_white = (255, 255, 255, 255)
         cell_border = (121, 112, 99, 255)
         cell_default = (18, 18, 19, 255)
         cell_grey = (44, 48, 50, 255)
@@ -58,7 +59,7 @@ class Wordle(commands.Cog):
         cell_discord_dark = (41, 43, 47, 255)
         cell_discord_grey = (47, 49, 54, 255)
 
-        cell_border_width = -2
+        cell_border_width = 2
         cell_gap = 5
         cell_width = 62
         cell_height = 62
@@ -77,9 +78,7 @@ class Wordle(commands.Cog):
                 end_x = start_x + cell_width
                 end_y = start_y + cell_height
 
-                frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_discord_dark, cell_discord_grey, cell_border_width)
-
-        canvas.resize((canvas_width * 2, canvas_height * 2))
+                frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_bg, cell_white, -cell_border_width)
 
         file = BytesIO()
         canvas.save(file, "PNG", quality = 100)
