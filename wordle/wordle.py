@@ -86,7 +86,7 @@ class Wordle(commands.Cog):
             except:
                 pass
         else:
-            await ctx.send(f"The word was `{target_word}`. Better luck next time!")
+            await ctx.send(f"The word was {target_word}. Better luck next time!")
             await self.config.member(ctx.author).streak.set(0)
         return
 
