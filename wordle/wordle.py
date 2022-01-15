@@ -120,7 +120,7 @@ class Wordle(commands.Cog):
                 end_y = start_y + cell_height
 
                 if y < len(guesses):
-                    print(f"Finding {guesses[len(guesses) - 1]}", flush=True)
+                    print(f"Finding {guesses[len(guesses) - 1][x]}", flush=True)
                     if guesses[len(guesses) - 1][x] == letter:
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_green)
                     elif guesses[len(guesses) - 1][x] in target_word:
