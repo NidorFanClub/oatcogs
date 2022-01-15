@@ -48,6 +48,10 @@ class Wordle(commands.Cog):
 
         await ctx.send("Welcome to Wordle! Try deciphering the random five letter word. Type `stop` at any time to cancel the game.")
 
+        canvas = await self.draw_canvas(ctx, target_word, guesses)
+        file = discord.File(canvas, filename = "wordle.png")
+        await ctx.send(file = file)
+
         while len(guesses) < 6 or target_word not in guesses:
             try:
                 guess = await ctx.bot.wait_for("message", timeout=120.0)
