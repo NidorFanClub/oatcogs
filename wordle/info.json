@@ -1,0 +1,10 @@
+{
+    "author" : ["moosey"],
+    "install_msg" : "moose!",
+    "name" : "Wordle",
+    "short" : "Play Wordle in Discord!",
+    "description" : "Wordle. It's fun. Play it. Now.",
+    "tags" : ["fun"],
+    "requirements" : [],
+    "hidden" : false
+}
