@@ -55,29 +55,24 @@ class Wordle(commands.Cog):
         file = discord.File(canvas, filename = "wordle.png")
         await ctx.send(file = file)
 
-        async def check(message: discord.Message):
-            if message.author.id == ctx.author.id and message.channel.id == ctx.channel.id:
-                return True
-            elif message.content.lower() == "stop":
-                await ctx.send("Stopping game. Goodbye!")
-            elif (len(message.content) != 5):
-                await ctx.send("Your guess must be exactly 5 characters.")
-            elif message.content not in open(f"{bundled_data_path(self)}/words.txt").read():
-                await ctx.send("Your guess must be a valid English word.")
-            else:
-                return False
-
         while len(guesses) < 6 or target_word not in guesses:
             try:
-                guess = await ctx.bot.wait_for("message", check = check, timeout=120.0)
+                guess = await self.bot.wait_for("message", check = MessagePredicate.same_context(ctx), timeout=120.0)
             except asyncio.TimeoutError:
                 await ctx.send("Stopping game. Goodbye!")
                 return
             else:
-                guesses.append(guess.content.lower())
-                canvas = await self.draw_canvas(ctx, target_word, guesses)
-                file = discord.File(canvas, filename = "wordle.png")
-                await ctx.send(file = file)
+                if message.content.lower() == "stop":
+                    await ctx.send("Stopping game. Goodbye!")
+                elif (len(message.content) != 5):
+                    await ctx.send("Your guess must be exactly 5 characters.")
+                elif message.content not in open(f"{bundled_data_path(self)}/words.txt").read():
+                    await ctx.send("Your guess must be a valid English word.")
+                else:
+                    guesses.append(guess.content.lower())
+                    canvas = await self.draw_canvas(ctx, target_word, guesses)
+                    file = discord.File(canvas, filename = "wordle.png")
+                    await ctx.send(file = file)
 
         await ctx.send("A winner is you!")
         return
