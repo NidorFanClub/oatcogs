@@ -133,10 +133,11 @@ class Wordle(commands.Cog):
                 end_x = start_x + cell_width
                 end_y = start_y + cell_height
 
+                print(f"{target_word}", flush = True)
                 if y < len(guesses):
                     if guesses[y][x] == letter:
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_green)
-                    elif guesses[y][x] in target_word:
+                    elif guesses[y][x] in target_word and guesses[y][:x].count(guesses[y][x]) <= target_word.count(guesses[y][x]):
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_yellow)
                     else:
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_grey)
