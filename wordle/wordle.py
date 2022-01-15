@@ -57,6 +57,7 @@ class Wordle(commands.Cog):
 
         async def check(message: discord.Message):
             if message.author.id != ctx.author.id and message.channel.id != ctx.channel.id:
+                break
             elif message.content.lower() == "stop":
                 await ctx.send("Stopping game. Goodbye!")
             elif (len(message.content) != 5):
