@@ -67,7 +67,7 @@ class Wordle(commands.Cog):
                     await ctx.send("It was nice playing with you. Goodbye!")
                 elif (len(guess.content) != 5):
                     await ctx.send("Your guess must be exactly 5 characters.")
-                elif guess.content not in open(f"{bundled_data_path(self)}/words.txt").read():
+                elif guess.content.lower() not in open(f"{bundled_data_path(self)}/words.txt").read():
                     await ctx.send("Your guess must be a valid English word.")
                 else:
                     guesses.append(guess.content.lower())
