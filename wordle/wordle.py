@@ -54,7 +54,7 @@ class Wordle(commands.Cog):
 
         canvas = await self.draw_canvas(ctx, target_word, guesses)
         file = discord.File(canvas, filename = "wordle.png")
-        await ctx.send(file = file)
+        wordle_game = await ctx.send(file = file)
 
         while len(guesses) < 6 and target_word not in guesses:
             try:
@@ -66,14 +66,14 @@ class Wordle(commands.Cog):
                 if guess.content.lower() == "stop":
                     await ctx.send("It was nice playing with you. Goodbye!")
                 elif (len(guess.content) != 5):
-                    await ctx.send("Your guess must be 5 characters long.")
+                    await ctx.send("Your guess must be 5 characters long.", delete_after = 5)
                 elif guess.content.lower() not in open(f"{bundled_data_path(self)}/valid_guesses.txt").read():
-                    await ctx.send("Your guess must be a valid English word.")
+                    await ctx.send("Please guess another word, that one isn't valid.", delete_after = 5)
                 else:
                     guesses.append(guess.content.lower())
                     canvas = await self.draw_canvas(ctx, target_word, guesses)
                     file = discord.File(canvas, filename = "wordle.png")
-                    await ctx.send(file = file)
+                    await wordle_game.edit(file = file)
 
         if target_word in guesses:
             await ctx.send(f"A winner is you! You've been awarded {await self.config.guild(ctx.guild).WIN_AMOUNT()} {await bank.get_currency_name(ctx.guild)}!")
