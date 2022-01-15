@@ -75,6 +75,8 @@ class Wordle(commands.Cog):
                 await ctx.send("Stopping game. Goodbye!")
                 return
             else:
+                print(f"Appending {guess.content}", flush=True)
+
                 guesses.append(guess.content)
                 canvas = await self.draw_canvas(ctx, target_word, guesses)
                 file = discord.File(canvas, filename = "wordle.png")
@@ -118,6 +120,7 @@ class Wordle(commands.Cog):
                 end_y = start_y + cell_height
 
                 if y < len(guesses):
+                    print(f"Finding {guesses[len(guesses) - 1]}", flush=True)
                     if guesses[len(guesses) - 1][x] == letter:
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_green)
                     elif guesses[len(guesses) - 1][x] in target_word:
