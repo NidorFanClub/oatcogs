@@ -55,16 +55,18 @@ class Wordle(commands.Cog):
         cell_gap = 5
         cell_width = 62
         cell_height = 62
-        cell_rows = 6
-        cell_columns = 5
+        cell_row_count = 6
+        cell_column_count = 5
 
         canvas = Image.new("RGBA", (canvas_width, canvas_height), cell_bg)
         frame = ImageDraw.Draw(canvas)
 
-        for row in enumerate(cell_rows):
-            for letter in enumerate(cell_columns):
-                start_x = canvas_padding + (cell_width * letter) + (cell_gap * letter)
-                start_y = canvas_padding + (cell_height * row) + (cell_gap * row)
+        cell_rows = [list(target_word) for row in range(cell_row_count)]
+
+        for y, cell_row in enumerate(cell_rows):
+            for x, letter in enumerate(cell_row):
+                start_x = canvas_padding + (cell_width * x) + (cell_gap * x)
+                start_y = canvas_padding + (cell_height * y) + (cell_gap * y)
                 end_x = start_x + cell_width
                 end_y = start_y + cell_height
 
