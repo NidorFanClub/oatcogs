@@ -1,11 +1,13 @@
 from redbot.core import commands
 from redbot.core import Config
 from redbot.core import checks
+from redbot.core.data_manager import bundled_data_path
 from io import BytesIO
 import asyncio
 import discord.utils 
 import discord.ext
 import discord
+import random
 import os
 
 try:
@@ -40,9 +42,34 @@ class Wordle(commands.Cog):
     @commands.guild_only()
     async def wordle(self, ctx):
         f"Play a game of Wordle!"
-        wordle_game = await self.draw_canvas(ctx, "guess", None)
-        file = discord.File(wordle_game, filename = "world.png")
-        await ctx.send(file = file)
+        target_word = await self.get_word()
+
+        guesses = []
+
+        await ctx.send("Welcome to Wordle! Try deciphering the random five letter word. Type `stop` at any time to cancel the game.")
+
+        while len(guesses) < 6 or target_word not in guesses:
+            try:
+                guess = await ctx.bot.wait_for("message", timeout=120.0)
+            except asyncio.TimeoutError:
+                break
+
+            if guess.content.lower() == "stop":
+                await ctx.send("Stopping game. Goodbye!")
+                return
+            elif (len(guess.content) != 5):
+                await ctx.send("Your guess must be exactly 5 characters.")
+            elif guess.content not in open(f"{bundled_data_path(self)}/words.txt").read():
+                await ctx.send("Your guess must be a valid English word.")
+
+            guesses.append(guess.content)
+
+            canvas = await self.draw_canvas(ctx, target_word, guesses)
+            file = discord.File(canvas, filename = "wordle.png")
+            await ctx.send(file = file)
+
+    async def get_word(self):
+        return random.choice(open(f"{bundled_data_path(self)}/words.txt").readlines())
 
     async def draw_canvas(self, ctx, target_word, guesses):
         canvas_width = 350
@@ -78,7 +105,15 @@ class Wordle(commands.Cog):
                 end_x = start_x + cell_width
                 end_y = start_y + cell_height
 
-                frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_bg, cell_white, cell_border_width)
+                if guess[y] is not None:
+                    if guess[y][x] == letter:
+                        frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_green)
+                    elif guess[y][x] in target_word:
+                        frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_yellow)
+                    else:
+                        frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_grey)
+                else:
+                    frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_bg, cell_white, cell_border_width)
 
         file = BytesIO()
         canvas.save(file, "PNG", quality = 100)
