@@ -63,11 +63,11 @@ class Wordle(commands.Cog):
                 await ctx.send("Stopping game. Goodbye!")
                 return
             else:
-                if message.content.lower() == "stop":
+                if ctx.content.lower() == "stop":
                     await ctx.send("Stopping game. Goodbye!")
-                elif (len(message.content) != 5):
+                elif (len(ctx.content) != 5):
                     await ctx.send("Your guess must be exactly 5 characters.")
-                elif message.content not in open(f"{bundled_data_path(self)}/words.txt").read():
+                elif ctx.content not in open(f"{bundled_data_path(self)}/words.txt").read():
                     await ctx.send("Your guess must be a valid English word.")
                 else:
                     guesses.append(guess.content.lower())
