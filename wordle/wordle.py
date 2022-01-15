@@ -65,6 +65,7 @@ class Wordle(commands.Cog):
             else:
                 if guess.content.lower() == "stop":
                     await ctx.send("It was nice playing with you. Goodbye!")
+                    return
                 elif (len(guess.content) != 5):
                     await ctx.send("Your guess must be 5 characters long.")
                 elif guess.content.lower() not in open(f"{bundled_data_path(self)}/valid_guesses.txt").read():
