@@ -58,7 +58,7 @@ class Wordle(commands.Cog):
 
         while len(guesses) < 6 and target_word not in guesses:
             try:
-                guess = await self.bot.wait_for("message", check = MessagePredicate.same_context(ctx), timeout=120.0)
+                guess = await self.bot.wait_for("message", check = MessagePredicate.same_context(ctx), timeout=150.0)
             except asyncio.TimeoutError:
                 await ctx.send("Stopping game. Goodbye!")
                 return
@@ -66,7 +66,7 @@ class Wordle(commands.Cog):
                 if guess.content.lower() == "stop":
                     await ctx.send("It was nice playing with you. Goodbye!")
                 elif (len(guess.content) != 5):
-                    await ctx.send("Your guess must be exactly 5 characters.")
+                    await ctx.send("Your guess must be 5 characters long.")
                 elif guess.content.lower() not in open(f"{bundled_data_path(self)}/words.txt").read():
                     await ctx.send("Your guess must be a valid English word.")
                 else:
@@ -133,7 +133,6 @@ class Wordle(commands.Cog):
                 end_x = start_x + cell_width
                 end_y = start_y + cell_height
 
-                print(f"{target_word}", flush = True)
                 if y < len(guesses):
                     if guesses[y][x] == letter:
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_green)
