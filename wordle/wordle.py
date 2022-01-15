@@ -77,7 +77,7 @@ class Wordle(commands.Cog):
                 await ctx.send(file = file)
 
     async def get_word(self):
-        return random.choice(open(f"{bundled_data_path(self)}/words.txt").splitlines())
+        return random.choice(open(f"{bundled_data_path(self)}/words.txt").read().splitlines())
 
     async def draw_canvas(self, ctx, target_word, guesses):
         canvas_width = 350
