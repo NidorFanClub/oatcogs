@@ -59,7 +59,7 @@ class Wordle(commands.Cog):
         cell_discord_dark = (41, 43, 47, 255)
         cell_discord_grey = (47, 49, 54, 255)
 
-        cell_border_width = 5
+        cell_border_width = 2
         cell_gap = 5
         cell_width = 62
         cell_height = 62
