@@ -108,6 +108,8 @@ class Wordle(commands.Cog):
 
         cell_rows = [list(target_word) for row in range(cell_row_count)]
 
+        print(f"{cell_rows}", flush=True)
+
         for y, cell_row in enumerate(cell_rows):
             for x, letter in enumerate(cell_row):
                 start_x = canvas_padding + (cell_width * x) + (cell_gap * x)
