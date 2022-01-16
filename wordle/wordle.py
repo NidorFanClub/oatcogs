@@ -125,7 +125,6 @@ class Wordle(commands.Cog):
 
         cell_rows = [list(target_word) for row in range(cell_row_count)]
 
-        print(f"In Green. The word is {answer}")
         for y, cell_row in enumerate(cell_rows):
             answer = target_word
 
