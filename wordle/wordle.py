@@ -52,7 +52,7 @@ class Wordle(commands.Cog):
         await self.config.member(ctx.author).played.set(played)
 
         canvas = await self.draw_canvas(ctx, target_word, guesses)
-        keyboard = await self.draw_canvas(ctx, target_word, guesses)
+        keyboard = await self.draw_keyboard(ctx, target_word, guesses)
 
         wordle_game = discord.File(canvas, filename = "wordle_game.png")
         wordle_keyboard = discord.File(keyboard, filename = "wordle_keyboard.png")
@@ -76,7 +76,7 @@ class Wordle(commands.Cog):
                 else:
                     guesses.append(guess.content.lower())
                     canvas = await self.draw_canvas(ctx, target_word, guesses)
-                    keyboard = await self.draw_canvas(ctx, target_word, guesses)
+                    keyboard = await self.draw_keyboard(ctx, target_word, guesses)
 
                     wordle_game = discord.File(canvas, filename = "wordle_game.png")
                     wordle_keyboard = discord.File(keyboard, filename = "wordle_keyboard.png")
