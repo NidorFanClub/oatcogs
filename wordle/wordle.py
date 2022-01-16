@@ -197,7 +197,7 @@ class Wordle(commands.Cog):
 
         font_file = f"{bundled_data_path(self)}/HelveticaNeue.ttf"
         font_color = (208, 204, 198, 255)
-        font = ImageFont.truetype(font_file, 13.33333)
+        font = ImageFont.truetype(font_file, 13)
 
         for key_index, keyboard_letter in enumerate(keys):
             if key_index < 10:
