@@ -49,6 +49,7 @@ class Wordle(commands.Cog):
         total_wins = await self.config.member(ctx.author).total_wins()
         streak = await self.config.member(ctx.author).streak()
         max_streak = await self.config.member(ctx.author).max_streak()
+        win_amount = await self.config.guild(ctx.guild).WIN_AMOUNT() * (1 + (0.1 * streak))
 
         await self.config.member(ctx.author).played.set(played)
 
@@ -60,16 +61,16 @@ class Wordle(commands.Cog):
             try:
                 guess = await self.bot.wait_for("message", check = MessagePredicate.same_context(ctx), timeout=200.0)
             except asyncio.TimeoutError:
-                await ctx.send("Stopping game. Goodbye!")
+                await ctx.send(f"Stopping game. Your word was ***{target_word}***. Goodbye!")
                 return
             else:
                 if guess.content.lower() == "stop":
                     await ctx.send("It was nice playing with you. Goodbye!")
                     return
                 elif (len(guess.content) != 5):
-                    await ctx.send("Your guess must be 5 characters long.")
+                    await ctx.send("Your guess must be exactly 5 characters long.")
                 elif guess.content.lower() not in open(f"{bundled_data_path(self)}/valid_guesses.txt").read():
-                    await ctx.send("Please guess another word, that one isn't valid.")
+                    await ctx.send("That word isn't valid. Please guess again.")
                 else:
                     guesses.append(guess.content.lower())
                     canvas = await self.draw_canvas(ctx, target_word, guesses)
@@ -77,17 +78,17 @@ class Wordle(commands.Cog):
                     await ctx.send(file = file)
 
         if target_word in guesses:
-            await ctx.send(f"A winner is you! You've been awarded {await self.config.guild(ctx.guild).WIN_AMOUNT()} {await bank.get_currency_name(ctx.guild)}!")
+            await ctx.send(f"A winner is you! You guessed the word ***{target_word}***, earning you {win_amount}. Your streak is {str(streak + 1)} and your bonus is {str(1 + (0.1 * streak))}!")
             await self.config.member(ctx.author).total_wins.set(total_wins + 1)
             await self.config.member(ctx.author).streak.set(streak + 1)
             if streak + 1 > max_streak:
                 await self.config.member(ctx.author).max_streak.set(streak + 1)
             try:
-                await bank.deposit_credits(author, await self.config.guild(guild).WIN_AMOUNT())
+                await bank.deposit_credits(author, win_amount)
             except:
                 pass
         else:
-            await ctx.send(f"The word was {target_word}. Better luck next time!")
+            await ctx.send(f"The word was ***{target_word}***. Better luck next time!")
             await self.config.member(ctx.author).streak.set(0)
         return
 
