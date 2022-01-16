@@ -157,7 +157,7 @@ class Wordle(commands.Cog):
                 font_y = start_y + (cell_height / 2)
 
                 if y < len(guesses):
-                    if guesses[y][x] in answer:
+                    if guesses[y][x] in answer and guesses[y][x] != letter:
                         answer = ''.join(answer.split(guesses[y][x], 1))
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_yellow)
                     frame.text(xy = (font_x, font_y), text = guesses[y][x].upper(), fill = font_color, font = font, anchor = "mm")
