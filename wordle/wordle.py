@@ -134,6 +134,9 @@ class Wordle(commands.Cog):
                 end_x = start_x + cell_width
                 end_y = start_y + cell_height
 
+                font_x = start_x + (cell_width / 2)
+                font_y = start_y + (cell_height / 2)
+
                 frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_bg, cell_white, cell_border_width)
 
                 if y < len(guesses):
@@ -141,6 +144,7 @@ class Wordle(commands.Cog):
                     if guesses[y][x] == letter:
                         answer = ''.join(answer.split(letter, 1))
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_green)
+                    frame.text(xy = (font_x, font_y), text = guesses[y][x].upper(), fill = font_color, font = font, anchor = "mm")
 
         for y, cell_row in enumerate(cell_rows):
             for x, letter in enumerate(cell_row):
@@ -149,17 +153,13 @@ class Wordle(commands.Cog):
                 end_x = start_x + cell_width
                 end_y = start_y + cell_height
 
-                if y < len(guesses):
-                    if guesses[y][x] in answer:
-                        answer = ''.join(answer.split(guesses[y][x], 1))
-                        frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_yellow)
-
-        for y, cell_row in enumerate(cell_rows):
-            for x, letter in enumerate(cell_row):
                 font_x = start_x + (cell_width / 2)
                 font_y = start_y + (cell_height / 2)
 
                 if y < len(guesses):
+                    if guesses[y][x] in answer:
+                        answer = ''.join(answer.split(guesses[y][x], 1))
+                        frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_yellow)
                     frame.text(xy = (font_x, font_y), text = guesses[y][x].upper(), fill = font_color, font = font, anchor = "mm")
 
         file = BytesIO()
