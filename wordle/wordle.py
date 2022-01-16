@@ -199,6 +199,9 @@ class Wordle(commands.Cog):
         font_color = (208, 204, 198, 255)
         font = ImageFont.truetype(font_file, 13)
 
+        canvas = Image.new("RGBA", (canvas_width, canvas_height), key_bg)
+        frame = ImageDraw.Draw(canvas)
+        
         for key_index, keyboard_letter in enumerate(keys):
             if key_index < 10:
                 top = key_index
@@ -236,3 +239,8 @@ class Wordle(commands.Cog):
                 for i, letter in enumerate(guess):
                     if guess[i] == target_word[i]:
                         frame.rounded_rectangle([(start_x, start_y), (end_x, end_y)], radius = 4, fill = key_green)
+                        
+            file = BytesIO()
+            canvas.save(file, "PNG", quality = 100)
+            file.seek(0)
+            return file
