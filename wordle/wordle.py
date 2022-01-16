@@ -223,7 +223,7 @@ class Wordle(commands.Cog):
             font_y = start_y + (key_height / 2)
 
             frame.rounded_rectangle([(start_x, start_y), (end_x, end_y)], radius = 4, fill = key_default)
-            frame.text(xy = (font_x, font_y), text = guesses[y][x].upper(), fill = font_color, font = font, anchor = "mm")
+            frame.text(xy = (font_x, font_y), text = keyboard_letter.upper(), fill = font_color, font = font, anchor = "mm")
 
             for guess in guesses:
                 for i, letter in enumerate(guess):
