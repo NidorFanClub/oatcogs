@@ -78,7 +78,7 @@ class Wordle(commands.Cog):
                     await ctx.send(file = file)
 
         if target_word in guesses:
-            await ctx.send(f"A winner is you! You guessed the word ***{target_word}***, earning you {win_amount}. Your streak is {str(streak + 1)} and your bonus is {str(1 + (0.1 * streak))}!")
+            await ctx.send(f"A winner is you! You guessed the word ***{target_word}***, earning you {int(win_amount)} {await bank.get_currency_name(ctx.guild)}. Your streak is {str(streak + 1)} and your bonus is x{str(1 + (0.1 * streak))}!")
             await self.config.member(ctx.author).total_wins.set(total_wins + 1)
             await self.config.member(ctx.author).streak.set(streak + 1)
             if streak + 1 > max_streak:
