@@ -125,8 +125,10 @@ class Wordle(commands.Cog):
 
         cell_rows = [list(target_word) for row in range(cell_row_count)]
 
+        print(f"In Green. The word is {answer}")
         for y, cell_row in enumerate(cell_rows):
             answer = target_word
+
             for x, letter in enumerate(cell_row):
                 start_x = canvas_padding + (cell_width * x) + (cell_gap * x)
                 start_y = canvas_padding + (cell_height * y) + (cell_gap * y)
@@ -145,8 +147,6 @@ class Wordle(commands.Cog):
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_green)
                     frame.text(xy = (font_x, font_y), text = guesses[y][x].upper(), fill = font_color, font = font, anchor = "mm")
 
-        for y, cell_row in enumerate(cell_rows):
-            answer = target_word
             for x, letter in enumerate(cell_row):
                 start_x = canvas_padding + (cell_width * x) + (cell_gap * x)
                 start_y = canvas_padding + (cell_height * y) + (cell_gap * y)
