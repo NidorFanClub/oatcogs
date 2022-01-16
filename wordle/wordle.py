@@ -70,11 +70,8 @@ class Wordle(commands.Cog):
                     await ctx.send(f"It was nice playing with you. The word was ***{target_word}***. Goodbye!")
                     return
                 elif (len(guess.content) != 5):
-                    await ctx.send("Your guess must be exactly 5 characters long.")
-                elif guess.content.lower() not in open(f"{bundled_data_path(self)}/valid_guesses.txt").read() and guess.content.lower() not in open(f"{bundled_data_path(self)}/words.txt").read():
-                    await ctx.send("That word isn't valid. Please guess again.")
                     await ctx.send("Your guess must be exactly 5 characters long.", delete_after = 5.0)
-                elif guess.content.lower() not in open(f"{bundled_data_path(self)}/valid_guesses.txt").read() and not in open(f"{bundled_data_path(self)}/words.txt").read():
+                elif guess.content.lower() not in open(f"{bundled_data_path(self)}/valid_guesses.txt").read() and guess.content.lower() not in open(f"{bundled_data_path(self)}/words.txt").read():
                     await ctx.send("That doesn't seem to be a valid word. Please guess again.", delete_after = 5.0)
                 else:
                     guesses.append(guess.content.lower())
@@ -98,7 +95,6 @@ class Wordle(commands.Cog):
             if streak + 1 > max_streak:
                 await self.config.member(ctx.author).max_streak.set(streak + 1)
             try:
-                await bank.deposit_credits(ctx.author, win_amount)
                 await bank.deposit_credits(ctx.author, int(win_amount))
             except:
                 pass
