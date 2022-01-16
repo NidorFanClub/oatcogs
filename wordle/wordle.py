@@ -89,7 +89,7 @@ class Wordle(commands.Cog):
             if streak + 1 > max_streak:
                 await self.config.member(ctx.author).max_streak.set(streak + 1)
             try:
-                await bank.deposit_credits(author, win_amount)
+                await bank.deposit_credits(ctx.author, win_amount)
             except:
                 pass
         else:
