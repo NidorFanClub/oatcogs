@@ -58,7 +58,7 @@ class Wordle(commands.Cog):
 
         while len(guesses) < 6 and target_word not in guesses:
             try:
-                guess = await self.bot.wait_for("message", check = MessagePredicate.same_context(ctx), timeout=150.0)
+                guess = await self.bot.wait_for("message", check = MessagePredicate.same_context(ctx), timeout=200.0)
             except asyncio.TimeoutError:
                 await ctx.send("Stopping game. Goodbye!")
                 return
@@ -125,26 +125,42 @@ class Wordle(commands.Cog):
 
         cell_rows = [list(target_word) for row in range(cell_row_count)]
 
+        answer = target_word
+
         for y, cell_row in enumerate(cell_rows):
             for x, letter in enumerate(cell_row):
                 start_x = canvas_padding + (cell_width * x) + (cell_gap * x)
                 start_y = canvas_padding + (cell_height * y) + (cell_gap * y)
-                font_x = start_x + (cell_width / 2)
-                font_y = start_y + (cell_height / 2)
+                end_x = start_x + cell_width
+                end_y = start_y + cell_height
+
+                frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_bg, cell_white, cell_border_width)
+
+                if y < len(guesses):
+                    frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_grey)
+                    if guesses[y][x] == letter:
+                        answer = ''.join(answer.split(letter, 1))
+                        frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_green)
+
+        for y, cell_row in enumerate(cell_rows):
+            for x, letter in enumerate(cell_row):
+                start_x = canvas_padding + (cell_width * x) + (cell_gap * x)
+                start_y = canvas_padding + (cell_height * y) + (cell_gap * y)
                 end_x = start_x + cell_width
                 end_y = start_y + cell_height
 
                 if y < len(guesses):
-                    if guesses[y][x] == letter:
-                        frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_green)
-                    elif guesses[y][x] in target_word and (len(re.findall(guesses[y][x], guesses[y])) <= len(re.findall(guesses[y][x], target_word))):
+                    if guesses[y][x] in answer:
+                        answer = ''.join(answer.split(guesses[y][x], 1))
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_yellow)
-                    else:
-                        frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_grey)
-                    frame.text(xy = (font_x, font_y), text = guesses[y][x].upper(), fill = font_color, font = font, anchor = "mm")
 
-                else:
-                    frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_bg, cell_white, cell_border_width)
+        for y, cell_row in enumerate(cell_rows):
+            for x, letter in enumerate(cell_row):
+                font_x = start_x + (cell_width / 2)
+                font_y = start_y + (cell_height / 2)
+
+                if y < len(guesses):
+                    frame.text(xy = (font_x, font_y), text = guesses[y][x].upper(), fill = font_color, font = font, anchor = "mm")
 
         file = BytesIO()
         canvas.save(file, "PNG", quality = 100)
