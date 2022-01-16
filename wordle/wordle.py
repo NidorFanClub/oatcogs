@@ -18,8 +18,6 @@ try:
 except Exception as e:
     raise RuntimeError(f"Can't load pillow: {e}\nDo '[p]pipinstall pillow'.")
 
-AVATAR_FORMAT = "webp" if pil_features.check("webp_anim") else "jpg"
-
 class Wordle(commands.Cog):
     """Wordle -- now in Discord!"""
 
@@ -43,45 +41,56 @@ class Wordle(commands.Cog):
 
         guesses = []
 
-        await ctx.send("Welcome to Wordle! Try deciphering the random five letter word. Type `stop` at any time to cancel the game.")
+        await ctx.send("Welcome to Wordle! Type a five letter word to start. Type `stop` at any time to cancel the game.")
 
         played = await self.config.member(ctx.author).played() + 1
         total_wins = await self.config.member(ctx.author).total_wins()
         streak = await self.config.member(ctx.author).streak()
         max_streak = await self.config.member(ctx.author).max_streak()
-        win_amount = await self.config.guild(ctx.guild).WIN_AMOUNT() * (1 + (0.1 * streak))
+        win_amount = await self.config.guild(ctx.guild).WIN_AMOUNT() * (1 + (0.25 * streak))
 
         await self.config.member(ctx.author).played.set(played)
 
         canvas = await self.draw_canvas(ctx, target_word, guesses)
-        file = discord.File(canvas, filename = "wordle.png")
-        await ctx.send(file = file)
+        keyboard = await self.draw_canvas(ctx, target_word, guesses)
+
+        wordle_game = discord.File(canvas, filename = "wordle_game.png")
+        wordle_keyboard = discord.File(keyboard, filename = "wordle_keyboard.png")
+        await ctx.send(file = wordle_game)
+        await ctx.send(file = wordle_keyboard)
 
         while len(guesses) < 6 and target_word not in guesses:
             try:
-                guess = await self.bot.wait_for("message", check = MessagePredicate.same_context(ctx), timeout=200.0)
+                guess = await self.bot.wait_for("message", check = MessagePredicate.same_context(ctx), timeout = 300.0)
             except asyncio.TimeoutError:
-                await ctx.send(f"Stopping game. Your word was ***{target_word}***. Goodbye!")
+                await ctx.send(f"Stopping game. The word was ***{target_word}***. Goodbye!")
                 return
             else:
                 if guess.content.lower() == "stop":
-                    await ctx.send("It was nice playing with you. Goodbye!")
+                    await ctx.send(f"It was nice playing with you. The word was ***{target_word}***. Goodbye!")
                     return
                 elif (len(guess.content) != 5):
                     await ctx.send("Your guess must be exactly 5 characters long.")
                 elif guess.content.lower() not in open(f"{bundled_data_path(self)}/valid_guesses.txt").read() and guess.content.lower() not in open(f"{bundled_data_path(self)}/words.txt").read():
                     await ctx.send("That word isn't valid. Please guess again.")
+                    await ctx.send("Your guess must be exactly 5 characters long.", delete_after = 5.0)
+                elif guess.content.lower() not in open(f"{bundled_data_path(self)}/valid_guesses.txt").read() and not in open(f"{bundled_data_path(self)}/words.txt").read():
+                    await ctx.send("That doesn't seem to be a valid word. Please guess again.", delete_after = 5.0)
                 else:
                     guesses.append(guess.content.lower())
                     canvas = await self.draw_canvas(ctx, target_word, guesses)
-                    file = discord.File(canvas, filename = "wordle.png")
-                    await ctx.send(file = file)
+                    keyboard = await self.draw_canvas(ctx, target_word, guesses)
+
+                    wordle_game = discord.File(canvas, filename = "wordle_game.png")
+                    wordle_keyboard = discord.File(keyboard, filename = "wordle_keyboard.png")
+                    await ctx.send(file = wordle_game)
+                    await ctx.send(file = wordle_keyboard)
 
         if target_word in guesses:
             victory_string = f"A winner is you! You guessed the word ***{target_word}***, earning you {int(win_amount)} {await bank.get_currency_name(ctx.guild)}."
 
             if streak >= 1:
-                victory_string = victory_string + f" Your streak is {str(streak + 1)} and your bonus is x{str(1 + (0.1 * (streak + 1)))}!"
+                victory_string = victory_string + f" Your streak is {str(streak + 1)} and your bonus is x{(1 + (0.25 * (streak + 1))):.2f}!"
 
             await ctx.send(victory_string)
             await self.config.member(ctx.author).total_wins.set(total_wins + 1)
@@ -90,6 +99,7 @@ class Wordle(commands.Cog):
                 await self.config.member(ctx.author).max_streak.set(streak + 1)
             try:
                 await bank.deposit_credits(ctx.author, win_amount)
+                await bank.deposit_credits(ctx.author, int(win_amount))
             except:
                 pass
         else:
@@ -105,6 +115,13 @@ class Wordle(commands.Cog):
         canvas_height = 420
         canvas_padding = 10
 
+        cell_border_width = 2
+        cell_gap = 5
+        cell_width = 62
+        cell_height = 62
+        cell_row_count = 6
+        cell_column_count = 5
+
         cell_bg = (0, 0, 0, 0)
         cell_white = (255, 255, 255, 255)
         cell_border = (121, 112, 99, 255)
@@ -118,13 +135,6 @@ class Wordle(commands.Cog):
         font_file = f"{bundled_data_path(self)}/HelveticaNeue.ttf"
         font_color = (208, 204, 198, 255)
         font = ImageFont.truetype(font_file, 32)
-
-        cell_border_width = 2
-        cell_gap = 5
-        cell_width = 62
-        cell_height = 62
-        cell_row_count = 6
-        cell_column_count = 5
 
         canvas = Image.new("RGBA", (canvas_width, canvas_height), cell_bg)
         frame = ImageDraw.Draw(canvas)
@@ -172,4 +182,61 @@ class Wordle(commands.Cog):
         file.seek(0)
         return file
 
+    async def draw_keyboard(self, ctx, target_word, guesses):
+        canvas_width = 500
+        canvas_height = 200
+        canvas_padding = 8
 
+        key_gap = 6
+        key_width = 43
+        key_height = 58
+
+        key_bg = (0, 0, 0, 0)
+        key_default = (129, 131, 132, 255)
+        key_grey = (58, 58, 60, 255)
+        key_yellow = (181, 159, 59, 255)
+        key_green = (83, 141, 78, 255)
+
+        keys = "qwertyuiopasdfghijklzxcvbnm"
+
+        font_file = f"{bundled_data_path(self)}/HelveticaNeue.ttf"
+        font_color = (208, 204, 198, 255)
+        font = ImageFont.truetype(font_file, 13.33333)
+
+        for key_index, keyboard_letter in enumerate(keys):
+            if key_index < 10:
+                top = key_index
+                start_x = canvas_padding + (key_width * top) + (key_gap * top)
+                start_y = 0
+            elif key_index >= 10 and key_index < 20:
+                mid = key_index - 10
+                start_x = canvas_padding + (key_width/2) + (key_width * mid) + (key_gap * mid)
+                start_y = key_height + key_gap
+            else:
+                bot = key_index - 20
+                start_x = canvas_padding + key_width + (key_width/2) + (key_width * bot) + (key_gap * bot)
+                start_y = (key_height * 2) + (key_gap * 2)
+
+            end_x = start_x + key_width
+            end_y = start_y + key_height
+
+            font_x = start_x + (key_width / 2)
+            font_y = start_y + (key_height / 2)
+
+            frame.rounded_rectangle([(start_x, start_y), (end_x, end_y)], radius = 4, fill = key_default)
+            frame.text(xy = (font_x, font_y), text = guesses[y][x].upper(), fill = font_color, font = font, anchor = "mm")
+
+            for guess in guesses:
+                for i, letter in enumerate(guess):
+                    if guess[i] not in target_word:
+                        frame.rounded_rectangle([(start_x, start_y), (end_x, end_y)], radius = 4, fill = key_grey)
+
+            for guess in guesses:
+                for i, letter in enumerate(guess):
+                    if guess[i] in target_word:
+                        frame.rounded_rectangle([(start_x, start_y), (end_x, end_y)], radius = 4, fill = key_yellow)
+
+            for guess in guesses:
+                for i, letter in enumerate(guess):
+                    if guess[i] == target_word[i]:
+                        frame.rounded_rectangle([(start_x, start_y), (end_x, end_y)], radius = 4, fill = key_green)
