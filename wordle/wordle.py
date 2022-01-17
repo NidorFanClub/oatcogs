@@ -50,13 +50,10 @@ class Wordle(commands.Cog):
 
         await self.config.member(ctx.author).played.set(played)
 
-        canvas = await self.draw_canvas(ctx, target_word, guesses)
-        keyboard = await self.draw_keyboard(ctx, target_word, guesses)
+        wordle_image = await self.draw_wordle(ctx, await self.draw_canvas(ctx, target_word, guesses), await self.draw_keyboard(ctx, target_word, guesses))
+        wordle_file = discord.File(wordle_game, filename = "wordle_game.png")
 
-        wordle_game = discord.File(canvas, filename = "wordle_game.png")
-        wordle_keyboard = discord.File(keyboard, filename = "wordle_keyboard.png")
-        await ctx.send("Welcome to Wordle! Type a five letter word to start. Type `stop` at any time to cancel the game.", file = wordle_game)
-        await ctx.send(file = wordle_keyboard)
+        await ctx.send("Welcome to Wordle! Type a five letter word to start. Type `stop` at any time to cancel the game.", file = wordle_file)
 
         while len(guesses) < 6 and target_word not in guesses:
             try:
@@ -74,13 +71,11 @@ class Wordle(commands.Cog):
                     await ctx.send("That doesn't seem to be a valid word. Please guess again.", delete_after = 5.0)
                 else:
                     guesses.append(guess.content.lower())
-                    canvas = await self.draw_canvas(ctx, target_word, guesses)
-                    keyboard = await self.draw_keyboard(ctx, target_word, guesses)
 
-                    wordle_game = discord.File(canvas, filename = "wordle_game.png")
-                    wordle_keyboard = discord.File(keyboard, filename = "wordle_keyboard.png")
-                    await ctx.send(file = wordle_game)
-                    await ctx.send(file = wordle_keyboard)
+                    wordle_image = await self.draw_wordle(ctx, await self.draw_canvas(ctx, target_word, guesses), await self.draw_keyboard(ctx, target_word, guesses))
+                    wordle_file = discord.File(wordle_game, filename = "wordle_game.png")
+
+                    await ctx.send(file = wordle_file)
 
         if target_word in guesses:
             victory_string = f"A winner is you! You guessed the word ***{target_word}***, earning you {int(win_amount)} {await bank.get_currency_name(ctx.guild)}."
@@ -104,6 +99,19 @@ class Wordle(commands.Cog):
 
     async def get_word(self):
         return random.choice(open(f"{bundled_data_path(self)}/words.txt").read().splitlines()).lower()
+
+    async def draw_wordle(self, ctx, canvas, keyboard):
+        keyboard.thumbnail(canvas.size)
+
+        img = Image.new("RGB", min(canvas.width, keyboard.width), canvas.height + keyboard.height)
+        img.paste(canvas, (0, 0))
+        img.paste(keyboard, (0, canvas.height))
+
+        file = BytesIO()
+        img.save(file, "PNG", quality = 100)
+        file.seek(0)
+
+        return file
 
     async def draw_canvas(self, ctx, target_word, guesses):
         canvas_width = 350
@@ -172,10 +180,7 @@ class Wordle(commands.Cog):
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_yellow)
                     frame.text(xy = (font_x, font_y), text = guesses[y][x].upper(), fill = font_color, font = font, anchor = "mm")
 
-        file = BytesIO()
-        canvas.save(file, "PNG", quality = 100)
-        file.seek(0)
-        return file
+        return canvas
 
     async def draw_keyboard(self, ctx, target_word, guesses):
         canvas_width = 500
@@ -198,14 +203,14 @@ class Wordle(commands.Cog):
         font_color = (208, 204, 198, 255)
         font = ImageFont.truetype(font_file, 14)
 
-        canvas = Image.new("RGBA", (canvas_width, canvas_height), key_bg)
-        frame = ImageDraw.Draw(canvas)
+        keyboard = Image.new("RGBA", (canvas_width, canvas_height), key_bg)
+        frame = ImageDraw.Draw(keyboard)
         
         for key_index, letter in enumerate(letters):
             if key_index < 10:
                 start_x = canvas_padding + (key_width * key_index) + (key_gap * key_index)
                 start_y = 0
-            elif key_index >= 10 and key_index < 20:
+            elif key_index >= 10 and key_index < 19:
                 start_x = canvas_padding + (key_width/2) + (key_width * (key_index - 10)) + (key_gap * (key_index - 10))
                 start_y = key_height + key_gap
             else:
@@ -236,7 +241,4 @@ class Wordle(commands.Cog):
                     if letter == guess_letter and guess[i] == target_word[i]:
                         frame.rounded_rectangle([(start_x, start_y), (end_x, end_y)], radius = 4, fill = key_green)
                         
-        file = BytesIO()
-        canvas.save(file, "PNG", quality = 100)
-        file.seek(0)
-        return file
+        return keyboard
