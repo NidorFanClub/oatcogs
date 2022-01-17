@@ -248,17 +248,6 @@ class Wordle(commands.Cog):
                         
         return canvas
 
-    async def draw_wordle(self, ctx, canvas, keyboard):
-        keyboard.thumbnail(canvas.size)
-
-        bg = (0, 0, 0, 0)
-
-        img = Image.new("RGBA", (min(canvas.width, keyboard.width), canvas.height + keyboard.height), bg)
-        img.paste(canvas, (0, 0))
-        img.paste(keyboard, (0, canvas.height))
-
-        return await self.save_image(img)
-
     async def draw_postgame(self, ctx, target_word, guesses):
         canvas_width = 500
         canvas_height = 444
@@ -294,7 +283,18 @@ class Wordle(commands.Cog):
         frame = ImageDraw.Draw(canvas)
         frame.rounded_rectangle([(0, 0), (canvas_width, canvas_height)], radius = 8, fill = frame_bg)
 
-        return await self.save_image(canvas)
+        return canvas
+
+    async def draw_wordle(self, ctx, canvas, keyboard):
+        keyboard.thumbnail(canvas.size)
+
+        bg = (0, 0, 0, 0)
+
+        img = Image.new("RGBA", (min(canvas.width, keyboard.width), canvas.height + keyboard.height), bg)
+        img.paste(canvas, (0, 0))
+        img.paste(keyboard, (0, canvas.height))
+
+        return await self.save_image(img)
 
     async def save_image(self, img):
         file = BytesIO()
