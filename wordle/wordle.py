@@ -322,7 +322,7 @@ class Wordle(commands.Cog):
 
         frame.rounded_rectangle([(0, 0), (canvas_width, canvas_height)], radius = 14, fill = frame_bg, width = 1, outline = frame_border)
 
-        frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height / 2)), text = "STATISTICS", fill = text_color, font = header, anchor = "mm")
+        frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height / 2)), text = f"{member.name}'S STATISTICS", fill = text_color, font = header, anchor = "mm")
 
         frame.text(xy = ((canvas_width / 2 - 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.humanize_int(played)}", fill = text_color, font = statistic_value, anchor = "mm")
         frame.text(xy = ((canvas_width / 2 - statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{100 * (total_wins / played):.0f}", fill = text_color, font = statistic_value, anchor = "mm")
