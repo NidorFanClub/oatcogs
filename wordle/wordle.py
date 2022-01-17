@@ -285,6 +285,7 @@ class Wordle(commands.Cog):
         header = ImageFont.truetype(HelveticaNeueBold, 17)
         statistic_value = ImageFont.truetype(HelveticaNeue, 36)
         statistic_label = ImageFont.truetype(HelveticaNeue, 12)
+        graph_label = ImageFont.truetype(HelveticaNeue, 14)
 
         canvas = Image.new("RGBA", (canvas_width, canvas_height), blank_bg)
         frame = ImageDraw.Draw(canvas)
@@ -305,13 +306,12 @@ class Wordle(commands.Cog):
 
         frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height + statistics_height + heading_height / 2)), text = "GUESS DISTRIBUTION", fill = text_color, font = header, anchor = "mm")
 
-        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 0 * graph_padding + 0 * graph_label_height)), text = "1", fill = text_color, font = header, anchor = "la")
-        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 1 * graph_padding + 1 * graph_label_height)), text = "2", fill = text_color, font = header, anchor = "la")
-        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 2 * graph_padding + 2 * graph_label_height)), text = "2", fill = text_color, font = header, anchor = "la")
-        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 3 * graph_padding + 3 * graph_label_height)), text = "2", fill = text_color, font = header, anchor = "la")
-        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 4 * graph_padding + 4 * graph_label_height)), text = "2", fill = text_color, font = header, anchor = "la")
-        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 5 * graph_padding + 5 * graph_label_height)), text = "2", fill = text_color, font = header, anchor = "la")
-        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 6 * graph_padding + 6 * graph_label_height)), text = "2", fill = text_color, font = header, anchor = "la")
+        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 0 * graph_padding + 0 * graph_label_height)), text = "1", fill = text_color, font = graph_label, anchor = "la")
+        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 1 * graph_padding + 1 * graph_label_height)), text = "2", fill = text_color, font = graph_label, anchor = "la")
+        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 2 * graph_padding + 2 * graph_label_height)), text = "3", fill = text_color, font = graph_label, anchor = "la")
+        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 3 * graph_padding + 3 * graph_label_height)), text = "4", fill = text_color, font = graph_label, anchor = "la")
+        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 4 * graph_padding + 4 * graph_label_height)), text = "5", fill = text_color, font = graph_label, anchor = "la")
+        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 5 * graph_padding + 5 * graph_label_height)), text = "6", fill = text_color, font = graph_label, anchor = "la")
 
         return canvas
 
