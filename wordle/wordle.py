@@ -341,7 +341,10 @@ class Wordle(commands.Cog):
             max_guess_amount = max(guess_amounts)
 
         for i, guess_amount in enumerate(guess_amounts):
-            percent_of_max = guess_amount / max_guess_amount
+            if max_guess_amount is not 0:
+                percent_of_max = guess_amount / max_guess_amount
+            else:
+                percent_of_max = 0
 
             graph_label_x = canvas_width / 2 - graph_width / 2
             graph_label_y = 2 * canvas_padding + 2 * heading_height + statistics_height + statistics_padding / 2 + i * graph_padding + i * graph_label_height
