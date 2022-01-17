@@ -55,8 +55,11 @@ class Wordle(commands.Cog):
             except asyncio.TimeoutError:
                 break
             else:
-                if guess.content.lower() == "stop":
-                    await guess.tick()
+                if guess.content.lower() == "stop" or guess.content.lower() == ".stop":
+                    try:
+                        await guess.delete()
+                    except:
+                        pass
                     break
                 elif (len(guess.content) != 5):
                     await ctx.send("Your guess must be exactly 5 characters long.", delete_after = 4.0)
