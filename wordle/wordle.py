@@ -325,7 +325,7 @@ class Wordle(commands.Cog):
                 graph_bar_start_y = graph_label_y
                 graph_bar_end_x = max(graph_bar_start_x + graph_bar_min, graph_bar_start_x + percent_of_max * graph_bar_width)
                 graph_bar_end_y = graph_bar_start_y + graph_label_height - 2
-                graph_bar_label_x = (graph_bar_start_x + graph_bar_end_x) / 2
+                graph_bar_label_x = graph_bar_end_x - graph_padding * 3
 
                 frame.text(xy = (graph_label_x, graph_label_y), text = str(i + 1), fill = text_color, font = graph_label)
 
