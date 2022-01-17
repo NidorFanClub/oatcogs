@@ -334,7 +334,7 @@ class Wordle(commands.Cog):
                 else:
                     frame.rectangle([(graph_bar_start_x, graph_bar_start_y), (graph_bar_end_x, graph_bar_end_y)], grey_bar)
 
-                frame.text(xy = (graph_bar_label_x, graph_label_y), text = str(i + 1), fill = text_color, font = graph_bar_label, anchor = "mm")
+                frame.text(xy = (graph_bar_label_x, graph_label_y), text = str(i + 1), fill = text_color, font = graph_bar_label, anchor = "ma")
 
         return canvas
 
