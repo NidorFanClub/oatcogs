@@ -379,7 +379,7 @@ class Wordle(commands.Cog):
             magnitude += 1
             num /= 1000.0
 
-        return f"{"{num:f}".rstrip('0').rstrip('.')}{['', 'K', 'M', 'B', 'T'][magnitude]}"
+        return f"{num:f.rstrip('0').rstrip('.')}{['', 'K', 'M', 'B', 'T'][magnitude]}"
 
     @commands.command()
     @commands.guild_only()
