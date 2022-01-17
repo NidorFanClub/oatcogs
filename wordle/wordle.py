@@ -41,7 +41,6 @@ class Wordle(commands.Cog):
 
         guesses = []
 
-        await ctx.send("Welcome to Wordle! Type a five letter word to start. Type `stop` at any time to cancel the game.")
 
         played = await self.config.member(ctx.author).played() + 1
         total_wins = await self.config.member(ctx.author).total_wins()
@@ -56,7 +55,7 @@ class Wordle(commands.Cog):
 
         wordle_game = discord.File(canvas, filename = "wordle_game.png")
         wordle_keyboard = discord.File(keyboard, filename = "wordle_keyboard.png")
-        await ctx.send(file = wordle_game)
+        await ctx.send("Welcome to Wordle! Type a five letter word to start. Type `stop` at any time to cancel the game.", file = wordle_game)
         await ctx.send(file = wordle_keyboard)
 
         while len(guesses) < 6 and target_word not in guesses:
@@ -193,7 +192,7 @@ class Wordle(commands.Cog):
         key_yellow = (181, 159, 59, 255)
         key_green = (83, 141, 78, 255)
 
-        keys = "qwertyuiopasdfghijklzxcvbnm"
+        letters = "qwertyuiopasdfghijklzxcvbnm"
 
         font_file = f"{bundled_data_path(self)}/HelveticaNeue.ttf"
         font_color = (208, 204, 198, 255)
@@ -202,18 +201,16 @@ class Wordle(commands.Cog):
         canvas = Image.new("RGBA", (canvas_width, canvas_height), key_bg)
         frame = ImageDraw.Draw(canvas)
         
-        for key_index, keyboard_letter in enumerate(keys):
+        for key_index, keyboard_letter in enumerate(letters):
+            print(f"Enumerating new key {keyboard_letter}")
             if key_index < 10:
-                top = key_index
-                start_x = canvas_padding + (key_width * top) + (key_gap * top)
+                start_x = canvas_padding + (key_width * key_index) + (key_gap * key_index)
                 start_y = 0
             elif key_index >= 10 and key_index < 20:
-                mid = key_index - 10
-                start_x = canvas_padding + (key_width/2) + (key_width * mid) + (key_gap * mid)
+                start_x = canvas_padding + (key_width/2) + (key_width * key_index - 10) + (key_gap * key_index - 10)
                 start_y = key_height + key_gap
             else:
-                bot = key_index - 20
-                start_x = canvas_padding + key_width + (key_width/2) + (key_width * bot) + (key_gap * bot)
+                start_x = canvas_padding + key_width + (key_width/2) + (key_width * key_index - 20) + (key_gap * key_index - 20)
                 start_y = (key_height * 2) + (key_gap * 2)
 
             end_x = start_x + key_width
