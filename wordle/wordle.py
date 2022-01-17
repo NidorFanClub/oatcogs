@@ -58,9 +58,9 @@ class Wordle(commands.Cog):
                 if guess.content.lower() == "stop":
                     break
                 elif (len(guess.content) != 5):
-                    await ctx.send("Your guess must be exactly 5 characters long.", delete_after = 5.0)
+                    await ctx.send("Your guess must be exactly 5 characters long.", delete_after = 4.0)
                 elif guess.content.lower() not in open(f"{bundled_data_path(self)}/valid_guesses.txt").read() and guess.content.lower() not in open(f"{bundled_data_path(self)}/words.txt").read():
-                    await ctx.send("That doesn't seem to be a valid word. Please guess again.", delete_after = 5.0)
+                    await ctx.send("That doesn't seem to be a valid word. Please guess again.", delete_after = 4.0)
                 else:
                     guesses.append(guess.content.lower())
 
@@ -341,7 +341,7 @@ class Wordle(commands.Cog):
 
             frame.text(xy = (graph_bar_label_x, graph_label_y), text = str(guess_amount), fill = text_color, font = graph_bar_label, anchor = "ma")
 
-        frame.line(xy = ([(2 * canvas_padding + economy_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + economy_padding, 2 * canvas_padding + economy_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + economy_padding + economy_height)]), fill = text_color, width = 1)
+        frame.line(xy = ([(2 * canvas_padding + economy_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + economy_padding), (2 * canvas_padding + economy_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + economy_padding + economy_height)]), fill = text_color, width = 1)
 
         frame.text(xy = (2 * canvas_padding + economy_label_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + economy_padding + heading_height / 2), text = f"EARNED {str(await bank.get_currency_name(member.guild)).upper()}", fill = text_color, font = header, anchor = "mm")
 
