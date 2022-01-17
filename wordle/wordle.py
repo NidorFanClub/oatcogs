@@ -53,11 +53,11 @@ class Wordle(commands.Cog):
                 guess = await self.bot.wait_for("message", check = MessagePredicate.same_context(ctx), timeout = 300.0)
             except asyncio.TimeoutError:
                 await ctx.send(f"Stopping game. The word was ***{target_word}***. Goodbye!")
-                return
+                break
             else:
                 if guess.content.lower() == "stop":
                     await ctx.send(f"It was nice playing with you. The word was ***{target_word}***. Goodbye!")
-                    return
+                    break
                 elif (len(guess.content) != 5):
                     await ctx.send("Your guess must be exactly 5 characters long.", delete_after = 5.0)
                 elif guess.content.lower() not in open(f"{bundled_data_path(self)}/valid_guesses.txt").read() and guess.content.lower() not in open(f"{bundled_data_path(self)}/words.txt").read():
@@ -81,7 +81,6 @@ class Wordle(commands.Cog):
 
             async with self.config.member(ctx.author).guess_distribution() as guess_distribution:
                 guess_distribution[len(guesses)] += 1
-
 
             if streak > max_streak:
                 await self.config.member(ctx.author).max_streak.set(streak)
@@ -117,21 +116,6 @@ class Wordle(commands.Cog):
     async def get_word(self):
         return random.choice(open(f"{bundled_data_path(self)}/words.txt").read().splitlines()).lower()
 
-    async def draw_wordle(self, ctx, canvas, keyboard):
-        keyboard.thumbnail(canvas.size)
-
-        bg = (0, 0, 0, 0)
-
-        img = Image.new("RGBA", (min(canvas.width, keyboard.width), canvas.height + keyboard.height), bg)
-        img.paste(canvas, (0, 0))
-        img.paste(keyboard, (0, canvas.height))
-
-        file = BytesIO()
-        img.save(file, "PNG", quality = 100)
-        file.seek(0)
-
-        return file
-
     async def draw_canvas(self, ctx, target_word, guesses):
         canvas_width = 350
         canvas_height = 420
@@ -154,9 +138,10 @@ class Wordle(commands.Cog):
         cell_discord_dark = (41, 43, 47, 255)
         cell_discord_grey = (47, 49, 54, 255)
 
-        font_file = f"{bundled_data_path(self)}/HelveticaNeue.ttf"
-        font_color = (208, 204, 198, 255)
-        font = ImageFont.truetype(font_file, 32)
+        text_color = (208, 204, 198, 255)
+
+        HelveticaNeueBold = f"{bundled_data_path(self)}/HelveticaNeueBold.ttf"
+        bold = ImageFont.truetype(HelveticaNeueBold, 32)
 
         canvas = Image.new("RGBA", (canvas_width, canvas_height), cell_bg)
         frame = ImageDraw.Draw(canvas)
@@ -182,7 +167,7 @@ class Wordle(commands.Cog):
                     if guesses[y][x] == letter:
                         answer = ''.join(answer.split(letter, 1))
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_green)
-                    frame.text(xy = (font_x, font_y), text = guesses[y][x].upper(), fill = font_color, font = font, anchor = "mm")
+                    frame.text(xy = (font_x, font_y), text = guesses[y][x].upper(), fill = text_color, font = bold, anchor = "mm")
 
             for x, letter in enumerate(cell_row):
                 start_x = canvas_padding + (cell_width * x) + (cell_gap * x)
@@ -197,7 +182,7 @@ class Wordle(commands.Cog):
                     if guesses[y][x] in answer and guesses[y][x] != letter:
                         answer = ''.join(answer.split(guesses[y][x], 1))
                         frame.rectangle([(start_x, start_y), (end_x, end_y)], cell_yellow)
-                    frame.text(xy = (font_x, font_y), text = guesses[y][x].upper(), fill = font_color, font = font, anchor = "mm")
+                    frame.text(xy = (font_x, font_y), text = guesses[y][x].upper(), fill = text_color, font = bold, anchor = "mm")
 
         return canvas
 
@@ -216,14 +201,15 @@ class Wordle(commands.Cog):
         key_yellow = (181, 159, 59, 255)
         key_green = (83, 141, 78, 255)
 
+        text_color = (208, 204, 198, 255)
+
         letters = "qwertyuiopasdfghjklzxcvbnm"
 
-        font_file = f"{bundled_data_path(self)}/HelveticaNeue.ttf"
-        font_color = (208, 204, 198, 255)
-        font = ImageFont.truetype(font_file, 14)
+        HelveticaNeueBold = f"{bundled_data_path(self)}/HelveticaNeueBold.ttf"
+        bold = ImageFont.truetype(HelveticaNeueBold, 14)
 
-        keyboard = Image.new("RGBA", (canvas_width, canvas_height), key_bg)
-        frame = ImageDraw.Draw(keyboard)
+        canvas = Image.new("RGBA", (canvas_width, canvas_height), key_bg)
+        frame = ImageDraw.Draw(canvas)
         
         for key_index, letter in enumerate(letters):
             if key_index < 10:
@@ -259,6 +245,69 @@ class Wordle(commands.Cog):
                     if letter == guess_letter and guess[i] == target_word[i]:
                         frame.rounded_rectangle([(start_x, start_y), (end_x, end_y)], radius = 4, fill = key_green)
 
-            frame.text(xy = (font_x, font_y), text = letter.upper(), fill = font_color, font = font, anchor = "mm")
+            frame.text(xy = (font_x, font_y), text = letter.upper(), fill = text_color, font = bold, anchor = "mm")
                         
-        return keyboard
+        return canvas
+
+    async def draw_wordle(self, ctx, canvas, keyboard):
+        keyboard.thumbnail(canvas.size)
+
+        bg = (0, 0, 0, 0)
+
+        img = Image.new("RGBA", (min(canvas.width, keyboard.width), canvas.height + keyboard.height), bg)
+        img.paste(canvas, (0, 0))
+        img.paste(keyboard, (0, canvas.height))
+
+        return await self.save_image(img)
+
+    async def draw_postgame(self, ctx, target_word, guesses):
+        canvas_width = 500
+        canvas_height = 444
+        canvas_padding = 16
+
+        statistics_width = 349
+        statistics_height = 66
+
+        statistic_label_width = 87
+        statistic_label_height = 14
+
+        graph_width = 373
+        graph_height = 154
+
+        economy_height = 233
+        economy_width = 81
+
+        heading_height = 18
+
+        blank_bg = (0, 0, 0, 0)
+        frame_bg = (26, 26, 27, 255)
+
+        text_color = (208, 204, 198, 255)
+
+        HelveticaNeueBold = f"{bundled_data_path(self)}/HelveticaNeueBold.ttf"
+        HelveticaNeue = f"{bundled_data_path(self)}/HelveticaNeue.ttf"
+
+        header = ImageFont.truetype(HelveticaNeueBold, 16)
+        statistic_value = ImageFont.truetype(HelveticaNeue, 36)
+        statistic_label = ImageFont.truetype(HelveticaNeue, 12)
+
+        canvas = Image.new("RGBA", (canvas_width, canvas_height), blank_bg)
+        frame = ImageDraw.Draw(canvas)
+        frame.rounded_rectangle([(0, 0), (canvas_width, canvas_height)], radius = 8, fill = frame_bg)
+
+        return await self.save_image(ctx, canvas)
+
+    async def save_image(self, img):
+        file = BytesIO()
+        img.save(file, "PNG", quality = 100)
+        file.seek(0)
+        return file
+
+    @commands.command()
+    @commands.guild_only()
+    async def wordleprofile(self, ctx):
+        img = await self.save_image(self.draw_postgame(ctx, None, None))
+
+        img_file = discord.File(img, filename = "profile.png")
+
+        await ctx.send(file = img_file)
