@@ -79,7 +79,7 @@ class Wordle(commands.Cog):
             await self.config.member(ctx.author).streak.set(streak)
 
             async with self.config.member(ctx.author).guess_distribution() as guess_distribution:
-                guess_distribution[len(guesses)] += 1
+                guess_distribution[str(len(guesses))] += 1
 
             if streak > max_streak:
                 await self.config.member(ctx.author).max_streak.set(streak)
