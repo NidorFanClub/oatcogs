@@ -196,7 +196,7 @@ class Wordle(commands.Cog):
 
         font_file = f"{bundled_data_path(self)}/HelveticaNeue.ttf"
         font_color = (208, 204, 198, 255)
-        font = ImageFont.truetype(font_file, 13)
+        font = ImageFont.truetype(font_file, 14)
 
         canvas = Image.new("RGBA", (canvas_width, canvas_height), key_bg)
         frame = ImageDraw.Draw(canvas)
@@ -206,10 +206,10 @@ class Wordle(commands.Cog):
                 start_x = canvas_padding + (key_width * key_index) + (key_gap * key_index)
                 start_y = 0
             elif key_index >= 10 and key_index < 20:
-                start_x = canvas_padding + (key_width/2) + (key_width * key_index - 10) + (key_gap * key_index - 10)
+                start_x = canvas_padding + (key_width/2) + (key_width * (key_index - 10)) + (key_gap * (key_index - 10))
                 start_y = key_height + key_gap
             else:
-                start_x = canvas_padding + key_width + (key_width/2) + (key_width * key_index - 20) + (key_gap * key_index - 20)
+                start_x = canvas_padding + key_width + (key_width/2) + (key_width * (key_index - 20)) + (key_gap * (key_index - 20))
                 start_y = (key_height * 2) + (key_gap * 2)
 
             end_x = start_x + key_width
