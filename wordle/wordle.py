@@ -283,8 +283,8 @@ class Wordle(commands.Cog):
         frame = ImageDraw.Draw(canvas)
         frame.rounded_rectangle([(0, 0), (canvas_width, canvas_height)], radius = 25, fill = frame_bg)
 
-        frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height)), text = "STATISTICS", fill = text_color, font = bold, anchor = "mm")
-        frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + statistics_height + 2 * heading_height)), text = "GUESS DISTRIBUTION", fill = text_color, font = bold, anchor = "mm")
+        frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height)), text = "STATISTICS", fill = text_color, font = header, anchor = "mm")
+        frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + statistics_height + 2 * heading_height)), text = "GUESS DISTRIBUTION", fill = text_color, font = header, anchor = "mm")
 
         return canvas
 
