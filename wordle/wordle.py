@@ -103,7 +103,7 @@ class Wordle(commands.Cog):
     async def draw_wordle(self, ctx, canvas, keyboard):
         keyboard.thumbnail(canvas.size)
 
-        img = Image.new("RGB", min(canvas.width, keyboard.width), canvas.height + keyboard.height)
+        img = Image.new("RGB", (min(canvas.width, keyboard.width), canvas.height + keyboard.height))
         img.paste(canvas, (0, 0))
         img.paste(keyboard, (0, canvas.height))
 
