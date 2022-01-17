@@ -9,6 +9,7 @@ import discord.utils
 import discord.ext
 import discord
 import random
+import typing
 import os
 import re
 
@@ -129,7 +130,7 @@ class Wordle(commands.Cog):
 
     @commands.command()
     @commands.guild_only()
-    async def wordlestats(self, ctx, member: discord.Member):
+    async def wordlestats(self, ctx, member: typing.Optional[discord.Member]):
         if not member:
             member = ctx.author
 
