@@ -263,6 +263,10 @@ class Wordle(commands.Cog):
 
         graph_width = 373
         graph_height = 154
+        graph_padding = 4
+
+        graph_label_width = 8
+        graph_label_height = 20
 
         economy_height = 233
         economy_width = 81
@@ -288,7 +292,6 @@ class Wordle(commands.Cog):
         frame.rounded_rectangle([(0, 0), (canvas_width, canvas_height)], radius = 16, fill = frame_bg, width = 1, outline = frame_border)
 
         frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height / 2)), text = "STATISTICS", fill = text_color, font = header, anchor = "mm")
-        frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height + statistics_height + statistics_padding + heading_height / 2)), text = "GUESS DISTRIBUTION", fill = text_color, font = header, anchor = "mm")
 
         frame.text(xy = ((canvas_width / 2 - 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.config.member(member).played()}", fill = text_color, font = statistic_value, anchor = "mm")
         frame.text(xy = ((canvas_width / 2 - statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{100 * (await self.config.member(member).total_wins() / await self.config.member(member).played()):.0f}", fill = text_color, font = statistic_value, anchor = "mm")
@@ -299,6 +302,16 @@ class Wordle(commands.Cog):
         frame.text(xy = ((canvas_width / 2 - statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height + statistic_label_height / 2)), text = "Win %", fill = text_color, font = statistic_label, anchor = "mm")
         frame.text(xy = ((canvas_width / 2 + statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height + statistic_label_height / 2)), text = "Current Streak", fill = text_color, font = statistic_label, anchor = "mm")
         frame.text(xy = ((canvas_width / 2 + 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height + statistic_label_height / 2)), text = "Max Streak", fill = text_color, font = statistic_label, anchor = "mm")
+
+        frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height + statistics_height + heading_height / 2)), text = "GUESS DISTRIBUTION", fill = text_color, font = header, anchor = "mm")
+
+        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 0 * graph_padding + 0 * graph_label_height)), text = "1", fill = text_color, font = header, anchor = "la")
+        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 1 * graph_padding + 1 * graph_label_height)), text = "2", fill = text_color, font = header, anchor = "la")
+        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 2 * graph_padding + 2 * graph_label_height)), text = "2", fill = text_color, font = header, anchor = "la")
+        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 3 * graph_padding + 3 * graph_label_height)), text = "2", fill = text_color, font = header, anchor = "la")
+        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 4 * graph_padding + 4 * graph_label_height)), text = "2", fill = text_color, font = header, anchor = "la")
+        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 5 * graph_padding + 5 * graph_label_height)), text = "2", fill = text_color, font = header, anchor = "la")
+        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 6 * graph_padding + 6 * graph_label_height)), text = "2", fill = text_color, font = header, anchor = "la")
 
         return canvas
 
