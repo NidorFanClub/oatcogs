@@ -350,7 +350,7 @@ class Wordle(commands.Cog):
 
         frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + heading_height / 2), text = f"EARNED {str(await bank.get_currency_name(member.guild)).upper()}", fill = text_color, font = header, anchor = "mm")
 
-        frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"{await self.humanize_int(earned)}", fill = text_color, font = statistic_value, anchor = "mm")
+        frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"500", fill = text_color, font = statistic_value, anchor = "mm")
 
         return canvas
 
@@ -372,6 +372,9 @@ class Wordle(commands.Cog):
         return file
 
     async def humanize_int(self, num):
+        if not num:
+            return
+
         num = float(f"{num:.3g}")
         magnitude = 0
 
