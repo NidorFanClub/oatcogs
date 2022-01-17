@@ -134,6 +134,8 @@ class Wordle(commands.Cog):
         if not member:
             member = ctx.author
 
+        await self.get_rank(member)
+
         profile_image = await self.save_image(await self.draw_profile(ctx, member))
         profile_file = discord.File(profile_image, filename = "profile.png")
         await ctx.send(file = profile_file)
@@ -426,3 +428,14 @@ class Wordle(commands.Cog):
             num /= 1000.0
 
         return "{}{}".format("{:f}".format(num).rstrip('0').rstrip('.'), ['', 'k', 'm', 'b', 't'][magnitude])
+
+    async def get_rank(self, member):
+        members = await self.config.all_members(ctx.guild)
+        members = {ctx.guild.get_member(u): d for u, d in members.items()}
+        members.pop(None, None)
+
+        items = members.items()
+
+        leaderboard = sorted(members.items(), key=lambda x: x[1]["total_wins"], reverse=True)
+
+        print(leaderboard, flush = True)
