@@ -294,7 +294,7 @@ class Wordle(commands.Cog):
         heading_height = 38
 
         blank_bg = (0, 0, 0, 0)
-        frame_bg = (58, 58, 60, 255)
+        frame_bg = (44, 48, 50, 255)
         frame_border = (26, 26, 27, 255)
 
         green_bar = (83, 141, 78, 255)
