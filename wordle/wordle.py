@@ -311,15 +311,13 @@ class Wordle(commands.Cog):
         frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height + statistics_height + heading_height / 2)), text = "GUESS DISTRIBUTION", fill = text_color, font = header, anchor = "mm")
 
         async with self.config.member(member).guess_distribution() as guess_distribution:
-            max_guess = max(guess_distribution, key = guess_distribution.get)
-            max_guess_value = guess_distribution[max_guess]
-
             guess_amounts = list(guess_distribution.values())
+            max_guess_amount = max(guess_amounts)
 
             print(guess_amounts, flush = True)
 
             for i, guess_amount in enumerate(guess_amounts):
-                percent_of_max = guess_amount / max_guess_value
+                percent_of_max = guess_amount / max_guess_amount
 
                 graph_label_x = canvas_width / 2 - graph_width / 2
                 graph_label_y = 2 * canvas_padding + 2 * heading_height + statistics_height
