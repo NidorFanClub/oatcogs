@@ -116,7 +116,7 @@ class Wordle(commands.Cog):
             win_amount = 0
             multiplier = 0
 
-        summary_image = await self.draw_profile(ctx, ctx.author, target_word, guesses, win_amount, multiplier)
+        summary_image = await self.draw_wordle(ctx, await self.draw_canvas(ctx, target_word, guesses), await self.draw_profile(ctx, ctx.author, target_word, guesses, win_amount, multiplier))
         summary_file = discord.File(summary_image, filename = "summary.png")
         await ctx.send(file = summary_file)
 
@@ -302,6 +302,7 @@ class Wordle(commands.Cog):
 
         header = ImageFont.truetype(HelveticaNeueBold, 17)
         statistic_value = ImageFont.truetype(HelveticaNeue, 36)
+        statistic_value_bold = ImageFont.truetype(HelveticaNeueBold, 36)
         statistic_label = ImageFont.truetype(HelveticaNeue, 12)
         graph_label = ImageFont.truetype(HelveticaNeue, 14)
         graph_bar_label = ImageFont.truetype(HelveticaNeueBold, 14)
@@ -366,20 +367,20 @@ class Wordle(commands.Cog):
         frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + heading_height / 2), text = f"THE WORD WAS", fill = text_color, font = header, anchor = "mm")
 
         if target_word in guesses:
-            frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"{target_word}", fill = green_bar, font = statistic_value, anchor = "mm")
+            frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"{target_word.upper()}", fill = green_bar, font = statistic_value_bold, anchor = "mm")
         else:
-            frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"{target_word}", fill = text_color, font = statistic_value, anchor = "mm")
+            frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"{target_word.upper()}", fill = text_color, font = statistic_value_bold, anchor = "mm")
 
-        return await self.save_image(canvas)
+        return canvas
 
-    async def draw_wordle(self, ctx, canvas, keyboard):
-        keyboard.thumbnail(canvas.size)
+    async def draw_wordle(self, ctx, canvas, combine):
+        combine.thumbnail(canvas.size)
 
         bg = (0, 0, 0, 0)
 
-        img = Image.new("RGBA", (min(canvas.width, keyboard.width), canvas.height + keyboard.height), bg)
+        img = Image.new("RGBA", (min(canvas.width, combine.width), canvas.height + combine.height), bg)
         img.paste(canvas, (0, 0))
-        img.paste(keyboard, (0, canvas.height))
+        img.paste(combine, (0, canvas.height))
 
         return await self.save_image(img)
 
@@ -400,4 +401,4 @@ class Wordle(commands.Cog):
             magnitude += 1
             num /= 1000.0
 
-        return "{}{}".format("{:f}".format(num).rstrip('0').rstrip('.'), ['', 'K', 'M', 'B', 'T'][magnitude])
+        return "{}{}".format("{:f}".format(num).rstrip('0').rstrip('.'), ['', 'k', 'm', 'b', 't'][magnitude])
