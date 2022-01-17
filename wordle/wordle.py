@@ -250,7 +250,7 @@ class Wordle(commands.Cog):
                         
         return canvas
 
-    async def draw_postgame(self, target_word = None, guesses = None, earned = None, member: discord.Member):
+    async def draw_postgame(self, member: discord.Member, target_word = None, guesses = None, earned = None):
         canvas_width = 500
         canvas_height = 444
         canvas_padding = 16
@@ -310,10 +310,10 @@ class Wordle(commands.Cog):
 
         frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height / 2)), text = "STATISTICS", fill = text_color, font = header, anchor = "mm")
 
-        frame.text(xy = ((canvas_width / 2 - 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{humanize_int(played)}", fill = text_color, font = statistic_value, anchor = "mm")
+        frame.text(xy = ((canvas_width / 2 - 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await humanize_int(played)}", fill = text_color, font = statistic_value, anchor = "mm")
         frame.text(xy = ((canvas_width / 2 - statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{100 * (total_wins / played):.0f}", fill = text_color, font = statistic_value, anchor = "mm")
-        frame.text(xy = ((canvas_width / 2 + statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{streak}", fill = text_color, font = statistic_value, anchor = "mm")
-        frame.text(xy = ((canvas_width / 2 + 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{max_streak}", fill = text_color, font = statistic_value, anchor = "mm")
+        frame.text(xy = ((canvas_width / 2 + statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await humanize_int(streak)}", fill = text_color, font = statistic_value, anchor = "mm")
+        frame.text(xy = ((canvas_width / 2 + 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await humanize_int(max_streak)}", fill = text_color, font = statistic_value, anchor = "mm")
 
         frame.text(xy = ((canvas_width / 2 - 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height + statistic_label_height / 2)), text = "Played", fill = text_color, font = statistic_label, anchor = "mm")
         frame.text(xy = ((canvas_width / 2 - statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height + statistic_label_height / 2)), text = "Win %", fill = text_color, font = statistic_label, anchor = "mm")
@@ -384,7 +384,7 @@ class Wordle(commands.Cog):
     @commands.command()
     @commands.guild_only()
     async def wordleprofile(self, ctx):
-        img = await self.save_image(await self.draw_postgame(None, None, ctx.author))
+        img = await self.save_image(await self.draw_postgame(ctx.author))
 
         img_file = discord.File(img, filename = "profile.png")
 
