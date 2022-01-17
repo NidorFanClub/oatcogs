@@ -85,6 +85,8 @@ class Wordle(commands.Cog):
             if await self.config.guild(ctx.guild).TURN_MULTIPLIER():
                 multiplier += (1 / (len(guesses) / 6))
 
+            win_amount = base_amount * multiplier
+
             victory_string = f"A winner is you! You guessed the word ***{target_word}***, earning you {int(win_amount)} {await bank.get_currency_name(ctx.guild)}."
 
             if streak >= 1 and await self.config.guild(ctx.guild).STREAKS():
