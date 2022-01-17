@@ -22,7 +22,7 @@ class Wordle(commands.Cog):
     """Wordle -- now in Discord!"""
 
     default_guild_settings = {"WIN_AMOUNT": 500, "MULTIPLIER": True, "STREAKS": True, "TURN_MULTIPLIER": True}
-    default_member_settings = {"played": 0, "total_wins": 0, "streak": 0, "max_streak": 0}
+    default_member_settings = {"played": 0, "total_wins": 0, "streak": 0, "max_streak": 0, "guess_distribution": {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0}}
 
     def __init__(self, bot):
         self.bot = bot
@@ -41,13 +41,7 @@ class Wordle(commands.Cog):
 
         guesses = []
 
-
-        played = await self.config.member(ctx.author).played() + 1
-        total_wins = await self.config.member(ctx.author).total_wins()
-        streak = await self.config.member(ctx.author).streak()
-        max_streak = await self.config.member(ctx.author).max_streak()
-
-        await self.config.member(ctx.author).played.set(played)
+        await self.config.member(ctx.author).played.set(await self.config.member(ctx.author).played() + 1)
 
         wordle_image = await self.draw_wordle(ctx, await self.draw_canvas(ctx, target_word, guesses), await self.draw_keyboard(ctx, target_word, guesses))
         wordle_file = discord.File(wordle_image, filename = "wordle_game.png")
@@ -78,11 +72,23 @@ class Wordle(commands.Cog):
 
         if target_word in guesses:
             base_amount = await self.config.guild(ctx.guild).WIN_AMOUNT()
+            streak = await self.config.member(ctx.author).streak() + 1
+            total_wins = await self.config.member(ctx.author).total_wins() + 1
+            max_streak = await self.config.member(ctx.author).max_streak()
+
+            await self.config.member(ctx.author).total_wins.set(total_wins)
+            await self.config.member(ctx.author).streak.set(streak)
+
+            async with self.config.member(ctx.author).guess_distribution() as guess_distribution:
+                guess_distribution[len(guesses)] += 1
+
+
+            if streak > max_streak:
+                await self.config.member(ctx.author).max_streak.set(streak)
 
             if await self.config.guild(ctx.guild).MULTIPLIER():
                 multiplier = 0
                 if await self.config.guild(ctx.guild).STREAKS():
-                    streak += 1
                     await self.config.member(ctx.author).streak.set(streak)
                     multiplier += (0.5 * (streak))
                 if await self.config.guild(ctx.guild).TURN_MULTIPLIER():
@@ -94,14 +100,11 @@ class Wordle(commands.Cog):
 
             victory_string = f"A winner is you! You guessed the word ***{target_word}***, earning you {int(win_amount)} {await bank.get_currency_name(ctx.guild)}."
 
-            if streak >= 1 and await self.config.guild(ctx.guild).STREAKS():
+            if streak > 1 and await self.config.guild(ctx.guild).STREAKS():
                 victory_string += f" Your streak is {str(streak)} and your bonus multiplier is **x{multiplier:.2f}**!"
 
             await ctx.send(victory_string)
-            await self.config.member(ctx.author).total_wins.set(total_wins + 1)
-            await self.config.member(ctx.author).streak.set(streak + 1)
-            if streak + 1 > max_streak:
-                await self.config.member(ctx.author).max_streak.set(streak + 1)
+
             try:
                 await bank.deposit_credits(ctx.author, int(win_amount))
             except:
