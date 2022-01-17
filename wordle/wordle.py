@@ -274,7 +274,7 @@ class Wordle(commands.Cog):
                         
         return canvas
 
-    async def draw_profile(self, ctx, member: discord.Member, target_word = None, guesses = [], earned = None, multiplier = None):
+    async def draw_profile(self, ctx, member: discord.Member, target_word = None, guesses = [], earned = 0, multiplier = 0):
         canvas_width = 500
         canvas_height = 444
         canvas_padding = 16
@@ -416,7 +416,7 @@ class Wordle(commands.Cog):
 
     async def humanize_int(self, num):
         if not num:
-            return
+            return 0
 
         num = float(f"{num:.3g}")
         magnitude = 0
