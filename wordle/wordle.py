@@ -103,7 +103,9 @@ class Wordle(commands.Cog):
     async def draw_wordle(self, ctx, canvas, keyboard):
         keyboard.thumbnail(canvas.size)
 
-        img = Image.new("RGB", (min(canvas.width, keyboard.width), canvas.height + keyboard.height))
+        bg = (0, 0, 0, 0)
+
+        img = Image.new("RGBA", (min(canvas.width, keyboard.width), canvas.height + keyboard.height), bg)
         img.paste(canvas, (0, 0))
         img.paste(keyboard, (0, canvas.height))
 
@@ -214,7 +216,7 @@ class Wordle(commands.Cog):
                 start_x = canvas_padding + (key_width/2) + (key_width * (key_index - 10)) + (key_gap * (key_index - 10))
                 start_y = key_height + key_gap
             else:
-                start_x = canvas_padding + key_width + (key_width/2) + key_gap + (key_width * (key_index - 20)) + (key_gap * (key_index - 20))
+                start_x = canvas_padding + key_width + (key_width/2) + key_gap + (key_width * (key_index - 19)) + (key_gap * (key_index - 19))
                 start_y = (key_height * 2) + (key_gap * 2)
 
             end_x = start_x + key_width
