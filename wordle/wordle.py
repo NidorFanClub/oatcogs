@@ -192,7 +192,7 @@ class Wordle(commands.Cog):
         key_yellow = (181, 159, 59, 255)
         key_green = (83, 141, 78, 255)
 
-        letters = "qwertyuiopasdfghijklzxcvbnm"
+        letters = "qwertyuiopasdfghjklzxcvbnm"
 
         font_file = f"{bundled_data_path(self)}/HelveticaNeue.ttf"
         font_color = (208, 204, 198, 255)
@@ -201,7 +201,7 @@ class Wordle(commands.Cog):
         canvas = Image.new("RGBA", (canvas_width, canvas_height), key_bg)
         frame = ImageDraw.Draw(canvas)
         
-        for key_index, keyboard_letter in enumerate(list(letters)):
+        for key_index, letter in enumerate(letters):
             if key_index < 10:
                 start_x = canvas_padding + (key_width * key_index) + (key_gap * key_index)
                 start_y = 0
@@ -209,7 +209,7 @@ class Wordle(commands.Cog):
                 start_x = canvas_padding + (key_width/2) + (key_width * (key_index - 10)) + (key_gap * (key_index - 10))
                 start_y = key_height + key_gap
             else:
-                start_x = canvas_padding + key_width + (key_width/2) + (key_width * (key_index - 20)) + (key_gap * (key_index - 20))
+                start_x = canvas_padding + key_width + (key_width/2) + key_gap + (key_width * (key_index - 20)) + (key_gap * (key_index - 20))
                 start_y = (key_height * 2) + (key_gap * 2)
 
             end_x = start_x + key_width
@@ -219,21 +219,21 @@ class Wordle(commands.Cog):
             font_y = start_y + (key_height / 2)
 
             frame.rounded_rectangle([(start_x, start_y), (end_x, end_y)], radius = 4, fill = key_default)
-            frame.text(xy = (font_x, font_y), text = keyboard_letter.upper(), fill = font_color, font = font, anchor = "mm")
+            frame.text(xy = (font_x, font_y), text = letter.upper(), fill = font_color, font = font, anchor = "mm")
 
             for guess in guesses:
-                for i, letter in enumerate(guess):
-                    if guess[i] not in target_word:
+                for i, guess_letter in enumerate(guess):
+                    if letter == guess_letter and guess[i] not in target_word:
                         frame.rounded_rectangle([(start_x, start_y), (end_x, end_y)], radius = 4, fill = key_grey)
 
             for guess in guesses:
-                for i, letter in enumerate(guess):
-                    if guess[i] in target_word:
+                for i, guess_letter in enumerate(guess):
+                    if letter == guess_letter and guess[i] in target_word:
                         frame.rounded_rectangle([(start_x, start_y), (end_x, end_y)], radius = 4, fill = key_yellow)
 
             for guess in guesses:
-                for i, letter in enumerate(guess):
-                    if guess[i] == target_word[i]:
+                for i, guess_letter in enumerate(guess):
+                    if letter == guess_letter and guess[i] == target_word[i]:
                         frame.rounded_rectangle([(start_x, start_y), (end_x, end_y)], radius = 4, fill = key_green)
                         
         file = BytesIO()
