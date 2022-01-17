@@ -272,7 +272,7 @@ class Wordle(commands.Cog):
         graph_bar_width = 365
         graph_bar_min = 25
 
-        economy_width = 233
+        economy_width = 466
         economy_height = 81
         economy_padding = 10
 
