@@ -324,8 +324,8 @@ class Wordle(commands.Cog):
                 graph_bar_start_x = graph_label_x + graph_padding + graph_label_width
                 graph_bar_start_y = graph_label_y
                 graph_bar_end_x = max(graph_bar_start_x + graph_bar_min, graph_bar_start_x + percent_of_max * graph_bar_width)
-                graph_bar_end_y = graph_bar_start_y + graph_label_height
-                graph_bar_label_x = graph_bar_end_x - 3 * graph_padding
+                graph_bar_end_y = graph_bar_start_y + graph_label_height - 2
+                graph_bar_label_x = (graph_bar_start_x + graph_bar_end_x) / 2
 
                 frame.text(xy = (graph_label_x, graph_label_y), text = str(i + 1), fill = text_color, font = graph_label)
 
@@ -334,7 +334,7 @@ class Wordle(commands.Cog):
                 else:
                     frame.rectangle([(graph_bar_start_x, graph_bar_start_y), (graph_bar_end_x, graph_bar_end_y)], grey_bar)
 
-                frame.text(xy = (graph_bar_label_x, graph_label_y), text = str(i + 1), fill = text_color, font = graph_bar_label)
+                frame.text(xy = (graph_bar_label_x, graph_label_y), text = str(i + 1), fill = text_color, font = graph_bar_label, anchor = "mm")
 
         return canvas
 
