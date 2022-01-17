@@ -278,18 +278,17 @@ class Wordle(commands.Cog):
         HelveticaNeueBold = f"{bundled_data_path(self)}/HelveticaNeueBold.ttf"
         HelveticaNeue = f"{bundled_data_path(self)}/HelveticaNeue.ttf"
 
-        header = ImageFont.truetype(HelveticaNeueBold, 16)
+        header = ImageFont.truetype(HelveticaNeueBold, 17)
         statistic_value = ImageFont.truetype(HelveticaNeue, 36)
         statistic_label = ImageFont.truetype(HelveticaNeue, 12)
 
         canvas = Image.new("RGBA", (canvas_width, canvas_height), blank_bg)
         frame = ImageDraw.Draw(canvas)
-        frame.fontmode = "1"
 
         frame.rounded_rectangle([(0, 0), (canvas_width, canvas_height)], radius = 16, fill = frame_bg, width = 1, outline = frame_border)
 
         frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height / 2)), text = "STATISTICS", fill = text_color, font = header, anchor = "mm")
-        frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height + statistics_height + heading_height / 2)), text = "GUESS DISTRIBUTION", fill = text_color, font = header, anchor = "mm")
+        frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height + statistics_height + statistics_padding + heading_height / 2)), text = "GUESS DISTRIBUTION", fill = text_color, font = header, anchor = "mm")
 
         frame.text(xy = ((canvas_width / 2 - 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.config.member(member).played()}", fill = text_color, font = statistic_value, anchor = "mm")
         frame.text(xy = ((canvas_width / 2 - statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{100 * (await self.config.member(member).total_wins() / await self.config.member(member).played()):.0f}", fill = text_color, font = statistic_value, anchor = "mm")
