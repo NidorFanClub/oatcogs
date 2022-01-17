@@ -268,7 +268,7 @@ class Wordle(commands.Cog):
         heading_height = 18
 
         blank_bg = (0, 0, 0, 0)
-        frame_bg = (26, 26, 27, 255)
+        frame_bg = (41, 43, 47, 255)
 
         text_color = (208, 204, 198, 255)
 
