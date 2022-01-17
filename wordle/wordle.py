@@ -216,7 +216,7 @@ class Wordle(commands.Cog):
                 start_x = canvas_padding + (key_width/2) + (key_width * (key_index - 10)) + (key_gap * (key_index - 10))
                 start_y = key_height + key_gap
             else:
-                start_x = canvas_padding + key_width + (key_width/2) + key_gap + (key_width * (key_index - 19)) + (key_gap * (key_index - 19))
+                start_x = canvas_padding + (key_width/2) + key_gap + (key_width * (key_index - 18)) + (key_gap * (key_index - 18))
                 start_y = (key_height * 2) + (key_gap * 2)
 
             end_x = start_x + key_width
@@ -226,7 +226,6 @@ class Wordle(commands.Cog):
             font_y = start_y + (key_height / 2)
 
             frame.rounded_rectangle([(start_x, start_y), (end_x, end_y)], radius = 4, fill = key_default)
-            frame.text(xy = (font_x, font_y), text = letter.upper(), fill = font_color, font = font, anchor = "mm")
 
             for guess in guesses:
                 for i, guess_letter in enumerate(guess):
@@ -242,5 +241,7 @@ class Wordle(commands.Cog):
                 for i, guess_letter in enumerate(guess):
                     if letter == guess_letter and guess[i] == target_word[i]:
                         frame.rounded_rectangle([(start_x, start_y), (end_x, end_y)], radius = 4, fill = key_green)
+
+            frame.text(xy = (font_x, font_y), text = letter.upper(), fill = font_color, font = font, anchor = "mm")
                         
         return keyboard
