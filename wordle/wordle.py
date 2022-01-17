@@ -316,6 +316,8 @@ class Wordle(commands.Cog):
 
             guess_amounts = list(guess_distribution.values())
 
+            print(guess_amounts, flush = True)
+
             for i, guess_amount in enumerate(guess_amounts):
                 percent_of_max = guess_amount / max_guess_value
 
