@@ -269,9 +269,9 @@ class Wordle(commands.Cog):
         heading_height = 18
 
         blank_bg = (0, 0, 0, 0)
-        frame_bg = (41, 43, 47, 255)
+        frame_bg = (18, 18, 19, 255)
 
-        text_color = (18, 18, 19, 255)
+        text_color = (215, 218, 220, 255)
 
         HelveticaNeueBold = f"{bundled_data_path(self)}/HelveticaNeueBold.ttf"
         HelveticaNeue = f"{bundled_data_path(self)}/HelveticaNeue.ttf"
@@ -287,16 +287,14 @@ class Wordle(commands.Cog):
         frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height)), text = "STATISTICS", fill = text_color, font = header, anchor = "mm")
         frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + statistics_height + 2 * heading_height)), text = "GUESS DISTRIBUTION", fill = text_color, font = header, anchor = "mm")
 
-        frame.text(xy = ((canvas_width / 2 - 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.config.member(member).played()}", fill = text_color, font = statistic_label, anchor = "mm")
+        frame.text(xy = ((canvas_width / 2 - 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.config.member(member).played()}", fill = text_color, font = statistic_value, anchor = "mm")
+        frame.text(xy = ((canvas_width / 2 - statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.config.member(member).played() / await self.config.member(member).played():.0%}", fill = text_color, font = statistic_value, anchor = "mm")
+        frame.text(xy = ((canvas_width / 2 + statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.config.member(member).streak()}", fill = text_color, font = value, anchor = "mm")
+        frame.text(xy = ((canvas_width / 2 + 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.config.member(member).max_streak()}", fill = text_color, font = statistic_value, anchor = "mm")
+
         frame.text(xy = ((canvas_width / 2 - 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height + statistic_label_height / 2)), text = "Played", fill = text_color, font = statistic_label, anchor = "mm")
-
-        frame.text(xy = ((canvas_width / 2 - statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.config.member(member).played() / await self.config.member(member).played():.0%}", fill = text_color, font = statistic_label, anchor = "mm")
         frame.text(xy = ((canvas_width / 2 - statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height + statistic_label_height / 2)), text = "Win %", fill = text_color, font = statistic_label, anchor = "mm")
-
-        frame.text(xy = ((canvas_width / 2 + statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.config.member(member).streak()}", fill = text_color, font = statistic_label, anchor = "mm")
         frame.text(xy = ((canvas_width / 2 + statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height + statistic_label_height / 2)), text = "Current Streak", fill = text_color, font = statistic_label, anchor = "mm")
-
-        frame.text(xy = ((canvas_width / 2 + 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.config.member(member).max_streak()}", fill = text_color, font = statistic_label, anchor = "mm")
         frame.text(xy = ((canvas_width / 2 + 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height + statistic_label_height / 2)), text = "Max Streak", fill = text_color, font = statistic_label, anchor = "mm")
 
         return canvas
