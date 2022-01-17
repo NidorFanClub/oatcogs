@@ -337,7 +337,7 @@ class Wordle(commands.Cog):
         frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height / 2)), text = f"{member.name.upper()}'S STATS", fill = text_color, font = header, anchor = "mm")
 
         frame.text(xy = ((canvas_width / 2 - 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.humanize_int(played)}", fill = text_color, font = statistic_value, anchor = "mm")
-        frame.text(xy = ((canvas_width / 2 - statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{100 * (total_wins / played):.0f}", fill = text_color, font = statistic_value, anchor = "mm")
+        frame.text(xy = ((canvas_width / 2 - statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{100 * (total_wins / played if played else 0):.0f}", fill = text_color, font = statistic_value, anchor = "mm")
         frame.text(xy = ((canvas_width / 2 + statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.humanize_int(streak)}", fill = text_color, font = statistic_value, anchor = "mm")
         frame.text(xy = ((canvas_width / 2 + 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.humanize_int(max_streak)}", fill = text_color, font = statistic_value, anchor = "mm")
 
@@ -353,10 +353,7 @@ class Wordle(commands.Cog):
             max_guess_amount = max(guess_amounts)
 
         for i, guess_amount in enumerate(guess_amounts):
-            if max_guess_amount != 0:
-                percent_of_max = guess_amount / max_guess_amount
-            else:
-                percent_of_max = 0
+            percent_of_max = guess_amount / max_guess_amount if max_guess_amount else 0
 
             graph_label_x = canvas_width / 2 - graph_width / 2
             graph_label_y = 2 * canvas_padding + 2 * heading_height + statistics_height + statistics_padding / 2 + i * graph_padding + i * graph_label_height
