@@ -271,6 +271,7 @@ class Wordle(commands.Cog):
 
         blank_bg = (0, 0, 0, 0)
         frame_bg = (18, 18, 19, 255)
+        frame_border = (26, 26, 27, 255)
 
         text_color = (215, 218, 220, 255)
 
@@ -283,7 +284,9 @@ class Wordle(commands.Cog):
 
         canvas = Image.new("RGBA", (canvas_width, canvas_height), blank_bg)
         frame = ImageDraw.Draw(canvas)
-        frame.rounded_rectangle([(0, 0), (canvas_width, canvas_height)], radius = 25, fill = frame_bg)
+        frame.fontmode = "L"
+
+        frame.rounded_rectangle([(0, 0), (canvas_width, canvas_height)], radius = 16, fill = frame_bg, width = 1, outline = frame_border)
 
         frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height / 2)), text = "STATISTICS", fill = text_color, font = header, anchor = "mm")
         frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + statistics_height + statistics_padding + 3 * heading_height / 2)), text = "GUESS DISTRIBUTION", fill = text_color, font = header, anchor = "mm")
