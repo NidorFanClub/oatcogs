@@ -44,7 +44,7 @@ class Wordle(commands.Cog):
         await self.config.member(ctx.author).played.set(await self.config.member(ctx.author).played() + 1)
 
         wordle_image = await self.draw_wordle(ctx, await self.draw_canvas(ctx, target_word, guesses), await self.draw_keyboard(ctx, target_word, guesses))
-        wordle_file = discord.File(wordle_image, filename = "wordle_game.png")
+        wordle_file = discord.File(wordle_image, filename = "wordle.png")
 
         await ctx.send("Welcome to Wordle! Type a five letter word to start. Type `stop` at any time to cancel the game.", file = wordle_file)
 
@@ -66,7 +66,7 @@ class Wordle(commands.Cog):
                     guesses.append(guess.content.lower())
 
                     wordle_image = await self.draw_wordle(ctx, await self.draw_canvas(ctx, target_word, guesses), await self.draw_keyboard(ctx, target_word, guesses))
-                    wordle_file = discord.File(wordle_image, filename = "wordle_game.png")
+                    wordle_file = discord.File(wordle_image, filename = "wordle.png")
 
                     await ctx.send(file = wordle_file)
 
@@ -295,7 +295,7 @@ class Wordle(commands.Cog):
         frame = ImageDraw.Draw(canvas)
         frame.rounded_rectangle([(0, 0), (canvas_width, canvas_height)], radius = 8, fill = frame_bg)
 
-        return await self.save_image(ctx, canvas)
+        return await self.save_image(canvas)
 
     async def save_image(self, img):
         file = BytesIO()
