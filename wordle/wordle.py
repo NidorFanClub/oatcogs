@@ -440,5 +440,5 @@ class Wordle(commands.Cog):
         leaderboard = sorted(members.items(), key=lambda x: x[1]["total_wins"], reverse=True)
 
         for i, user in enumerate(leaderboard):
-            if user[0] == member.id
+            if user[0] == member.id:
                 return i + 1
