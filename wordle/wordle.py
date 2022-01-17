@@ -21,7 +21,7 @@ except Exception as e:
 class Wordle(commands.Cog):
     """Wordle -- now in Discord!"""
 
-    default_guild_settings = {"WIN_AMOUNT": 500, "STREAKS": True, "TURN_MULTIPLIER": True}
+    default_guild_settings = {"WIN_AMOUNT": 1000, "STREAKS": True, "TURN_MULTIPLIER": True}
     default_member_settings = {"played": 0, "total_wins": 0, "streak": 0, "max_streak": 0}
 
     def __init__(self, bot):
