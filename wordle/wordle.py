@@ -222,23 +222,25 @@ class Wordle(commands.Cog):
             font_x = start_x + (key_width / 2)
             font_y = start_y + (key_height / 2)
 
-            frame.rounded_rectangle([(start_x, start_y), (end_x, end_y)], radius = 4, fill = key_default)
+            print([(start_x, start_y), (end_x, end_y)], flush=True)
+
+            frame.rectangle([(start_x, start_y), (end_x, end_y)], key_default)
             frame.text(xy = (font_x, font_y), text = keyboard_letter.upper(), fill = font_color, font = font, anchor = "mm")
 
             for guess in guesses:
                 for i, letter in enumerate(guess):
                     if guess[i] not in target_word:
-                        frame.rounded_rectangle([(start_x, start_y), (end_x, end_y)], radius = 4, fill = key_grey)
+                        frame.rectangle([(start_x, start_y), (end_x, end_y)], key_grey)
 
             for guess in guesses:
                 for i, letter in enumerate(guess):
                     if guess[i] in target_word:
-                        frame.rounded_rectangle([(start_x, start_y), (end_x, end_y)], radius = 4, fill = key_yellow)
+                        frame.rectangle([(start_x, start_y), (end_x, end_y)], key_yellow)
 
             for guess in guesses:
                 for i, letter in enumerate(guess):
                     if guess[i] == target_word[i]:
-                        frame.rounded_rectangle([(start_x, start_y), (end_x, end_y)], radius = 4, fill = key_green)
+                        frame.rectangle([(start_x, start_y), (end_x, end_y)], key_green)
                         
             file = BytesIO()
             canvas.save(file, "PNG", quality = 100)
