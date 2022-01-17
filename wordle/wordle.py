@@ -284,7 +284,7 @@ class Wordle(commands.Cog):
 
         canvas = Image.new("RGBA", (canvas_width, canvas_height), blank_bg)
         frame = ImageDraw.Draw(canvas)
-        frame.fontmode = "L"
+        frame.fontmode = "1"
 
         frame.rounded_rectangle([(0, 0), (canvas_width, canvas_height)], radius = 16, fill = frame_bg, width = 1, outline = frame_border)
 
