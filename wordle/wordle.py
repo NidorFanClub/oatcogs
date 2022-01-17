@@ -215,10 +215,10 @@ class Wordle(commands.Cog):
                 start_x = canvas_padding + (key_width * key_index) + (key_gap * key_index)
                 start_y = 0
             elif key_index >= 10 and key_index < 19:
-                start_x = canvas_padding + (key_width/2) + (key_width * (key_index - 10)) + (key_gap * (key_index - 10))
+                start_x = canvas_padding + (key_width / 2) + (key_width * (key_index - 10)) + (key_gap * (key_index - 10))
                 start_y = key_height + key_gap
             else:
-                start_x = canvas_padding + (key_width/2) + key_gap + (key_width * (key_index - 18)) + (key_gap * (key_index - 18))
+                start_x = canvas_padding + (key_width / 2) + key_gap + (key_width * (key_index - 18)) + (key_gap * (key_index - 18))
                 start_y = (key_height * 2) + (key_gap * 2)
 
             end_x = start_x + key_width
@@ -270,7 +270,7 @@ class Wordle(commands.Cog):
         blank_bg = (0, 0, 0, 0)
         frame_bg = (41, 43, 47, 255)
 
-        text_color = (208, 204, 198, 255)
+        text_color = (215, 218, 220, 255)
 
         HelveticaNeueBold = f"{bundled_data_path(self)}/HelveticaNeueBold.ttf"
         HelveticaNeue = f"{bundled_data_path(self)}/HelveticaNeue.ttf"
@@ -282,6 +282,9 @@ class Wordle(commands.Cog):
         canvas = Image.new("RGBA", (canvas_width, canvas_height), blank_bg)
         frame = ImageDraw.Draw(canvas)
         frame.rounded_rectangle([(0, 0), (canvas_width, canvas_height)], radius = 25, fill = frame_bg)
+
+        frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height)), text = "STATISTICS", fill = text_color, font = bold, anchor = "mm")
+        frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + statistics_height + 2 * heading_height)), text = "GUESS DISTRIBUTION", fill = text_color, font = bold, anchor = "mm")
 
         return canvas
 
