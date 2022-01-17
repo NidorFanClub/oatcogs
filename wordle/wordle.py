@@ -250,7 +250,7 @@ class Wordle(commands.Cog):
                         
         return canvas
 
-    async def draw_postgame(self, member: discord.Member, target_word = None, guesses = None, earned = None, bonus = None):
+    async def draw_postgame(self, member: discord.Member, target_word = None, guesses = [], earned = None, bonus = None):
         canvas_width = 500
         canvas_height = 444
         canvas_padding = 16
