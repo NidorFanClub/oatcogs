@@ -380,11 +380,11 @@ class Wordle(commands.Cog):
         if earned:
             frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + heading_height / 2), text = f"EARNED {str(await bank.get_currency_name(ctx.guild)).upper()} (x{multiplier:.2f})", fill = text_color, font = header, anchor = "mm")
 
-            frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"{await self.humanize_int(earned)}", fill = text_color, font = statistic_value, anchor = "mm")
+            frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"{await self.humanize_int(earned)}", fill = text_color, font = statistic_value_bold, anchor = "mm")
         else:
             frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + heading_height / 2), text = f"LIFETIME EARNINGS", fill = text_color, font = header, anchor = "mm")
 
-            frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"{await self.humanize_int(total_earnings)}", fill = text_color, font = statistic_value, anchor = "mm")
+            frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"{await self.humanize_int(total_earnings)}", fill = text_color, font = statistic_value_bold, anchor = "mm")
 
         if target_word:
             frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + heading_height / 2), text = f"THE WORD WAS", fill = text_color, font = header, anchor = "mm")
@@ -396,7 +396,7 @@ class Wordle(commands.Cog):
         else:
             frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + heading_height / 2), text = f"SERVER RANK", fill = text_color, font = header, anchor = "mm")
 
-            frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"SOON™", fill = green_bar, font = statistic_value_bold, anchor = "mm")
+            frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"SOON™", fill = text_color, font = statistic_value_bold, anchor = "mm")
 
         return canvas
 
