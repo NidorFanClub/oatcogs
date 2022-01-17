@@ -314,7 +314,7 @@ class Wordle(commands.Cog):
 
         played = await self.config.member(member).played()
         total_wins = await self.config.member(member).total_wins()
-        streak = await self.config.member(member).played()
+        streak = await self.config.member(member).streak()
         max_streak = await self.config.member(member).max_streak()
 
         canvas = Image.new("RGBA", (canvas_width, canvas_height), blank_bg)
