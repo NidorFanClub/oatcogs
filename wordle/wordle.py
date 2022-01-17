@@ -291,6 +291,7 @@ class Wordle(commands.Cog):
         statistic_value = ImageFont.truetype(HelveticaNeue, 36)
         statistic_label = ImageFont.truetype(HelveticaNeue, 12)
         graph_label = ImageFont.truetype(HelveticaNeue, 14)
+        graph_bar_label = ImageFont.truetype(HelveticaNeueBold, 14)
 
         canvas = Image.new("RGBA", (canvas_width, canvas_height), blank_bg)
         frame = ImageDraw.Draw(canvas)
@@ -319,18 +320,21 @@ class Wordle(commands.Cog):
                 percent_of_max = guess_amount / max_guess_amount
 
                 graph_label_x = canvas_width / 2 - graph_width / 2
-                graph_label_y = 2 * canvas_padding + 2 * heading_height + statistics_height + statistics_padding
+                graph_label_y = 2 * canvas_padding + 2 * heading_height + statistics_height + statistics_padding + i * graph_padding + i * graph_label_height
                 graph_bar_start_x = graph_label_x + graph_padding + graph_label_width
-                graph_bar_start_y = graph_label_y + i * graph_label_height + i * graph_padding
-                graph_bar_end_x = max(graph_bar_min, graph_bar_start_x + graph_padding + graph_label_width + percent_of_max * graph_bar_width)
+                graph_bar_start_y = graph_label_y
+                graph_bar_end_x = max(graph_bar_width * 0.07, graph_bar_start_x + graph_padding + graph_label_width + percent_of_max * graph_bar_width)
                 graph_bar_end_y = graph_bar_start_y + graph_label_height
+                graph_bar_label_x = graph_bar_end_x - 3 * graph_padding
 
-                frame.text(xy = (graph_label_x, graph_label_y + i * graph_padding + i * graph_label_height), text = str(i + 1), fill = text_color, font = graph_label)
+                frame.text(xy = (graph_label_x, graph_label_y), text = str(i + 1), fill = text_color, font = graph_label)
 
                 if percent_of_max == 1:
                     frame.rectangle([(graph_bar_start_x, graph_bar_start_y), (graph_bar_end_x, graph_bar_end_y)], green_bar)
                 else:
                     frame.rectangle([(graph_bar_start_x, graph_bar_start_y), (graph_bar_end_x, graph_bar_end_y)], grey_bar)
+
+                frame.text(xy = (graph_bar_label_x, graph_label_y), text = str(i + 1), fill = text_color, font = graph_bar_label)
 
         return canvas
 
