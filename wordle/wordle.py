@@ -21,7 +21,7 @@ except Exception as e:
 class Wordle(commands.Cog):
     """Wordle -- now in Discord!"""
 
-    default_guild_settings = {"WIN_AMOUNT": 2000}
+    default_guild_settings = {"WIN_AMOUNT": 500, "STREAKS": True, "TURN_MULTIPLIER": True}
     default_member_settings = {"played": 0, "total_wins": 0, "streak": 0, "max_streak": 0}
 
     def __init__(self, bot):
@@ -46,7 +46,6 @@ class Wordle(commands.Cog):
         total_wins = await self.config.member(ctx.author).total_wins()
         streak = await self.config.member(ctx.author).streak()
         max_streak = await self.config.member(ctx.author).max_streak()
-        win_amount = await self.config.guild(ctx.guild).WIN_AMOUNT() * (1 + (0.25 * streak))
 
         await self.config.member(ctx.author).played.set(played)
 
@@ -78,10 +77,18 @@ class Wordle(commands.Cog):
                     await ctx.send(file = wordle_file)
 
         if target_word in guesses:
+            base_amount = await self.config.guild(ctx.guild).WIN_AMOUNT()
+            multiplier = 1
+
+            if await self.config.guild(ctx.guild).STREAKS():
+                multiplier += (0.5 * (streak))
+            if await self.config.guild(ctx.guild).FAST():
+                multiplier += (1 / (len(guesses) / 6))
+
             victory_string = f"A winner is you! You guessed the word ***{target_word}***, earning you {int(win_amount)} {await bank.get_currency_name(ctx.guild)}."
 
-            if streak >= 1:
-                victory_string = victory_string + f" Your streak is {str(streak + 1)} and your bonus is x{(1 + (0.25 * (streak))):.2f}!"
+            if streak >= 1 and await self.config.guild(ctx.guild).STREAKS():
+                victory_string += f" Your streak is {str(streak + 1)} and your bonus multiplier is **x{multiplier):.2f}**!"
 
             await ctx.send(victory_string)
             await self.config.member(ctx.author).total_wins.set(total_wins + 1)
