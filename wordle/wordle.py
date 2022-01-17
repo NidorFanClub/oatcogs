@@ -66,13 +66,13 @@ class Wordle(commands.Cog):
                     wordle_image = await self.draw_wordle(ctx, await self.draw_canvas(ctx, target_word, guesses), await self.draw_keyboard(ctx, target_word, guesses))
                     wordle_file = discord.File(wordle_image, filename = "wordle.png")
 
+                    message = await ctx.send(file = wordle_file)
+
                     try:
                         await message.delete()
                         await guess.delete()
                     except:
                         pass
-
-                    message = await ctx.send(file = wordle_file)
 
         if target_word in guesses:
             base_amount = await self.config.guild(ctx.guild).WIN_AMOUNT()
@@ -113,7 +113,7 @@ class Wordle(commands.Cog):
             multiplier = 0
 
         summary_image = await self.draw_profile(ctx, ctx.author, target_word, guesses, win_amount, multiplier)
-        summary_file = discord.File(summary, filename = "summary.png")
+        summary_file = discord.File(summary_image, filename = "summary.png")
         await ctx.send(file = summary_file)
 
         return
