@@ -56,6 +56,7 @@ class Wordle(commands.Cog):
                 break
             else:
                 if guess.content.lower() == "stop":
+                    await guess.tick()
                     break
                 elif (len(guess.content) != 5):
                     await ctx.send("Your guess must be exactly 5 characters long.", delete_after = 4.0)
@@ -114,7 +115,7 @@ class Wordle(commands.Cog):
                 pass
         else:
             await self.config.member(ctx.author).streak.set(0)
-            win_amount = 250
+            win_amount = 50 * len(guesses)
             multiplier = 1
 
         try:
