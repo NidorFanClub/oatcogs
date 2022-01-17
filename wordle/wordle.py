@@ -56,7 +56,6 @@ class Wordle(commands.Cog):
                 break
             else:
                 if guess.content.lower() == "stop":
-                    await ctx.send(f"It was nice playing with you. The word was ***{target_word}***. Goodbye!")
                     break
                 elif (len(guess.content) != 5):
                     await ctx.send("Your guess must be exactly 5 characters long.", delete_after = 5.0)
