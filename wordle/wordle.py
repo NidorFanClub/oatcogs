@@ -296,7 +296,7 @@ class Wordle(commands.Cog):
         canvas = Image.new("RGBA", (canvas_width, canvas_height), blank_bg)
         frame = ImageDraw.Draw(canvas)
 
-        frame.rounded_rectangle([(0, 0), (canvas_width, canvas_height)], radius = 8, fill = frame_bg, width = 1, outline = frame_border)
+        frame.rounded_rectangle([(0, 0), (canvas_width, canvas_height)], radius = 11, fill = frame_bg, width = 1, outline = frame_border)
 
         frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height / 2)), text = "STATISTICS", fill = text_color, font = header, anchor = "mm")
 
@@ -316,25 +316,25 @@ class Wordle(commands.Cog):
             guess_amounts = list(guess_distribution.values())
             max_guess_amount = max(guess_amounts)
 
-            for i, guess_amount in enumerate(guess_amounts):
-                percent_of_max = guess_amount / max_guess_amount
+        for i, guess_amount in enumerate(guess_amounts):
+            percent_of_max = guess_amount / max_guess_amount
 
-                graph_label_x = canvas_width / 2 - graph_width / 2
-                graph_label_y = 2 * canvas_padding + 2 * heading_height + statistics_height + statistics_padding / 2 + i * graph_padding + i * graph_label_height
-                graph_bar_start_x = graph_label_x + graph_padding + graph_label_width
-                graph_bar_start_y = graph_label_y
-                graph_bar_end_x = max(graph_bar_start_x + graph_bar_min, graph_bar_start_x + percent_of_max * graph_bar_width)
-                graph_bar_end_y = graph_bar_start_y + graph_label_height - 2
-                graph_bar_label_x = graph_bar_end_x - graph_padding * 3
+            graph_label_x = canvas_width / 2 - graph_width / 2
+            graph_label_y = 2 * canvas_padding + 2 * heading_height + statistics_height + statistics_padding / 2 + i * graph_padding + i * graph_label_height
+            graph_bar_start_x = graph_label_x + graph_padding + graph_label_width
+            graph_bar_start_y = graph_label_y
+            graph_bar_end_x = max(graph_bar_start_x + graph_bar_min, graph_bar_start_x + percent_of_max * graph_bar_width)
+            graph_bar_end_y = graph_bar_start_y + graph_label_height - 2
+            graph_bar_label_x = graph_bar_end_x - graph_padding * 3
 
-                frame.text(xy = (graph_label_x, graph_label_y), text = str(i + 1), fill = text_color, font = graph_label)
+            frame.text(xy = (graph_label_x, graph_label_y), text = str(i + 1), fill = text_color, font = graph_label)
 
-                if percent_of_max == 1:
-                    frame.rectangle([(graph_bar_start_x, graph_bar_start_y), (graph_bar_end_x, graph_bar_end_y)], green_bar)
-                else:
-                    frame.rectangle([(graph_bar_start_x, graph_bar_start_y), (graph_bar_end_x, graph_bar_end_y)], grey_bar)
+            if percent_of_max == 1:
+                frame.rectangle([(graph_bar_start_x, graph_bar_start_y), (graph_bar_end_x, graph_bar_end_y)], green_bar)
+            else:
+                frame.rectangle([(graph_bar_start_x, graph_bar_start_y), (graph_bar_end_x, graph_bar_end_y)], grey_bar)
 
-                frame.text(xy = (graph_bar_label_x, graph_label_y), text = str(guess_amount), fill = text_color, font = graph_bar_label, anchor = "ma")
+            frame.text(xy = (graph_bar_label_x, graph_label_y), text = str(guess_amount), fill = text_color, font = graph_bar_label, anchor = "ma")
 
         return canvas
 
