@@ -134,8 +134,6 @@ class Wordle(commands.Cog):
         if not member:
             member = ctx.author
 
-        await self.get_rank(ctx, member)
-
         profile_image = await self.save_image(await self.draw_profile(ctx, member))
         profile_file = discord.File(profile_image, filename = "profile.png")
         await ctx.send(file = profile_file)
@@ -395,7 +393,10 @@ class Wordle(commands.Cog):
         else:
             frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + heading_height / 2), text = f"SERVER RANK", fill = text_color, font = header, anchor = "mm")
 
-            frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"SOON™", fill = text_color, font = statistic_value_bold, anchor = "mm")
+            rank = await self.get_rank(ctx, member)
+            members = len(ctx.guild.members)
+
+            frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"#{rank}/{members}", fill = text_color, font = statistic_value_bold, anchor = "mm")
 
         return canvas
 
@@ -438,4 +439,6 @@ class Wordle(commands.Cog):
 
         leaderboard = sorted(members.items(), key=lambda x: x[1]["total_wins"], reverse=True)
 
-        print(leaderboard, flush = True)
+        for i, user in enumerate(leaderboard):
+            if user[0] == member.id
+                return i + 1
