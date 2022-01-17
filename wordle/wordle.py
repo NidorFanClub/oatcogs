@@ -268,6 +268,7 @@ class Wordle(commands.Cog):
         graph_label_width = 8
         graph_label_height = 20
         graph_bar_width = 189
+        graph_bar_min = 25
 
         economy_height = 233
         economy_width = 81
@@ -325,10 +326,10 @@ class Wordle(commands.Cog):
                 graph_label_y = 2 * canvas_padding + 2 * heading_height + statistics_height
                 graph_bar_start_x = graph_label_x + graph_padding + graph_label_width
                 graph_bar_start_y = graph_label_y + i * graph_label_height + i * graph_padding
-                graph_bar_end_x = graph_bar_start_x + graph_padding + graph_label_width + percent_of_max * graph_bar_width
+                graph_bar_end_x = max(graph_bar_min, graph_bar_start_x + graph_padding + graph_label_width + percent_of_max * graph_bar_width)
                 graph_bar_end_y = graph_bar_start_y + graph_label_height + i * graph_label_height + i * graph_padding
 
-                frame.text(xy = (graph_label_x, graph_label_y + i * graph_padding + i * graph_label_height), text = str(i), fill = text_color, font = graph_label, anchor = "lm")
+                frame.text(xy = (graph_label_x, graph_label_y + i * graph_padding + i * graph_label_height), text = str(i + 1), fill = text_color, font = graph_label, anchor = "lm")
 
                 if percent_of_max == 1:
                     frame.rectangle([(graph_bar_end_x, graph_bar_start_y), (graph_bar_end_x, graph_bar_end_y)], green_bar)
