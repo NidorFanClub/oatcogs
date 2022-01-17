@@ -248,7 +248,7 @@ class Wordle(commands.Cog):
                         
         return canvas
 
-    async def draw_postgame(self, ctx, target_word, guesses, member: discord.Member):
+    async def draw_postgame(self, target_word, guesses, member: discord.Member):
         canvas_width = 500
         canvas_height = 444
         canvas_padding = 16
@@ -310,7 +310,7 @@ class Wordle(commands.Cog):
 
         frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height + statistics_height + heading_height / 2)), text = "GUESS DISTRIBUTION", fill = text_color, font = header, anchor = "mm")
 
-        async with self.config.member(ctx.author).guess_distribution() as guess_distribution:
+        async with self.config.member(member).guess_distribution() as guess_distribution:
             max_guess = max(guess_distribution, key = guess_distribution.get)
             max_guess_value = guess_distribution[max_guess]
 
@@ -355,7 +355,7 @@ class Wordle(commands.Cog):
     @commands.command()
     @commands.guild_only()
     async def wordleprofile(self, ctx):
-        img = await self.save_image(await self.draw_postgame(ctx, None, None, ctx.author))
+        img = await self.save_image(await self.draw_postgame(None, None, ctx.author))
 
         img_file = discord.File(img, filename = "profile.png")
 
