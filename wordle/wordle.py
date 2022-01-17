@@ -311,6 +311,8 @@ class Wordle(commands.Cog):
         frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height + statistics_height + heading_height / 2)), text = "GUESS DISTRIBUTION", fill = text_color, font = header, anchor = "mm")
 
         async with self.config.member(member).guess_distribution() as guess_distribution:
+            print(guess_distribution, flush = True)
+
             guess_amounts = list(guess_distribution.values())
             max_guess_amount = max(guess_amounts)
 
