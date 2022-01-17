@@ -441,7 +441,7 @@ class Wordle(commands.Cog):
 
         for i, user in enumerate(leaderboard):
             print(user, flush=True)
-            print(user[0], flush=True)
-            print(user[1], flush=True)
+            print(user[0]["id"], flush=True)
+            print(user["id"], flush=True)
             if user[0] == member.id:
                 return i + 1
