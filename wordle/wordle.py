@@ -267,6 +267,7 @@ class Wordle(commands.Cog):
 
         graph_label_width = 8
         graph_label_height = 20
+        graph_bar_width = 189
 
         economy_height = 233
         economy_width = 81
@@ -276,6 +277,9 @@ class Wordle(commands.Cog):
         blank_bg = (0, 0, 0, 0)
         frame_bg = (18, 18, 19, 255)
         frame_border = (26, 26, 27, 255)
+
+        green_bar = (83, 141, 78, 255)
+        grey_bar = (58, 58, 60, 255)
 
         text_color = (215, 218, 220, 255)
 
@@ -306,12 +310,28 @@ class Wordle(commands.Cog):
 
         frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height + statistics_height + heading_height / 2)), text = "GUESS DISTRIBUTION", fill = text_color, font = header, anchor = "mm")
 
-        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 0 * graph_padding + 0 * graph_label_height)), text = "1", fill = text_color, font = graph_label, anchor = "la")
-        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 1 * graph_padding + 1 * graph_label_height)), text = "2", fill = text_color, font = graph_label, anchor = "la")
-        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 2 * graph_padding + 2 * graph_label_height)), text = "3", fill = text_color, font = graph_label, anchor = "la")
-        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 3 * graph_padding + 3 * graph_label_height)), text = "4", fill = text_color, font = graph_label, anchor = "la")
-        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 4 * graph_padding + 4 * graph_label_height)), text = "5", fill = text_color, font = graph_label, anchor = "la")
-        frame.text(xy = ((canvas_width / 2 - graph_width / 2), (2 * canvas_padding + 2 * heading_height + statistics_height + 5 * graph_padding + 5 * graph_label_height)), text = "6", fill = text_color, font = graph_label, anchor = "la")
+        async with self.config.member(ctx.author).guess_distribution() as guess_distribution:
+            max_guess = max(guess_distribution, key = guess_distribution.get)
+            max_guess_value = guess_distribution[max_guess]
+
+            guess_amounts = list(guess_distribution.values())
+
+            for i, guess_amount in enumerate(guess_amounts):
+                percent_of_max = guess_amount / max_guess_value
+
+                graph_label_x = canvas_width / 2 - graph_width / 2
+                graph_label_y = 2 * canvas_padding + 2 * heading_height + statistics_height
+                graph_bar_start_x = graph_label_x + graph_padding + graph_label_width
+                graph_bar_start_y = graph_label_y + i * graph_label_height + i * graph_label_padding
+                graph_bar_end_x = graph_bar_start_x + graph_padding + graph_label_width + percent_of_max * graph_bar_width
+                graph_bar_end_y = graph_bar_start_y + graph_label_height + i * graph_label_height + i * graph_padding
+
+                frame.text(xy = (graph_label_x, graph_label_y + i * graph_padding + i * graph_label_height), text = str(i), fill = text_color, font = graph_label, anchor = "lm")
+
+                if percent_of_max == 1:
+                    frame.rectangle([(graph_bar_end_x, graph_bar_start_y), (graph_bar_end_x, graph_bar_end_y)], green_bar)
+                else:
+                    frame.rectangle([(graph_bar_end_x, graph_bar_start_y), (graph_bar_end_x, graph_bar_end_y)], grey_bar)
 
         return canvas
 
