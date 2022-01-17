@@ -255,6 +255,7 @@ class Wordle(commands.Cog):
 
         statistics_width = 349
         statistics_height = 66
+        statistics_padding = 10
 
         statistic_label_width = 87
         statistic_label_height = 14
@@ -266,7 +267,7 @@ class Wordle(commands.Cog):
         economy_height = 233
         economy_width = 81
 
-        heading_height = 18
+        heading_height = 28
 
         blank_bg = (0, 0, 0, 0)
         frame_bg = (18, 18, 19, 255)
@@ -285,7 +286,7 @@ class Wordle(commands.Cog):
         frame.rounded_rectangle([(0, 0), (canvas_width, canvas_height)], radius = 25, fill = frame_bg)
 
         frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height / 2)), text = "STATISTICS", fill = text_color, font = header, anchor = "mm")
-        frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + statistics_height + 2 * heading_height)), text = "GUESS DISTRIBUTION", fill = text_color, font = header, anchor = "mm")
+        frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + statistics_height + statistics_padding + 2 * heading_height)), text = "GUESS DISTRIBUTION", fill = text_color, font = header, anchor = "mm")
 
         frame.text(xy = ((canvas_width / 2 - 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.config.member(member).played()}", fill = text_color, font = statistic_value, anchor = "mm")
         frame.text(xy = ((canvas_width / 2 - statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{100 * (await self.config.member(member).total_wins() / await self.config.member(member).played()):.0f}", fill = text_color, font = statistic_value, anchor = "mm")
