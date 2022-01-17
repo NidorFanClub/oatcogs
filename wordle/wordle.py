@@ -312,12 +312,8 @@ class Wordle(commands.Cog):
         frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height + statistics_height + heading_height / 2)), text = "GUESS DISTRIBUTION", fill = text_color, font = header, anchor = "mm")
 
         async with self.config.member(member).guess_distribution() as guess_distribution:
-            print(guess_distribution, flush = True)
-
             guess_amounts = list(guess_distribution.values())
             max_guess_amount = max(guess_amounts)
-
-            print(guess_amounts, flush = True)
 
             for i, guess_amount in enumerate(guess_amounts):
                 percent_of_max = guess_amount / max_guess_amount
@@ -332,9 +328,9 @@ class Wordle(commands.Cog):
                 frame.text(xy = (graph_label_x, graph_label_y + i * graph_padding + i * graph_label_height), text = str(i + 1), fill = text_color, font = graph_label, anchor = "lm")
 
                 if percent_of_max == 1:
-                    frame.rectangle([(graph_bar_end_x, graph_bar_start_y), (graph_bar_end_x, graph_bar_end_y)], green_bar)
+                    frame.rectangle([(graph_bar_start_x, graph_bar_start_y), (graph_bar_end_x, graph_bar_end_y)], green_bar)
                 else:
-                    frame.rectangle([(graph_bar_end_x, graph_bar_start_y), (graph_bar_end_x, graph_bar_end_y)], grey_bar)
+                    frame.rectangle([(graph_bar_start_x, graph_bar_start_y), (graph_bar_end_x, graph_bar_end_y)], grey_bar)
 
         return canvas
 
