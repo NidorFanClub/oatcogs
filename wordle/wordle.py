@@ -21,7 +21,7 @@ except Exception as e:
 class Wordle(commands.Cog):
     """Wordle -- now in Discord!"""
 
-    default_guild_settings = {"WIN_AMOUNT": 1000, "STREAKS": True, "TURN_MULTIPLIER": True}
+    default_guild_settings = {"WIN_AMOUNT": 500, "MULTIPLIER": True, "STREAKS": True, "TURN_MULTIPLIER": True}
     default_member_settings = {"played": 0, "total_wins": 0, "streak": 0, "max_streak": 0}
 
     def __init__(self, bot):
@@ -78,14 +78,16 @@ class Wordle(commands.Cog):
 
         if target_word in guesses:
             base_amount = await self.config.guild(ctx.guild).WIN_AMOUNT()
-            multiplier = 1
 
-            if await self.config.guild(ctx.guild).STREAKS():
-                await self.config.member(ctx.author).streak.set(streak + 1)
-
-                multiplier += (0.5 * (streak))
-            if await self.config.guild(ctx.guild).TURN_MULTIPLIER():
-                multiplier += (1 / (len(guesses) / 6))
+            if await self.config.guild(ctx.guild).MULTIPLIER():
+                multiplier = 0
+                if await self.config.guild(ctx.guild).STREAKS():
+                    await self.config.member(ctx.author).streak.set(streak + 1)
+                    multiplier += (0.5 * (streak))
+                if await self.config.guild(ctx.guild).TURN_MULTIPLIER():
+                    multiplier += (1 / (len(guesses) / 6))
+            else:
+                multiplier = 1
 
             win_amount = base_amount * multiplier
 
