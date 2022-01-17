@@ -22,7 +22,7 @@ class Wordle(commands.Cog):
     """Wordle -- now in Discord!"""
 
     default_guild_settings = {"WIN_AMOUNT": 500, "MULTIPLIER": True, "STREAKS": True, "TURN_MULTIPLIER": True}
-    default_member_settings = {"played": 0, "total_wins": 0, "streak": 0, "max_streak": 0, "guess_distribution": {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0}}
+    default_member_settings = {"played": 0, "total_wins": 0, "streak": 0, "max_streak": 0, "guess_distribution": {"1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0}}
 
     def __init__(self, bot):
         self.bot = bot
