@@ -109,7 +109,7 @@ class Wordle(commands.Cog):
 
             try:
                 await bank.deposit_credits(ctx.author, int(win_amount))
-                await self.config.member(ctx.author).total_earnings.set(win_amount)
+                await self.config.member(ctx.author).total_earnings.set(total_earnings + win_amount)
             except:
                 pass
         else:
