@@ -296,7 +296,7 @@ class Wordle(commands.Cog):
         canvas = Image.new("RGBA", (canvas_width, canvas_height), blank_bg)
         frame = ImageDraw.Draw(canvas)
 
-        frame.rounded_rectangle([(0, 0), (canvas_width, canvas_height)], radius = 16, fill = frame_bg, width = 1, outline = frame_border)
+        frame.rounded_rectangle([(0, 0), (canvas_width, canvas_height)], radius = 8, fill = frame_bg, width = 1, outline = frame_border)
 
         frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height / 2)), text = "STATISTICS", fill = text_color, font = header, anchor = "mm")
 
@@ -334,7 +334,7 @@ class Wordle(commands.Cog):
                 else:
                     frame.rectangle([(graph_bar_start_x, graph_bar_start_y), (graph_bar_end_x, graph_bar_end_y)], grey_bar)
 
-                frame.text(xy = (graph_bar_label_x, graph_label_y), text = str(i + 1), fill = text_color, font = graph_bar_label, anchor = "ma")
+                frame.text(xy = (graph_bar_label_x, graph_label_y), text = str(guess_amount), fill = text_color, font = graph_bar_label, anchor = "ma")
 
         return canvas
 
