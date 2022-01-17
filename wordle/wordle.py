@@ -250,7 +250,7 @@ class Wordle(commands.Cog):
                         
         return canvas
 
-    async def draw_postgame(self, member: discord.Member, target_word = None, guesses = None, earned = None):
+    async def draw_postgame(self, member: discord.Member, target_word = None, guesses = None, earned = None, bonus = None):
         canvas_width = 500
         canvas_height = 444
         canvas_padding = 16
@@ -350,7 +350,14 @@ class Wordle(commands.Cog):
 
         frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + heading_height / 2), text = f"EARNED {str(await bank.get_currency_name(member.guild)).upper()}", fill = text_color, font = header, anchor = "mm")
 
-        frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"500", fill = text_color, font = statistic_value, anchor = "mm")
+        frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"{await self.humanize_int(earned)} (x{bonus})", fill = text_color, font = statistic_value, anchor = "mm")
+
+        frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + heading_height / 2), text = f"THE WORD WAS", fill = text_color, font = header, anchor = "mm")
+
+        if target_word in guesses:
+            frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"{target_word}", fill = green_bar, font = statistic_value, anchor = "mm")
+        else:
+            frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"{target_word}", fill = text_color, font = statistic_value, anchor = "mm")
 
         return canvas
 
