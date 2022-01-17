@@ -288,7 +288,7 @@ class Wordle(commands.Cog):
         frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + statistics_height + 2 * heading_height)), text = "GUESS DISTRIBUTION", fill = text_color, font = header, anchor = "mm")
 
         frame.text(xy = ((canvas_width / 2 - 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.config.member(member).played()}", fill = text_color, font = statistic_value, anchor = "mm")
-        frame.text(xy = ((canvas_width / 2 - statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{100 * (await self.config.member(member).total_wins() / await self.config.member(member).played()):.0}", fill = text_color, font = statistic_value, anchor = "mm")
+        frame.text(xy = ((canvas_width / 2 - statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{100 * (await self.config.member(member).total_wins() / await self.config.member(member).played()):.0f}", fill = text_color, font = statistic_value, anchor = "mm")
         frame.text(xy = ((canvas_width / 2 + statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.config.member(member).streak()}", fill = text_color, font = statistic_value, anchor = "mm")
         frame.text(xy = ((canvas_width / 2 + 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.config.member(member).max_streak()}", fill = text_color, font = statistic_value, anchor = "mm")
 
