@@ -22,7 +22,7 @@ class Wordle(commands.Cog):
     """Wordle -- now in Discord!"""
 
     default_guild_settings = {"WIN_AMOUNT": 500, "MULTIPLIER": True, "STREAKS": True, "TURN_MULTIPLIER": True}
-    default_member_settings = {"played": 0, "total_wins": 0, "streak": 0, "max_streak": 0, "guess_distribution": {"1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0}}
+    default_member_settings = {"played": 0, "total_wins": 0, "total_earnings": 0, "streak": 0, "max_streak": 0, "guess_distribution": {"1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0}}
 
     def __init__(self, bot):
         self.bot = bot
@@ -73,6 +73,7 @@ class Wordle(commands.Cog):
             base_amount = await self.config.guild(ctx.guild).WIN_AMOUNT()
             streak = await self.config.member(ctx.author).streak() + 1
             total_wins = await self.config.member(ctx.author).total_wins() + 1
+            total_earnings = await self.config.member(ctx.author).total_earnings()
             max_streak = await self.config.member(ctx.author).max_streak()
 
             await self.config.member(ctx.author).total_wins.set(total_wins)
@@ -105,6 +106,7 @@ class Wordle(commands.Cog):
 
             try:
                 await bank.deposit_credits(ctx.author, int(win_amount))
+                await self.config.member(ctx.author).total_earnings.set(win_amount)
             except:
                 pass
         else:
@@ -270,8 +272,11 @@ class Wordle(commands.Cog):
         graph_bar_width = 365
         graph_bar_min = 25
 
-        economy_height = 233
-        economy_width = 81
+        economy_width = 233
+        economy_height = 81
+        economy_padding = 10
+
+        economy_label_width = 221
 
         heading_height = 38
 
@@ -335,6 +340,10 @@ class Wordle(commands.Cog):
                 frame.rectangle([(graph_bar_start_x, graph_bar_start_y), (graph_bar_end_x, graph_bar_end_y)], grey_bar)
 
             frame.text(xy = (graph_bar_label_x, graph_label_y), text = str(guess_amount), fill = text_color, font = graph_bar_label, anchor = "ma")
+
+        frame.line(xy = ([(2 * canvas_padding + economy_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + economy_padding, 2 * canvas_padding + economy_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + economy_padding + economy_height)]), fill = text_color, width = 1)
+
+        frame.text(xy = (2 * canvas_padding + economy_label_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + economy_padding + heading_height / 2), text = f"EARNED {str(await bank.get_currency_name(ctx.guild)).upper()}", fill = text_color, font = header, anchor = "mm")
 
         return canvas
 
