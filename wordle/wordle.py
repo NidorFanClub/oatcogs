@@ -113,8 +113,8 @@ class Wordle(commands.Cog):
                 pass
         else:
             await self.config.member(ctx.author).streak.set(0)
-            win_amount = 0
-            multiplier = 0
+            win_amount = 250
+            multiplier = 1
 
         try:
             await message.delete()
@@ -126,6 +126,16 @@ class Wordle(commands.Cog):
         await ctx.send(file = summary_file)
 
         return
+
+    @commands.command()
+    @commands.guild_only()
+    async def wordlestats(self, ctx, member: discord.Member):
+        if not member:
+            member = ctx.author
+
+        profile_image = await self.save_image(await self.draw_profile(ctx, member))
+        profile_file = discord.File(profile_image, filename = "profile.png")
+        await ctx.send(file = profile_file)
 
     async def get_word(self):
         return random.choice(open(f"{bundled_data_path(self)}/words.txt").read().splitlines()).lower()
@@ -316,13 +326,14 @@ class Wordle(commands.Cog):
         total_wins = await self.config.member(member).total_wins()
         streak = await self.config.member(member).streak()
         max_streak = await self.config.member(member).max_streak()
+        total_earnings = await self.config.member(member).total_earnings()
 
         canvas = Image.new("RGBA", (canvas_width, canvas_height), blank_bg)
         frame = ImageDraw.Draw(canvas)
 
         frame.rounded_rectangle([(0, 0), (canvas_width, canvas_height)], radius = 14, fill = frame_bg, width = 1, outline = frame_border)
 
-        frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height / 2)), text = f"{member.name.upper()}'S STATISTICS", fill = text_color, font = header, anchor = "mm")
+        frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height / 2)), text = f"{member.name.upper()}'S STATS", fill = text_color, font = header, anchor = "mm")
 
         frame.text(xy = ((canvas_width / 2 - 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.humanize_int(played)}", fill = text_color, font = statistic_value, anchor = "mm")
         frame.text(xy = ((canvas_width / 2 - statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{100 * (total_wins / played):.0f}", fill = text_color, font = statistic_value, anchor = "mm")
@@ -365,19 +376,26 @@ class Wordle(commands.Cog):
 
         frame.line(xy = ([(canvas_padding + economy_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height), (canvas_padding + economy_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + economy_height)]), fill = text_color, width = 1)
 
-        frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + heading_height / 2), text = f"EARNED {str(await bank.get_currency_name(ctx.guild)).upper()} (x{multiplier:.2f})", fill = text_color, font = header, anchor = "mm")
-
         if earned:
+            frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + heading_height / 2), text = f"EARNED {str(await bank.get_currency_name(ctx.guild)).upper()} (x{multiplier:.2f})", fill = text_color, font = header, anchor = "mm")
+
             frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"{await self.humanize_int(earned)}", fill = text_color, font = statistic_value, anchor = "mm")
         else:
-            frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"0", fill = text_color, font = statistic_value, anchor = "mm")
+            frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + heading_height / 2), text = f"LIFETIME EARNINGS", fill = text_color, font = header, anchor = "mm")
 
-        frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + heading_height / 2), text = f"THE WORD WAS", fill = text_color, font = header, anchor = "mm")
+            frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"{await self.humanize_int(total_earnings)}", fill = text_color, font = statistic_value, anchor = "mm")
 
-        if target_word in guesses:
-            frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"{target_word.upper()}", fill = green_bar, font = statistic_value_bold, anchor = "mm")
+        if target_word:
+            frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + heading_height / 2), text = f"THE WORD WAS", fill = text_color, font = header, anchor = "mm")
+
+            if target_word in guesses:
+                frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"{target_word.upper()}", fill = green_bar, font = statistic_value_bold, anchor = "mm")
+            else:
+                frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"{target_word.upper()}", fill = text_color, font = statistic_value_bold, anchor = "mm")
         else:
-            frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"{target_word.upper()}", fill = text_color, font = statistic_value_bold, anchor = "mm")
+            frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + heading_height / 2), text = f"SERVER RANK", fill = text_color, font = header, anchor = "mm")
+
+            frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"SOON™", fill = green_bar, font = statistic_value_bold, anchor = "mm")
 
         return canvas
 
