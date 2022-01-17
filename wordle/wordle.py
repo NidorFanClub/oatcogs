@@ -201,7 +201,7 @@ class Wordle(commands.Cog):
         canvas = Image.new("RGBA", (canvas_width, canvas_height), key_bg)
         frame = ImageDraw.Draw(canvas)
         
-        for key_index, keyboard_letter in enumerate(letters):
+        for key_index, keyboard_letter in enumerate(list(letters)):
             print(f"Enumerating new key {keyboard_letter}")
             if key_index < 10:
                 start_x = canvas_padding + (key_width * key_index) + (key_gap * key_index)
