@@ -306,7 +306,7 @@ class Wordle(commands.Cog):
     @commands.command()
     @commands.guild_only()
     async def wordleprofile(self, ctx):
-        img = await self.save_image(self.draw_postgame(ctx, None, None))
+        img = await self.save_image(await self.draw_postgame(ctx, None, None))
 
         img_file = discord.File(img, filename = "profile.png")
 
