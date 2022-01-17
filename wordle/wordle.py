@@ -341,7 +341,7 @@ class Wordle(commands.Cog):
             max_guess_amount = max(guess_amounts)
 
         for i, guess_amount in enumerate(guess_amounts):
-            if max_guess_amount is not 0:
+            if max_guess_amount != 0:
                 percent_of_max = guess_amount / max_guess_amount
             else:
                 percent_of_max = 0
