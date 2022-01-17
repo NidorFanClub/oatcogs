@@ -66,10 +66,14 @@ class Wordle(commands.Cog):
                     wordle_image = await self.draw_wordle(ctx, await self.draw_canvas(ctx, target_word, guesses), await self.draw_keyboard(ctx, target_word, guesses))
                     wordle_file = discord.File(wordle_image, filename = "wordle.png")
 
+                    try:
+                        await message.delete()
+                    except:
+                        pass
+
                     message = await ctx.send(file = wordle_file)
 
                     try:
-                        await message.delete()
                         await guess.delete()
                     except:
                         pass
