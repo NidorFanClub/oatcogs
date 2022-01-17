@@ -116,6 +116,11 @@ class Wordle(commands.Cog):
             win_amount = 0
             multiplier = 0
 
+        try:
+            await message.delete()
+        except:
+            pass
+
         summary_image = await self.draw_wordle(ctx, await self.draw_canvas(ctx, target_word, guesses), await self.draw_profile(ctx, ctx.author, target_word, guesses, win_amount, multiplier))
         summary_file = discord.File(summary_image, filename = "summary.png")
         await ctx.send(file = summary_file)
@@ -289,7 +294,7 @@ class Wordle(commands.Cog):
         heading_height = 38
 
         blank_bg = (0, 0, 0, 0)
-        frame_bg = (18, 18, 19, 255)
+        frame_bg = (58, 58, 60, 255)
         frame_border = (26, 26, 27, 255)
 
         green_bar = (83, 141, 78, 255)
@@ -357,10 +362,10 @@ class Wordle(commands.Cog):
 
         frame.line(xy = ([(canvas_padding + economy_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height), (canvas_padding + economy_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + economy_height)]), fill = text_color, width = 1)
 
-        frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + heading_height / 2), text = f"EARNED {str(await bank.get_currency_name(ctx.guild)).upper()}", fill = text_color, font = header, anchor = "mm")
+        frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + heading_height / 2), text = f"EARNED {str(await bank.get_currency_name(ctx.guild)).upper()} (x{multiplier:.2f})", fill = text_color, font = header, anchor = "mm")
 
         if earned:
-            frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"{await self.humanize_int(earned)} (x{multiplier:.2f})", fill = text_color, font = statistic_value, anchor = "mm")
+            frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"{await self.humanize_int(earned)}", fill = text_color, font = statistic_value, anchor = "mm")
         else:
             frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"0", fill = text_color, font = statistic_value, anchor = "mm")
 
