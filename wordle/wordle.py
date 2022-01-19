@@ -163,7 +163,7 @@ class Wordle(commands.Cog):
         except:
             pass
 
-        summary_image = await self.combine(await self.canvas(target_word, guesses), await self.profile(ctx.author, target_word, guesses, win_amount, multiplier))
+        summary_image = await self.combine(await self.canvas(target_word, guesses), await self.profile(ctx, ctx.author, target_word, guesses, win_amount, multiplier))
         summary_file = discord.File(summary_image, filename = "summary.png")
         await ctx.send(content = summary_text if summary_text else None, file = summary_file)
 
