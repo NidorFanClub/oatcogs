@@ -22,19 +22,36 @@ except Exception as e:
 class Wordle(commands.Cog):
     """Wordle -- now in Discord!"""
 
-    default_guild_settings = {"WIN_AMOUNT": 500, "MULTIPLIER": True, "STREAKS": True, "TURN_MULTIPLIER": True}
-    default_member_settings = {"played": 0, "total_wins": 0, "total_earnings": 0, "streak": 0, "max_streak": 0, "guess_distribution": {"1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0}}
+    default_guild_settings = {"WIN_AMOUNT": 500,
+                              "TIME_LIMIT": 300,
+                              "MULTIPLIER": True,
+                              "STREAKS": True,
+                              "TURN_MULTIPLIER": True
+                              "AWARD_ON_LOSS": False}
+
+    default_member_settings = {"played": 0,
+                               "total_wins": 0,
+                               "total_earnings": 0,
+                               "streak": 0,
+                               "max_streak": 0,
+                               "guess_distribution": {"1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0},
+                               "green_letters": 0,
+                               "yellow_letters": 0,
+                               "total_lines": 0}
 
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier = 8234834580, force_registration=True)
+        self.config.register_global(is_global = False)
         self.config.register_guild(**self.default_guild_settings)
         self.config.register_member(**self.default_member_settings)
+        self.config.register_user(**self.default_member_settings)
+
 
     @commands.command()
-    @commands.max_concurrency(1, per = commands.BucketType.user, wait = False)
+    @commands.max_concurrency(1, per = commands.BucketType.member, wait = False)
     @commands.guild_only()
-    async def wordle(self, ctx):
+    async def wordle(self, ctx, guess = None):
         f"Play a game of Wordle!"
         target_word = await self.get_word()
 
@@ -42,20 +59,31 @@ class Wordle(commands.Cog):
 
         guesses = []
 
-        await self.config.member(ctx.author).played.set(await self.config.member(ctx.author).played() + 1)
+        conf = await self.config
 
-        wordle_image = await self.draw_wordle(ctx, await self.draw_canvas(ctx, target_word, guesses), await self.draw_keyboard(ctx, target_word, guesses))
+        guild = conf.guild(ctx.guild)
+
+        if conf.global.is_global():
+            member = conf.user(ctx.author)
+        else:
+            member = conf.member(ctx.author)
+
+        member.played.set(member.played() + 1)
+
+        wordle_image = await self.combine(await self.canvas(ctx, target_word, guesses), await self.keyboard(ctx, target_word, guesses))
         wordle_file = discord.File(wordle_image, filename = "wordle.png")
 
         message = await ctx.send("Welcome to Wordle! Type a five letter word to start. Type `stop` at any time to cancel the game.", file = wordle_file)
 
         while len(guesses) < 6 and target_word not in guesses:
             try:
-                guess = await self.bot.wait_for("message", check = MessagePredicate.same_context(ctx), timeout = 300.0)
+                guess = await self.bot.wait_for("message", check = MessagePredicate.same_context(ctx), timeout = guild.TIME_LIMIT())
             except asyncio.TimeoutError:
+                summary_text = "You didn't make a guess within the time limit."
                 break
             else:
-                if guess.content.lower() == "stop" or guess.content.lower() == ".stop":
+                if guess.content.lower() == "stop"
+                    summary_text = "You stopped the game before you reached the end."
                     try:
                         await guess.delete()
                     except:
@@ -68,7 +96,7 @@ class Wordle(commands.Cog):
                 else:
                     guesses.append(guess.content.lower())
 
-                    wordle_image = await self.draw_wordle(ctx, await self.draw_canvas(ctx, target_word, guesses), await self.draw_keyboard(ctx, target_word, guesses))
+                    wordle_image = await self.combine(await self.canvas(ctx, target_word, guesses), await self.keyboard(ctx, target_word, guesses))
                     wordle_file = discord.File(wordle_image, filename = "wordle.png")
 
                     try:
@@ -83,69 +111,78 @@ class Wordle(commands.Cog):
                     except:
                         pass
 
-        if target_word in guesses:
-            base_amount = await self.config.guild(ctx.guild).WIN_AMOUNT()
-            streak = await self.config.member(ctx.author).streak() + 1
-            total_wins = await self.config.member(ctx.author).total_wins() + 1
-            total_earnings = await self.config.member(ctx.author).total_earnings()
-            max_streak = await self.config.member(ctx.author).max_streak()
+        if target_word not in guesses:
+            member.streak.set(0)
 
-            await self.config.member(ctx.author).total_wins.set(total_wins)
-            await self.config.member(ctx.author).streak.set(streak)
+            if guild.AWARD_ON_LOSS:
+                win_amount = 50 * len(guesses)
+                multiplier = 1
+            else:
+                win_amount = 0
+                multiplier = 0
+        else:
+            base_amount = guild.WIN_AMOUNT()
+            streak = member.streak() + 1
+            total_wins = member.total_wins() + 1
+            max_streak = member.max_streak()
 
-            async with self.config.member(ctx.author).guess_distribution() as guess_distribution:
+            member.total_wins.set(total_wins)
+            member.streak.set(streak)
+
+            async with member.guess_distribution() as guess_distribution:
                 guess_distribution[str(len(guesses))] += 1
 
             if streak > max_streak:
-                await self.config.member(ctx.author).max_streak.set(streak)
+                await member.max_streak.set(streak)
 
-            if await self.config.guild(ctx.guild).MULTIPLIER():
+            if await member.MULTIPLIER():
                 multiplier = 0
-                if await self.config.guild(ctx.guild).STREAKS():
-                    await self.config.member(ctx.author).streak.set(streak)
+                if guild.STREAKS():
+                    await member.streak.set(streak)
                     multiplier += (0.5 * (streak))
-                if await self.config.guild(ctx.guild).TURN_MULTIPLIER():
+                if guild.TURN_MULTIPLIER():
                     multiplier += (1 / (len(guesses) / 6))
             else:
                 multiplier = 1
 
             win_amount = base_amount * multiplier
 
-            try:
-                await bank.deposit_credits(ctx.author, int(win_amount))
-                await self.config.member(ctx.author).total_earnings.set(total_earnings + win_amount)
-            except:
-                pass
+        total_earnings = member.total_earnings()
+        total_lines = member.total_lines() + len(guesses)
+        member.total_lines.set(total_lines)
+
+        try:
+            await bank.deposit_credits(ctx.author, int(win_amount))
+        except:
+            pass
         else:
-            await self.config.member(ctx.author).streak.set(0)
-            win_amount = 50 * len(guesses)
-            multiplier = 1
+            await member.total_earnings.set(total_earnings + win_amount)
 
         try:
             await message.delete()
         except:
             pass
 
-        summary_image = await self.draw_wordle(ctx, await self.draw_canvas(ctx, target_word, guesses), await self.draw_profile(ctx, ctx.author, target_word, guesses, win_amount, multiplier))
+        summary_image = await self.combine(await self.canvas(target_word, guesses), await self.profile(ctx.author, target_word, guesses, win_amount, multiplier))
         summary_file = discord.File(summary_image, filename = "summary.png")
-        await ctx.send(file = summary_file)
+        await ctx.send(content = summary_text if summary_text else content = None, file = summary_file)
 
         return
 
     @commands.command()
     @commands.guild_only()
-    async def wordlestats(self, ctx, member: typing.Optional[discord.Member]):
-        if not member:
+    async def wordlestats(self, ctx, member: discord.Member = None):
+        if member is None:
             member = ctx.author
 
-        profile_image = await self.save_image(await self.draw_profile(ctx, member))
+        profile_image = await self.save_image(await self.profile(ctx, member))
         profile_file = discord.File(profile_image, filename = "profile.png")
         await ctx.send(file = profile_file)
 
     async def get_word(self):
         return random.choice(open(f"{bundled_data_path(self)}/words.txt").read().splitlines()).lower()
 
-    async def draw_canvas(self, ctx, target_word, guesses):
+    async def canvas(self, target_word, guesses):
         canvas_width = 350
         canvas_height = 420
         canvas_padding = 10
@@ -215,7 +252,7 @@ class Wordle(commands.Cog):
 
         return canvas
 
-    async def draw_keyboard(self, ctx, target_word, guesses):
+    async def keyboard(self, target_word, guesses):
         canvas_width = 500
         canvas_height = 200
         canvas_padding = 8
@@ -278,7 +315,10 @@ class Wordle(commands.Cog):
                         
         return canvas
 
-    async def draw_profile(self, ctx, member: discord.Member, target_word = None, guesses = [], earned = 0, multiplier = 0):
+    # This place is not a place of honor.
+    # No highly esteemed deed is commemorated here.
+    # Nothing valued is here.
+    async def profile(self, ctx, member: discord.Member, target_word = None, guesses = [], earned = 0, multiplier = 0):
         canvas_width = 500
         canvas_height = 444
         canvas_padding = 16
@@ -340,10 +380,10 @@ class Wordle(commands.Cog):
 
         frame.text(xy = ((canvas_width / 2), (2 * canvas_padding + heading_height / 2)), text = f"{member.name.upper()}'S STATS", fill = text_color, font = header, anchor = "mm")
 
-        frame.text(xy = ((canvas_width / 2 - 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.humanize_int(played)}", fill = text_color, font = statistic_value, anchor = "mm")
+        frame.text(xy = ((canvas_width / 2 - 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.humanize_number(played)}", fill = text_color, font = statistic_value, anchor = "mm")
         frame.text(xy = ((canvas_width / 2 - statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{100 * (total_wins / played if played else 0):.0f}", fill = text_color, font = statistic_value, anchor = "mm")
-        frame.text(xy = ((canvas_width / 2 + statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.humanize_int(streak)}", fill = text_color, font = statistic_value, anchor = "mm")
-        frame.text(xy = ((canvas_width / 2 + 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.humanize_int(max_streak)}", fill = text_color, font = statistic_value, anchor = "mm")
+        frame.text(xy = ((canvas_width / 2 + statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.humanize_number(streak)}", fill = text_color, font = statistic_value, anchor = "mm")
+        frame.text(xy = ((canvas_width / 2 + 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height / 2)), text = f"{await self.humanize_number(max_streak)}", fill = text_color, font = statistic_value, anchor = "mm")
 
         frame.text(xy = ((canvas_width / 2 - 3 * statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height + statistic_label_height / 2)), text = "Played", fill = text_color, font = statistic_label, anchor = "mm")
         frame.text(xy = ((canvas_width / 2 - statistic_label_width / 2), (2 * canvas_padding + heading_height + statistic_value_height + statistic_label_height / 2)), text = "Win %", fill = text_color, font = statistic_label, anchor = "mm")
@@ -381,11 +421,11 @@ class Wordle(commands.Cog):
         if earned:
             frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + heading_height / 2), text = f"EARNED {str(await bank.get_currency_name(ctx.guild)).upper()} (x{multiplier:.2f})", fill = text_color, font = header, anchor = "mm")
 
-            frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"{await self.humanize_int(earned)}", fill = text_color, font = statistic_value_bold, anchor = "mm")
+            frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"{await self.humanize_number(earned)}", fill = text_color, font = statistic_value_bold, anchor = "mm")
         else:
             frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + heading_height / 2), text = f"LIFETIME EARNINGS", fill = text_color, font = header, anchor = "mm")
 
-            frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"{await self.humanize_int(total_earnings)}", fill = text_color, font = statistic_value_bold, anchor = "mm")
+            frame.text(xy = (canvas_padding + economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"{await self.humanize_number(total_earnings)}", fill = text_color, font = statistic_value_bold, anchor = "mm")
 
         if target_word:
             frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 2 * heading_height + statistics_height + graph_height + heading_height / 2), text = f"THE WORD WAS", fill = text_color, font = header, anchor = "mm")
@@ -400,11 +440,11 @@ class Wordle(commands.Cog):
             rank = await self.get_rank(ctx, member)
             members = len(ctx.guild.members)
 
-            frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"#{rank}/{members}", fill = text_color, font = statistic_value_bold, anchor = "mm")
+            frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"#{rank}/{members}" if rank else text = f"No Data", fill = text_color, font = statistic_value_bold, anchor = "mm")
 
         return canvas
 
-    async def draw_wordle(self, ctx, canvas, combine):
+    async def combine(self, canvas, combine):
         combine.thumbnail(canvas.size)
 
         bg = (0, 0, 0, 0)
@@ -421,18 +461,18 @@ class Wordle(commands.Cog):
         file.seek(0)
         return file
 
-    async def humanize_int(self, num):
-        if not num:
+    async def humanize_number(self, number):
+        if not number:
             return 0
 
-        num = float(f"{num:.3g}")
+        number = float(f"{number:.3g}")
         magnitude = 0
 
-        while abs(num) >= 1000:
+        while abs(number) >= 1000:
             magnitude += 1
-            num /= 1000.0
+            number /= 1000.0
 
-        return "{}{}".format("{:f}".format(num).rstrip('0').rstrip('.'), ['', 'k', 'm', 'b', 't'][magnitude])
+        return f"{number:.0f}{['', 'k', 'm', 'b', 't'][magnitude])}"
 
     async def get_rank(self, ctx, member):
         members = await self.config.all_members(ctx.guild)
