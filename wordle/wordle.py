@@ -68,7 +68,7 @@ class Wordle(commands.Cog):
 
         guild = conf.guild(ctx.guild)
 
-        member.played.set(await member.played() + 1)
+        await member.played.set(await member.played() + 1)
 
         wordle_image = await self.combine(await self.canvas(target_word, guesses), await self.keyboard(target_word, guesses))
         wordle_file = discord.File(wordle_image, filename = "wordle.png")
