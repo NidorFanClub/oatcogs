@@ -77,7 +77,7 @@ class Wordle(commands.Cog):
 
         while len(guesses) < 6 and target_word not in guesses:
             try:
-                guess = await self.bot.wait_for("message", check = MessagePredicate.same_context(ctx), timeout = guild.TIME_LIMIT())
+                guess = await self.bot.wait_for("message", check = MessagePredicate.same_context(ctx), timeout = await guild.TIME_LIMIT())
             except asyncio.TimeoutError:
                 summary_text = "You didn't make a guess within the time limit."
                 break
