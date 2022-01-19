@@ -74,6 +74,7 @@ class Wordle(commands.Cog):
         wordle_file = discord.File(wordle_image, filename = "wordle.png")
 
         message = await ctx.send("Welcome to Wordle! Type a five letter word to start. Type `stop` at any time to cancel the game.", file = wordle_file)
+        summary_text = None
 
         while len(guesses) < 6 and target_word not in guesses:
             try:
@@ -165,7 +166,7 @@ class Wordle(commands.Cog):
 
         summary_image = await self.combine(await self.canvas(target_word, guesses), await self.profile(ctx, ctx.author, target_word, guesses, win_amount, multiplier))
         summary_file = discord.File(summary_image, filename = "summary.png")
-        await ctx.send(content = None if not summary_text else summary_text, file = summary_file)
+        await ctx.send(content = summary_text, file = summary_file)
 
         return
 
