@@ -61,12 +61,12 @@ class Wordle(commands.Cog):
 
         conf = await self.config
 
-        guild = conf.guild(ctx.guild)
-
-        if conf.global.is_global():
+        if conf.is_global():
             member = conf.user(ctx.author)
         else:
             member = conf.member(ctx.author)
+
+        guild = conf.guild(ctx.guild)
 
         member.played.set(member.played() + 1)
 
