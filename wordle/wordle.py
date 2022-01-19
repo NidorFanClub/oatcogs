@@ -472,7 +472,7 @@ class Wordle(commands.Cog):
             magnitude += 1
             number /= 1000.0
 
-        return f"{number:.0f}{['', 'k', 'm', 'b', 't'][magnitude])}"
+        return f"{number:.0f}{['', 'k', 'm', 'b', 't'][magnitude]}"
 
     async def get_rank(self, ctx, member):
         members = await self.config.all_members(ctx.guild)
