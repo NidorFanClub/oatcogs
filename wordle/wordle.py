@@ -51,7 +51,7 @@ class Wordle(commands.Cog):
     @commands.command()
     @commands.max_concurrency(1, per = commands.BucketType.member, wait = False)
     @commands.guild_only()
-    async def wordle(self, ctx, guess = None):
+    async def wordle(self, ctx):
         f"Play a game of Wordle!"
         target_word = await self.get_word()
 
