@@ -26,7 +26,7 @@ class Wordle(commands.Cog):
                               "TIME_LIMIT": 300,
                               "MULTIPLIER": True,
                               "STREAKS": True,
-                              "TURN_MULTIPLIER": True
+                              "TURN_MULTIPLIER": True,
                               "AWARD_ON_LOSS": False}
 
     default_member_settings = {"played": 0,
