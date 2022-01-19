@@ -136,9 +136,9 @@ class Wordle(commands.Cog):
             if streak > max_streak:
                 await member.max_streak.set(streak)
 
-            if await member.MULTIPLIER():
+            if await guild.MULTIPLIER():
                 multiplier = 0
-                if guild.STREAKS():
+                if await guild.STREAKS():
                     await member.streak.set(streak)
                     multiplier += (0.5 * (streak))
                 if guild.TURN_MULTIPLIER():
