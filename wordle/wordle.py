@@ -440,7 +440,7 @@ class Wordle(commands.Cog):
             rank = await self.get_rank(ctx, member)
             members = len(ctx.guild.members)
 
-            frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"#{rank}/{members}" if rank else text = f"No Data", fill = text_color, font = statistic_value_bold, anchor = "mm")
+            frame.text(xy = (canvas_width - canvas_padding - economy_label_width / 2, 2 * canvas_padding + 3 * heading_height + statistics_height + graph_height + statistic_value_height / 2), text = f"#{rank}/{members}" if rank else f"No Data", fill = text_color, font = statistic_value_bold, anchor = "mm")
 
         return canvas
 
