@@ -59,9 +59,9 @@ class Wordle(commands.Cog):
 
         guesses = []
 
-        conf = await self.config
+        conf = self.config
 
-        if conf.is_global():
+        if await conf.is_global():
             member = conf.user(ctx.author)
         else:
             member = conf.member(ctx.author)
@@ -112,7 +112,7 @@ class Wordle(commands.Cog):
                         pass
 
         if target_word not in guesses:
-            member.streak.set(0)
+            await member.streak.set(0)
 
             if guild.AWARD_ON_LOSS:
                 win_amount = 50 * len(guesses)
@@ -121,13 +121,13 @@ class Wordle(commands.Cog):
                 win_amount = 0
                 multiplier = 0
         else:
-            base_amount = guild.WIN_AMOUNT()
-            streak = member.streak() + 1
-            total_wins = member.total_wins() + 1
-            max_streak = member.max_streak()
+            base_amount = await guild.WIN_AMOUNT()
+            streak = await member.streak() + 1
+            total_wins = await member.total_wins() + 1
+            max_streak = await member.max_streak()
 
-            member.total_wins.set(total_wins)
-            member.streak.set(streak)
+            await member.total_wins.set(total_wins)
+            await member.streak.set(streak)
 
             async with member.guess_distribution() as guess_distribution:
                 guess_distribution[str(len(guesses))] += 1
@@ -147,9 +147,9 @@ class Wordle(commands.Cog):
 
             win_amount = base_amount * multiplier
 
-        total_earnings = member.total_earnings()
-        total_lines = member.total_lines() + len(guesses)
-        member.total_lines.set(total_lines)
+        total_earnings = await member.total_earnings()
+        total_lines = await member.total_lines() + len(guesses)
+        await member.total_lines.set(total_lines)
 
         try:
             await bank.deposit_credits(ctx.author, int(win_amount))
