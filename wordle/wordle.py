@@ -70,7 +70,7 @@ class Wordle(commands.Cog):
 
         member.played.set(await member.played() + 1)
 
-        wordle_image = await self.combine(await self.canvas(ctx, target_word, guesses), await self.keyboard(ctx, target_word, guesses))
+        wordle_image = await self.combine(await self.canvas(target_word, guesses), await self.keyboard(target_word, guesses))
         wordle_file = discord.File(wordle_image, filename = "wordle.png")
 
         message = await ctx.send("Welcome to Wordle! Type a five letter word to start. Type `stop` at any time to cancel the game.", file = wordle_file)
@@ -96,7 +96,7 @@ class Wordle(commands.Cog):
                 else:
                     guesses.append(guess.content.lower())
 
-                    wordle_image = await self.combine(await self.canvas(ctx, target_word, guesses), await self.keyboard(ctx, target_word, guesses))
+                    wordle_image = await self.combine(await self.canvas(target_word, guesses), await self.keyboard(target_word, guesses))
                     wordle_file = discord.File(wordle_image, filename = "wordle.png")
 
                     try:
