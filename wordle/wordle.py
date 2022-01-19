@@ -82,7 +82,7 @@ class Wordle(commands.Cog):
                 summary_text = "You didn't make a guess within the time limit."
                 break
             else:
-                if guess.content.lower() == "stop"
+                if guess.content.lower() == "stop":
                     summary_text = "You stopped the game before you reached the end."
                     try:
                         await guess.delete()
