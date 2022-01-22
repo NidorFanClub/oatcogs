@@ -141,7 +141,7 @@ class Wordle(commands.Cog):
                 if await guild.STREAKS():
                     await member.streak.set(streak)
                     multiplier += (0.5 * (streak))
-                if guild.TURN_MULTIPLIER():
+                if await guild.TURN_MULTIPLIER():
                     multiplier += (1 / (len(guesses) / 6))
             else:
                 multiplier = 1
