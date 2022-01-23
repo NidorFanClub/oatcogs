@@ -100,11 +100,15 @@ class Wordle(commands.Cog):
                     wordle_image = await self.combine(await self.canvas(target_word, guesses), await self.keyboard(target_word, guesses))
                     wordle_file = discord.File(wordle_image, filename = "wordle.png")
 
+                    try:
+                        await message.delete()
+                    except:
+                        pass
+
                     if len(guesses) != 6:
                         message = await ctx.send(file = wordle_file)
 
                     try:
-                        await message.delete()
                         await guess.delete()
                     except:
                         pass
