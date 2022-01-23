@@ -102,15 +102,12 @@ class Wordle(commands.Cog):
 
                     try:
                         await message.delete()
-                    except:
-                        pass
-
-                    message = await ctx.send(file = wordle_file)
-
-                    try:
                         await guess.delete()
                     except:
                         pass
+
+                    if len(guesses) != 6:
+                        message = await ctx.send(file = wordle_file)
 
         if target_word not in guesses:
             await member.streak.set(0)
@@ -158,11 +155,6 @@ class Wordle(commands.Cog):
             pass
         else:
             await member.total_earnings.set(total_earnings + win_amount)
-
-        try:
-            await message.delete()
-        except:
-            pass
 
         summary_image = await self.combine(await self.canvas(target_word, guesses), await self.profile(ctx, ctx.author, target_word, guesses, win_amount, multiplier))
         summary_file = discord.File(summary_image, filename = "summary.png")
