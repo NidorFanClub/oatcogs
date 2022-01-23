@@ -5,7 +5,7 @@ from redbot.core.utils.predicates import MessagePredicate
 from redbot.core.data_manager import bundled_data_path
 from io import BytesIO
 import asyncio
-import discord.utils 
+import discord.utils
 import discord.ext
 import discord
 import random
@@ -100,14 +100,14 @@ class Wordle(commands.Cog):
                     wordle_image = await self.combine(await self.canvas(target_word, guesses), await self.keyboard(target_word, guesses))
                     wordle_file = discord.File(wordle_image, filename = "wordle.png")
 
+                    if len(guesses) != 6:
+                        message = await ctx.send(file = wordle_file)
+
                     try:
                         await message.delete()
                         await guess.delete()
                     except:
                         pass
-
-                    if len(guesses) != 6:
-                        message = await ctx.send(file = wordle_file)
 
         if target_word not in guesses:
             await member.streak.set(0)
@@ -269,7 +269,7 @@ class Wordle(commands.Cog):
 
         canvas = Image.new("RGBA", (canvas_width, canvas_height), key_bg)
         frame = ImageDraw.Draw(canvas)
-        
+
         for key_index, letter in enumerate(letters):
             if key_index < 10:
                 start_x = canvas_padding + (key_width * key_index) + (key_gap * key_index)
@@ -305,7 +305,7 @@ class Wordle(commands.Cog):
                         frame.rounded_rectangle([(start_x, start_y), (end_x, end_y)], radius = 4, fill = key_green)
 
             frame.text(xy = (font_x, font_y), text = letter.upper(), fill = text_color, font = bold, anchor = "mm")
-                        
+
         return canvas
 
     # This place is not a place of honor.
