@@ -22,7 +22,6 @@ class MooseTools(commands.Cog):
         """
         Returns all member IDs in the server as a text file
         """
-
         user_id_list = ""
 
         for user in ctx.guild.members:
@@ -35,9 +34,8 @@ class MooseTools(commands.Cog):
     @commands.guild_only()
     async def avatar(self, ctx, member: discord.Member):
         """
-        Returns a member's avatar.
+        Returns a member's avatar url.
         """
-
         if not member:
             member = ctx.author
 
