@@ -1,4 +1,5 @@
 from redbot.core import commands, Config, checks
+from redbot.core.utils.chat_formatting import humanize_list
 import asyncio
 import discord.utils
 import discord
@@ -96,34 +97,31 @@ class Study(commands.Cog):
     @studyset_add.command(name = "study", aliases = ["study_role", "studyrole"])
     async def studyset_add_study(self, ctx, role: discord.Role):
         await self.config.guild(ctx.guild).study_role.set(role.id)
-        await ctx.tick()
+        await ctx.send(f"Set {role.mention} as study role")
 
     @studyset_add.command(name = "banned", aliases = ["banned_role", "bannedrole"], require_var_positional=True)
-    async def studyset_add_banned(self, ctx, roles: commands.Greedy[discord.Role]):
+    async def studyset_add_banned(self, ctx, *roles: discord.Role):
         async with self.config.guild(ctx.guild).banned_roles() as banned_roles:
-            roles_added = 0
-            for banned_role in roles:
-                try:
-                    roles_added += 1
-                    banned_roles.append(banned_role.id)
-                except:
-                    pass
-            await ctx.send(f"Added {roles_added} role(s) to the list of banned roles!")
-        await ctx.tick()
+            roles_added = [role.id for role in roles if role.id not in banned_roles]
+            banned_roles.extend(roles_added)
+
+            if not roles_added:
+                await ctx.send("Role(s) already in banned role list")
+                return
+
+            await ctx.send(f"Added {humanize_list([ctx.guild.get_role(role_id).mention for role_id in roles_added])} to banned role list")
 
     @studyset_add.command(name = "exempt", aliases = ["exempt_role", "exemptrole"], require_var_positional=True)
-    async def studyset_add_exempt(self, ctx, roles: commands.Greedy[discord.Role]):
-
+    async def studyset_add_exempt(self, ctx, *roles: discord.Role):
         async with self.config.guild(ctx.guild).exempt_roles() as exempt_roles:
-            roles_added = 0
-            for exempt_role in roles:
-                try:
-                    roles_added += 1
-                    exempt_roles.append(exempt_role.id)
-                except:
-                    pass
-            await ctx.send(f"Added {roles_added} role(s) to the list of exempt roles!")
-        await ctx.tick()
+            roles_added = [role.id for role in roles if role.id not in exempt_roles]
+            exempt_roles.extend(roles_added)
+
+            if not roles_added:
+                await ctx.send("Role(s) already in exempt role list")
+                return
+
+            await ctx.send(f"Added {humanize_list([ctx.guild.get_role(role_id).mention for role_id in roles_added])} to exempt role list")
 
     @studyset.group(name = "remove", aliases = ["delete", "del", "rem"])
     async def studyset_remove(self, ctx: commands.Context) -> None:
@@ -133,45 +131,41 @@ class Study(commands.Cog):
     @studyset_remove.command(name = "study", aliases = ["study_role", "studyrole"])
     async def studyset_remove_study(self, ctx, role: discord.Role):
         await self.config.guild(ctx.guild).study_role.set("")
-        await ctx.tick()
+        await ctx.send(f"Removed study role")
 
 
     @studyset_remove.command(name = "banned", aliases = ["banned_role", "bannedrole"], require_var_positional=True)
-    async def studyset_remove_banned(self, ctx, roles: commands.Greedy[discord.Role]):
+    async def studyset_remove_banned(self, ctx, *roles: discord.Role):
         async with self.config.guild(ctx.guild).banned_roles() as banned_roles:
-            roles_removed = 0
-            for banned_role in roles:
-                try:
-                    roles_removed += 1
-                    banned_roles.remove(banned_role.id)
-                except:
-                    pass
-            await ctx.send(f"Removed {roles_removed} role(s) from the list of banned roles!")
-        await ctx.tick()
+            roles_removed = [role.id for role in roles if role.id in banned_roles]
+
+            if not roles_removed:
+                await ctx.send("Role(s) not in banned role list")
+                return
+
+            for role in roles_removed:
+                banned_roles.remove(role)
+
+            await ctx.send(f"Removed {humanize_list([ctx.guild.get_role(role_id).mention for role_id in roles_removed])} from banned role list")
 
     @studyset_remove.command(name = "exempt", aliases = ["exempt_role", "exemptrole"], require_var_positional=True)
-    async def studyset_remove_exempt(self, ctx, roles: commands.Greedy[discord.Role]):
+    async def studyset_remove_exempt(self, ctx, *roles: discord.Role):
         async with self.config.guild(ctx.guild).exempt_roles() as exempt_roles:
-            roles_removed = 0
-            for exempt_role in roles:
-                try:
-                    roles_removed += 1
-                    exempt_roles.remove(exempt_role.id)
-                except:
-                    pass
-            await ctx.send(f"Removed {roles_removed} role(s) from the list of exempt roles!")
-        await ctx.tick()
+            roles_removed = [role.id for role in roles if role.id in exempt_roles]
+
+            if not roles_removed:
+                await ctx.send("Role(s) not in exempt role list")
+                return
+
+            for role in roles_removed:
+                exempt_roles.remove(role)
+
+            await ctx.send(f"Removed {humanize_list([ctx.guild.get_role(role_id).mention for role_id in roles_removed])} from exempt role list")
 
     @studyset.group(name = "clear", aliases = ["wipe"])
     async def studyset_clear(self, ctx: commands.Context) -> None:
         f"Clear data from the study settings."
         pass
-
-    @studyset_clear.command(name = "exempt", aliases = ["exempt_roles", "exemptroles"])
-    async def studyset_clear_exempt(self, ctx):
-        async with self.config.guild(ctx.guild).exempt_roles() as exempt_roles:
-            exempt_roles.clear()
-        await ctx.tick()
 
     @studyset_clear.command(name = "banned", aliases = ["banned_roles", "bannedroles"])
     async def studyset_clear_banned(self, ctx):
@@ -179,13 +173,47 @@ class Study(commands.Cog):
             banned_roles.clear()
         await ctx.tick()
 
-    @studyset.group(name = "show", aliases = ["output", "display", "get"])
-    async def studyset_show(self, ctx: commands.Context) -> None:
-        f"Display study settings and debug info."
-        pass
+    @studyset_clear.command(name = "exempt", aliases = ["exempt_roles", "exemptroles"])
+    async def studyset_clear_exempt(self, ctx):
+        async with self.config.guild(ctx.guild).exempt_roles() as exempt_roles:
+            exempt_roles.clear()
+        await ctx.tick()
 
-    @studyset_show.command(name = "user", aliases = ["member"])
-    async def studyset_show_user(self, ctx: commands.Context, member: typing.Optional[discord.Member]):
+    @studyset.command(name = "list", aliases = ["output", "display", "get", "show"])
+    async def studyset_list(self, ctx: commands.Context) -> None:
+        e = discord.Embed(title="", colour=ctx.author.color)
+        e.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
+
+        study_list = ""
+        exempt_list = ""
+        banned_list = ""
+
+        async with self.config.guild(ctx.guild).exempt_roles() as exempt_roles:
+            if not exempt_roles:
+                exempt_list = "Empty"
+            else:
+                role_mentions = [ctx.guild.get_role(role_id).mention for role_id in exempt_roles]
+                exempt_list = "\n".join(role_mentions)
+
+        async with self.config.guild(ctx.guild).banned_roles() as banned_roles:
+            if not banned_roles:
+                banned_list = "Empty"
+            else:
+                role_mentions = [ctx.guild.get_role(role_id).mention for role_id in banned_roles]
+                banned_list = "\n".join(role_mentions)
+
+        study_mention = ctx.guild.get_role(await self.config.guild(ctx.guild).study_role()).mention
+        study_list = study_mention
+
+        e.add_field(name="Study Role", value=study_list, inline=False)
+        e.add_field(name="Exempt Roles", value=exempt_list, inline=False)
+        e.add_field(name="Banned Roles", value=banned_list, inline=False)
+
+        await ctx.send(embed=e)
+        await ctx.tick()
+
+    @studyset.command(name = "user", aliases = ["member"])
+    async def studyset_user(self, ctx: commands.Context, member: typing.Optional[discord.Member]):
         if not member:
             member = ctx.author
 
@@ -198,18 +226,14 @@ class Study(commands.Cog):
         if not member.roles:
             current_role_list = "No current roles"
         else:
-            for role in member.roles:
-                if role:
-                    current_role_list += str(role.name) + ": " + str(role.id) + "\n"
+            cached_role_list = "\n".join(member.roles)
 
         async with self.config.member(member).cached_roles() as cached_roles:
             if not cached_roles:
                 cached_role_list = "No cached roles"
             else:
-                for role_id in cached_roles:
-                    role = discord.utils.get(ctx.guild.roles, id = role_id)
-                    if role:
-                        cached_role_list += str(role.name) + ": " + str(role.id) + "\n"
+                role_mentions = [ctx.guild.get_role(role_id).mention for role_id in cached_roles]
+                cached_role_list = "\n".join(role_mentions)
 
         studying = await self.config.member(member).study_in_progress()
 
@@ -219,44 +243,6 @@ class Study(commands.Cog):
 
         await ctx.send(embed=e)
         await ctx.tick()
-
-    @studyset_show.command(name = "settings", aliases = ["roles"])
-    async def studyset_show_settings(self, ctx: commands.Context):
-            e = discord.Embed(title="", colour=ctx.author.color)
-            e.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
-
-            study_list = ""
-            exempt_list = ""
-            ban_list = ""
-
-            async with self.config.guild(ctx.guild).exempt_roles() as exempt_roles:
-                if not exempt_roles:
-                    exempt_list = "Empty"
-                else:
-                    for exempt_role_id in exempt_roles:
-                        exempt_role = discord.utils.get(ctx.guild.roles, id = exempt_role_id)
-                        if exempt_role:
-                            exempt_list += str(exempt_role.name) + ": " + str(exempt_role.id) + "\n"
-
-            async with self.config.guild(ctx.guild).banned_roles() as banned_roles:
-                if not banned_roles:
-                    ban_list = "Empty"
-                else:
-                    for banned_role_id in banned_roles:
-                        banned_role = discord.utils.get(ctx.guild.roles, id = banned_role_id)
-                        if banned_role:
-                            ban_list += str(banned_role.name) + ": " + str(banned_role.id) + "\n"
-
-            study_role_id = await self.config.guild(ctx.guild).study_role()
-            study_role = discord.utils.get(ctx.guild.roles, id = study_role_id)
-            study_list = str(study_role.name) + ": " + str(study_role.id) + "\n"
-
-            e.add_field(name="Study Role", value=study_list, inline=False)
-            e.add_field(name="Exempt Roles", value=exempt_list, inline=False)
-            e.add_field(name="Banned Roles", value=ban_list, inline=False)
-
-            await ctx.send(embed=e)
-            await ctx.tick()
 
     @studyset.command(name = "reset")
     async def studyset_reset(self, ctx, member: typing.Optional[discord.Member]):
