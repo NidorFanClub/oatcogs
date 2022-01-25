@@ -1,4 +1,4 @@
-from redbot.core import commands, Config
+from redbot.core import commands, Config, checks
 from redbot.core.utils.chat_formatting import humanize_list
 import discord
 
@@ -38,6 +38,7 @@ class YetAnotherAutoRoler(commands.Cog):
         await member.add_roles(*[member.guild.get_role(role_id) for role_id in data["roles"]])
 
     @commands.group(alias = "yetanotherautoroler")
+    @checks.mod_or_permissions(manage_roles=True)
     async def yaar(self, ctx):
         """YetAnotherAutoRoler commands"""
         pass
