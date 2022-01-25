@@ -1,4 +1,5 @@
 from redbot.core import commands, Config
+from redbot.core.utils.chat_formatting import humanize_list
 import discord
 
 class YetAnotherAutoRoler(commands.Cog):
@@ -32,12 +33,13 @@ class YetAnotherAutoRoler(commands.Cog):
 
         if data["circular_roles"]:
             await member.add_roles(member.guild.get_role(data["circular_roles"][(data["index"] % len(data["circular_roles"]))]))
+            await self.config.guild(member.guild).index.set(data["index"] + 1)
 
         await member.add_roles(*[member.guild.get_role(role_id) for role_id in data["roles"]])
 
-    @commands.group()
+    @commands.group(alias = "yetanotherautoroler")
     async def yaar(self, ctx):
-        """Autorole commands"""
+        """YetAnotherAutoRoler commands"""
         pass
 
     @yaar.group(name="role")
@@ -45,50 +47,66 @@ class YetAnotherAutoRoler(commands.Cog):
         """Roles for adding upon user join"""
         pass
 
-    @yaar_role.command(name="add")
-    async def yaar_role_add(self, ctx, role: discord.Role):
-        """Add a role to be assigned to all new joins"""
-        async with self.config.guild(ctx.guild).roles() as roles:
-            if role.id in roles:
-                await ctx.send("Role already in autorole list")
-                return
-            roles.append(role.id)
-            await ctx.send("{} added to autorole list").format(role.mention)
+    @yaar_role.command(name="add", require_var_positional=True)
+    async def yaar_role_add(self, ctx, *roles: discord.Role):
+        """Add role(s) to be assigned to all new joins"""
+        async with self.config.guild(ctx.guild).roles() as autoroles:
+            roles_added = [role.id for role in roles if role.id not in autoroles]
+            autoroles.extend(roles_added)
 
-    @yaar_role.command(name="remove")
-    async def yaar_role_remove(self, ctx, role: discord.Role):
-        """Remove a role from the autorole list"""
-        async with self.config.guild(ctx.guild).roles() as roles:
-            if role.id not in roles:
-                await ctx.send("Role not in autorole list")
+            if not roles_added:
+                await ctx.send("Role(s) already in autorole list")
                 return
-            roles.remove(role.id)
-            await ctx.send("{} removed from autorole list").format(role.mention)
+
+            await ctx.send(f"Added {humanize_list([ctx.guild.get_role(role_id).mention for role_id in roles_added])} to autorole list")
+
+    @yaar_role.command(name="remove", require_var_positional=True)
+    async def yaar_role_remove(self, ctx, *roles: discord.Role):
+        """Remove role(s) from the autorole list"""
+        async with self.config.guild(ctx.guild).roles() as autoroles:
+            roles_removed = [role.id for role in roles if role.id in autoroles]
+
+            if not roles_removed:
+                await ctx.send("Role(s) not in autorole list")
+                return
+
+            for role in roles_removed:
+                autoroles.remove(role)
+
+            await ctx.send(f"Removed {humanize_list([ctx.guild.get_role(role_id).mention for role_id in roles_removed])} from autorole list")
 
     @yaar.group(name="circular")
     async def yaar_circular(self, ctx):
         """Roles to be distributed upon user join"""
         pass
 
-    @yaar_circular.command(name="add")
-    async def yaar_circular_add(self, ctx, role: discord.Role):
-        """Add a circular role to be distributed to new joins"""
+    @yaar_circular.command(name="add", require_var_positional=True)
+    async def yaar_circular_add(self, ctx, *roles: discord.Role):
+        """Add circular role(s) to be distributed to new joins"""
         async with self.config.guild(ctx.guild).circular_roles() as circular_roles:
-            if role.id in circular_roles:
-                await ctx.send("Role already in circular list")
-                return
-            circular_roles.append(role.id)
-            await ctx.send("{} added to autorole list").format(role.mention)
+            roles_added = [role.id for role in roles if role.id not in circular_roles]
+            circular_roles.extend(roles_added)
 
-    @yaar_circular.command(name="remove")
-    async def yaar_circular_remove(self, ctx, role: discord.Role):
-        """Remove a role from the circular list"""
-        async with self.config.guild(ctx.guild).circular_roles() as circular_roles:
-            if role.id not in circular_roles:
-                await ctx.send("Role not in circular list")
+            if not roles_added:
+                await ctx.send("Role(s) already in circular list")
                 return
-            circular_roles.remove(role.id)
-            await ctx.send("{} removed from autorole list").format(role.mention)
+
+            await ctx.send(f"Added {humanize_list([ctx.guild.get_role(role_id).mention for role_id in roles_added])} to circular list")
+
+    @yaar_circular.command(name="remove", require_var_positional=True)
+    async def yaar_circular_remove(self, ctx, *roles: discord.Role):
+        """Remove role(s) from the circular list"""
+        async with self.config.guild(ctx.guild).circular_roles() as circular_roles:
+            roles_removed = [role.id for role in roles if role.id in circular_roles]
+
+            if not roles_removed:
+                await ctx.send("Role(s) not in circular list")
+                return
+
+            for role in roles_removed:
+                circular_roles.remove(role)
+
+            await ctx.send(f"Removed {humanize_list([ctx.guild.get_role(role_id).mention for role_id in roles_removed])} from circular list")
 
     @yaar.command(name="list")
     async def yaar_list(self, ctx):
@@ -108,7 +126,7 @@ class YetAnotherAutoRoler(commands.Cog):
                 circular_list = "Empty"
             else:
                 circular_mentions = [ctx.guild.get_role(role_id).mention for role_id in circular_roles]
-                role_list = "\n".join(circular_mentions)
+                circular_list = "\n".join(circular_mentions)
 
         e.add_field(name="Enabled", value=str(await self.config.guild(ctx.guild).enabled()), inline=False)
         e.add_field(name="Autoroles", value=role_list, inline=False)
@@ -120,10 +138,10 @@ class YetAnotherAutoRoler(commands.Cog):
     async def yaar_enable(self, ctx):
         """Enable autorole"""
         await self.config.guild(ctx.guild).enabled.set(True)
-        await ctx.send("AutoRoler enabled")
+        await ctx.send("YetAnotherAutoRoler enabled")
 
     @yaar.command(name="disable")
     async def yaar_disable(self, ctx):
         """Disable autorole"""
         await self.config.guild(ctx.guild).enabled.set(False)
-        await ctx.send("AutoRoler disabled")
+        await ctx.send("YetAnotherAutoRoler disabled")
