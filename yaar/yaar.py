@@ -40,7 +40,7 @@ class YetAnotherAutoRoler(commands.Cog):
         """Autorole commands"""
         pass
 
-    @yaar.group()
+    @yaar.group(name="role")
     async def yaar_role(self, ctx):
         """Roles for adding upon user join"""
         pass
@@ -65,7 +65,7 @@ class YetAnotherAutoRoler(commands.Cog):
             roles.remove(role.id)
             await ctx.send("{} removed from autorole list").format(role.mention)
 
-    @yaar.group()
+    @yaar.group(name="circular")
     async def yaar_circular(self, ctx):
         """Roles to be distributed upon user join"""
         pass
