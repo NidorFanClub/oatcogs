@@ -226,7 +226,7 @@ class Study(commands.Cog):
         if not member.roles:
             current_role_list = "No current roles"
         else:
-            cached_role_list = "\n".join([role.mention for role in member.roles])
+            current_role_list = "\n".join([role.mention for role in member.roles])
 
         async with self.config.member(member).cached_roles() as cached_roles:
             if not cached_roles:
