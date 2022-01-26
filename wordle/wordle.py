@@ -92,7 +92,7 @@ class Wordle(commands.Cog):
 
                     old_message = message
 
-                    if guess.content.lower() not in open(f"{bundled_data_path(self)}/words.txt").read():
+                    if guess.content.lower() != target_word
                         message = await ctx.send(file=wordle_file)
 
                     try:
