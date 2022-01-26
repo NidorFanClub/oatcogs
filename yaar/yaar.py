@@ -45,7 +45,7 @@ class YetAnotherAutoRoler(commands.Cog):
 
     @yaar.group(name="add")
     async def yaar_add(self, ctx):
-        """Roles for adding upon user join"""
+        """Add roles to be added upon user join"""
         pass
 
     @yaar_add.command(name="role", require_var_positional=True)
@@ -76,7 +76,7 @@ class YetAnotherAutoRoler(commands.Cog):
 
     @yaar.group(name="remove")
     async def yaar_remove(self, ctx):
-        """Roles to be distributed upon user join"""
+        """Remove roles from being added upon user join"""
         pass
 
     @yaar_remove.command(name="role", require_var_positional=True)
