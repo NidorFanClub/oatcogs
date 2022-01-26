@@ -1,21 +1,18 @@
 from redbot.core import Config, checks, commands, modlog
 from discord_components import DiscordComponents, Button, ButtonStyle, Select, SelectOption
 import asyncio
-from datetime import datetime, timezone, timedelta
-import discord.utils 
+from datetime import datetime, timezone
+import discord.utils
 import discord.ext
 import discord
-import os
-import typing
-from num2words import num2words
-from collections import defaultdict
 
 class Verification(commands.Cog):
     """Cog for approving members on public servers."""
+
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1312420691312, force_registration=True)
-        self.config.register_guild(verifier_channel = None, approval_channel = None, approval_message = "", cached_users = {}, cached_invites = {}, approved_roles = [], sus_roles = [], removed_roles = [], verifier_roles = [])
+        self.config.register_guild(verifier_channel=None, approval_channel=None, approval_message="", cached_users={}, cached_invites={}, approved_roles=[], sus_roles=[], removed_roles=[], verifier_roles=[])
 
     async def get_user(self, message: discord.Message):
         async with self.config.guild(message.guild).cached_users() as cached_users:
@@ -30,7 +27,6 @@ class Verification(commands.Cog):
         async with self.config.guild(guild).cached_invites() as cached_invites:
             for invite in await guild.invites():
                 cached_invites.update({invite.id: invite.uses})
-
 
     async def find_invite(self, guild: discord.Guild):
         invites_after_join = await guild.invites()
@@ -53,22 +49,29 @@ class Verification(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
+        await self.verification_menu(member.guild)
+
+    @commands.command()
+    async def verification(self, ctx, member: discord.Member):
+        await self.verification_menu(member.guild)
+
+    async def verification_menu(self, member: discord.Member):
         guild = member.guild
 
         verifier_channel_id = await self.config.guild(guild).verifier_channel()
 
-        channel = discord.utils.get(guild.channels, id = verifier_channel_id)
+        channel = discord.utils.get(guild.channels, id=verifier_channel_id)
 
         if not channel:
             return
-        
-        avatar = member.avatar_url_as(static_format = "png")
+
+        avatar = member.avatar_url_as(static_format="png")
         roles = member.roles[-1:0:-1]
 
         invite_id = await self.find_invite(guild)
 
         if invite_id:
-            invite = discord.utils.get(await guild.invites(), id = invite_id)
+            invite = discord.utils.get(await guild.invites(), id=invite_id)
         elif await guild.vanity_invite():
             invite = await guild.vanity_invite()
         else:
@@ -81,7 +84,7 @@ class Verification(commands.Cog):
 
         user_created = int(member.created_at.replace(tzinfo=timezone.utc).timestamp())
 
-        member_number = (sorted(guild.members, key=lambda m: m.joined_at or ctx.message.created_at).index(member) + 1)
+        member_number = (sorted(guild.members, key=lambda m: m.joined_at).index(member) + 1)
 
         created_on = "<t:{0}>\n(<t:{0}:R>)".format(user_created)
 
@@ -105,17 +108,12 @@ class Verification(commands.Cog):
             if str(member.id) not in cached_users:
                 cached_users[str(member.id)] = []
 
-            times_joined = len(cached_users[str(member.id)])
-
-            join_str = f"**{member.mention}** joined the server"
-
-            if times_joined > 0:
-                join_str = join_str + f" for the {num2words((times_joined + 1), ordinal = True)} time!"
-            else:
-                join_str = join_str + "!"
+            join_str = f"**{member.mention}** joined the server!"
 
         if invite:
-            invite_str = f"<{invite.url}> ({invite.inviter})"
+            invite_str = f"<{invite.url}>"
+            if invite.inviter:
+                invite_str += f" ({invite.inviter})"
         else:
             invite_str = None
 
@@ -124,30 +122,30 @@ class Verification(commands.Cog):
         else:
             role_str = None
 
-        e = discord.Embed(description = join_str, colour=member.colour)
-        e.add_field(name = "Joined Discord on", value = created_on)
-        e.add_field(name = "Joined server on", value = joined_on)
+        e = discord.Embed(description=join_str, colour=member.colour)
+        e.add_field(name="Joined Discord on", value=created_on)
+        e.add_field(name="Joined server on", value=joined_on)
 
         if invite_str is not None:
-            e.add_field(name = "Joined with invite", value = invite_str)
+            e.add_field(name="Joined with invite", value=invite_str)
 
         if role_str is not None:
-            e.add_field(name = "Roles" if len(roles) > 1 else "Role", value = role_str, inline = False)
+            e.add_field(name="Roles" if len(roles) > 1 else "Role", value=role_str, inline=False)
 
-        e.set_footer(text = f"Member #{member_number} | User ID: {member.id}")
-        e.set_author(name=f"{statusemoji} {member.name}", url = avatar)
-        e.set_thumbnail(url = avatar)
+        e.set_footer(text=f"Member #{member_number} | User ID: {member.id}")
+        e.set_author(name=f"{statusemoji} {member.name}", url=avatar)
+        e.set_thumbnail(url=avatar)
 
-        message = await channel.send(embed = e, components = [[Button(style = ButtonStyle.green, label = "Approve", custom_id = "approve_check", disabled = False),
-                                                               Button(style = ButtonStyle.grey, emoji = self.bot.get_emoji(929343381409255454), custom_id = "sus_check", disabled = False),
-                                                               Button(style = ButtonStyle.red, label = "Ban", custom_id = "ban_check", disabled = False)]])
+        message = await channel.send(embed=e, components=[[Button(style=ButtonStyle.green, label="Approve", custom_id="approve_check", disabled=False),
+                                                           Button(style=ButtonStyle.grey, emoji=self.bot.get_emoji(929343381409255454), custom_id="sus_check", disabled=False),
+                                                           Button(style=ButtonStyle.red, label="Ban", custom_id="ban_check", disabled=False)]])
 
         async with self.config.guild(guild).cached_users() as cached_users:
             cached_users[str(member.id)].append(int(message.id))
 
     async def add_roles(self, member: discord.Member, role_list):
         for role_id in role_list:
-            role = discord.utils.get(member.guild.roles, id = int(role_id))
+            role = discord.utils.get(member.guild.roles, id=int(role_id))
             try:
                 await member.add_roles(role)
             except:
@@ -155,7 +153,7 @@ class Verification(commands.Cog):
 
     async def remove_roles(self, member: discord.Member, role_list):
         for role_id in role_list:
-            role = discord.utils.get(member.guild.roles, id = int(role_id))
+            role = discord.utils.get(member.guild.roles, id=int(role_id))
             try:
                 await member.remove_roles(role)
             except:
@@ -168,18 +166,18 @@ class Verification(commands.Cog):
 
         user = await self.get_user(interaction.message)
 
-        if not user in guild.members:
+        if user not in guild.members:
             try:
                 banned = await guild.fetch_ban(user)
             except discord.NotFound:
-                new_buttons = [[Button(style = ButtonStyle.red, label = f"Left server", custom_id = "ban", disabled = True)]]
+                new_buttons = [[Button(style=ButtonStyle.red, label=f"Left server", custom_id="ban", disabled=True)]]
             else:
-                new_buttons = [[Button(style = ButtonStyle.red, label = f"Banned", custom_id = "ban", disabled = True)]]
+                new_buttons = [[Button(style=ButtonStyle.red, label=f"Banned", custom_id="ban", disabled=True)]]
 
-            await interaction.edit_origin(components = new_buttons)
+            await interaction.edit_origin(components=new_buttons)
             return
 
-        member = discord.utils.get(guild.members, id = user.id)
+        member = discord.utils.get(guild.members, id=user.id)
 
         verifier = False
         verifier_roles = await self.config.guild(guild).verifier_roles()
@@ -188,7 +186,7 @@ class Verification(commands.Cog):
         approval_message = await self.config.guild(guild).approval_message()
 
         for verifier_role_id in verifier_roles:
-            role = discord.utils.get(guild.roles, id = int(verifier_role_id))
+            role = discord.utils.get(guild.roles, id=int(verifier_role_id))
             if role in interaction.user.roles:
                 verifier = True
 
@@ -196,53 +194,53 @@ class Verification(commands.Cog):
             return
 
         for approved_role_id in approved_roles:
-            role = discord.utils.get(guild.roles, id = int(approved_role_id))
+            role = discord.utils.get(guild.roles, id=int(approved_role_id))
             if role in member.roles:
-                new_buttons = [[Button(style = ButtonStyle.green, label = f"Approved", custom_id = "approve", disabled = True)]]
-                await interaction.edit_origin(components = new_buttons)
+                new_buttons = [[Button(style=ButtonStyle.green, label=f"Approved", custom_id="approve", disabled=True)]]
+                await interaction.edit_origin(components=new_buttons)
                 return
 
         cached_users = await self.config.guild(guild).cached_users()
 
         if interaction.custom_id == "cancel":
-            new_buttons = [[Button(style = ButtonStyle.green, label = "Approve", custom_id = "approve_check", disabled = False),
-                            Button(style = ButtonStyle.grey, emoji = self.bot.get_emoji(929343381409255454), custom_id = "sus_check", disabled = False),
-                            Button(style = ButtonStyle.red, label = "Ban", custom_id = "ban_check", disabled = False)]]
+            new_buttons = [[Button(style=ButtonStyle.green, label="Approve", custom_id="approve_check", disabled=False),
+                            Button(style=ButtonStyle.grey, emoji=self.bot.get_emoji(929343381409255454), custom_id="sus_check", disabled=False),
+                            Button(style=ButtonStyle.red, label="Ban", custom_id="ban_check", disabled=False)]]
 
         elif interaction.custom_id == "approve_check":
-            new_buttons = [[Button(style = ButtonStyle.green, label = "Confirm approval?", custom_id = "approve", disabled = False),
-                            Button(style = ButtonStyle.red, label = "Cancel", custom_id = "cancel", disabled = False)]]
+            new_buttons = [[Button(style=ButtonStyle.green, label="Confirm approval?", custom_id="approve", disabled=False),
+                            Button(style=ButtonStyle.red, label="Cancel", custom_id="cancel", disabled=False)]]
 
         elif interaction.custom_id == "approve":
             await self.remove_roles(member, await self.config.guild(guild).removed_roles())
             await self.add_roles(member, await self.config.guild(guild).approved_roles())
-            new_buttons = [[Button(style = ButtonStyle.green, label = f"Approved by {interaction.user.name}", custom_id = "approve", disabled = True)]]
+            new_buttons = [[Button(style=ButtonStyle.green, label=f"Approved by {interaction.user.name}", custom_id="approve", disabled=True)]]
 
             if approval_channel is not None and approval_message is not None:
-                channel = discord.utils.get(guild.channels, id = int(approval_channel))
+                channel = discord.utils.get(guild.channels, id=int(approval_channel))
                 msg = f"Welcome, {member.mention}! " + approval_message
                 await channel.send(msg)
 
         elif interaction.custom_id == "sus_check":
-            new_buttons = [[Button(style = ButtonStyle.green, label = "Confirm sussy baka?", custom_id = "sus", disabled = False),
-                            Button(style = ButtonStyle.red, label = "Cancel", custom_id = "cancel", disabled = False)]]
+            new_buttons = [[Button(style=ButtonStyle.green, label="Confirm sussy baka?", custom_id="sus", disabled=False),
+                            Button(style=ButtonStyle.red, label="Cancel", custom_id="cancel", disabled=False)]]
 
         elif interaction.custom_id == "sus":
             await self.remove_roles(member, await self.config.guild(guild).removed_roles())
             await self.add_roles(member, await self.config.guild(guild).sus_roles())
-            new_buttons = [[Button(style = ButtonStyle.grey, emoji = self.bot.get_emoji(929343381409255454), label = f"Sussed by {interaction.user.name}", custom_id = "sus", disabled = True)]]
+            new_buttons = [[Button(style=ButtonStyle.grey, emoji=self.bot.get_emoji(929343381409255454), label=f"Sussed by {interaction.user.name}", custom_id="sus", disabled=True)]]
 
         elif interaction.custom_id == "ban_check":
-            new_buttons = [[Button(style = ButtonStyle.green, label = "Confirm banning?", custom_id = "ban", disabled = False),
-                            Button(style = ButtonStyle.red, label = "Cancel", custom_id = "cancel", disabled = False)]]
+            new_buttons = [[Button(style=ButtonStyle.green, label="Confirm banning?", custom_id="ban", disabled=False),
+                            Button(style=ButtonStyle.red, label="Cancel", custom_id="cancel", disabled=False)]]
 
         elif interaction.custom_id == "ban":
             try:
                 await member.ban(reason="troll in verification")
             except discord.NotFound:
                 pass
-            await modlog.create_case(self.bot, guild, datetime.now(tz = timezone.utc), "ban", member, interaction.user, reason = "troll in verification", until = None, channel = None)
-            new_buttons = [[Button(style = ButtonStyle.red, label = f"Banned by {interaction.user.name}", custom_id = "ban", disabled = True)]]
+            await modlog.create_case(self.bot, guild, datetime.now(tz=timezone.utc), "ban", member, interaction.user, reason="troll in verification", until=None, channel=None)
+            new_buttons = [[Button(style=ButtonStyle.red, label=f"Banned by {interaction.user.name}", custom_id="ban", disabled=True)]]
 
         elif interaction.custom_id == "lock":
             for action_bar in buttons:
@@ -251,35 +249,33 @@ class Verification(commands.Cog):
                         button.emoji = "🔒" if str(button.emoji) == "🔓" else "🔓"
                     else:
                         button.disabled = not button.disabled
-            await interaction.edit_origin(components = buttons)
+            await interaction.edit_origin(components=buttons)
             return
 
         else:
             return
 
-        await interaction.edit_origin(components = new_buttons)
+        await interaction.edit_origin(components=new_buttons)
 
-
-
-    @commands.group(name = "verification")
+    @commands.group(name="verification")
     @checks.mod_or_permissions(manage_messages=True)
     async def verification(self, ctx: commands.Context) -> None:
         f"Adjust or debug verification settings."
         pass
 
-    @verification.group(name = "set")
+    @verification.group(name="set")
     @checks.mod_or_permissions(manage_messages=True)
     async def verification_set(self, ctx: commands.Context) -> None:
         f"Adjust or debug verification settings."
         pass
 
-    @verification.group(name = "add")
+    @verification.group(name="add")
     @checks.mod_or_permissions(manage_messages=True)
     async def verification_add(self, ctx: commands.Context) -> None:
         f"Add roles to the verification settings."
         pass
 
-    @verification_add.command(name = "approved_roles", require_var_positional=True)
+    @verification_add.command(name="approved_roles", require_var_positional=True)
     @checks.mod_or_permissions(manage_messages=True)
     async def verification_add_approved_roles(self, ctx, roles: commands.Greedy[discord.Role]):
         async with self.config.guild(ctx.guild).approved_roles() as approved_roles:
@@ -293,7 +289,7 @@ class Verification(commands.Cog):
             await ctx.send(f"Added {roles_added} role(s) to the list of approved roles!")
         await ctx.tick()
 
-    @verification_add.command(name = "sus_roles", require_var_positional=True)
+    @verification_add.command(name="sus_roles", require_var_positional=True)
     @checks.mod_or_permissions(manage_messages=True)
     async def verification_add_sus_roles(self, ctx, roles: commands.Greedy[discord.Role]):
         async with self.config.guild(ctx.guild).sus_roles() as sus_roles:
@@ -307,7 +303,7 @@ class Verification(commands.Cog):
             await ctx.send(f"Added {roles_added} role(s) to the list of sus roles!")
         await ctx.tick()
 
-    @verification_add.command(name = "removed_roles", require_var_positional=True)
+    @verification_add.command(name="removed_roles", require_var_positional=True)
     @checks.mod_or_permissions(manage_messages=True)
     async def verification_add_removed_roles(self, ctx, roles: commands.Greedy[discord.Role]):
         async with self.config.guild(ctx.guild).removed_roles() as removed_roles:
@@ -321,7 +317,7 @@ class Verification(commands.Cog):
             await ctx.send(f"Added {roles_added} role(s) to the list of removed roles!")
         await ctx.tick()
 
-    @verification_add.command(name = "verifier_roles", require_var_positional=True)
+    @verification_add.command(name="verifier_roles", require_var_positional=True)
     @checks.mod_or_permissions(manage_messages=True)
     async def verification_add_verifier_roles(self, ctx, roles: commands.Greedy[discord.Role]):
         async with self.config.guild(ctx.guild).verifier_roles() as verifier_roles:
@@ -335,7 +331,7 @@ class Verification(commands.Cog):
             await ctx.send(f"Added {roles_added} role(s) to the list of verifier roles!")
         await ctx.tick()
 
-    @verification.command(name = "clear")
+    @verification.command(name="clear")
     @checks.mod_or_permissions(manage_messages=True)
     async def verification_clear(self, ctx: commands.Context):
         f"Clear roles from the verification settings."
@@ -345,7 +341,7 @@ class Verification(commands.Cog):
         await self.config.guild(ctx.guild).verifier_roles().clear()
         await self.config.guild(ctx.guild).verifier_channel.set(None)
 
-    @verification_set.command(name = "verifier_channel")
+    @verification_set.command(name="verifier_channel")
     @checks.mod_or_permissions(manage_messages=True)
     async def verification_set_verifier_channel(self, ctx, channel: discord.TextChannel):
         try:
@@ -355,7 +351,7 @@ class Verification(commands.Cog):
         else:
             await ctx.tick()
 
-    @verification_set.command(name = "approval_channel")
+    @verification_set.command(name="approval_channel")
     @checks.mod_or_permissions(manage_messages=True)
     async def verification_set_approval_channel(self, ctx, channel: discord.TextChannel):
         try:
@@ -365,84 +361,83 @@ class Verification(commands.Cog):
         else:
             await ctx.tick()
 
-    @verification_set.command(name = "approval_message", aliases = ["welcome_message", "approval_string", "welcome_string"])
+    @verification_set.command(name="approval_message", aliases=["welcome_message", "approval_string", "welcome_string"])
     @checks.mod_or_permissions(manage_messages=True)
     async def verification_set_approval_message(self, ctx, *args):
         approval_string = " ".join(args[:])
         await self.config.guild(ctx.guild).approval_message.set(approval_string)
         await ctx.tick()
 
-
-    @verification.command(name = "show", aliases = ["roles"])
+    @verification.command(name="show", aliases=["roles"])
     @checks.mod_or_permissions(manage_messages=True)
     async def verification_show(self, ctx: commands.Context):
-            e = discord.Embed(title="", colour=ctx.author.color)
-            e.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
+        e = discord.Embed(title="", colour=ctx.author.color)
+        e.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
 
-            async with self.config.guild(ctx.guild).approved_roles() as approved_roles:
-                if not approved_roles:
-                    approved_list = "Empty"
-                else:
-                    approved_list = ""
-                    for role_id in approved_roles:
-                        role = discord.utils.get(ctx.guild.roles, id = role_id)
-                        if role:
-                            approved_list += str(role.name) + ": " + str(role.id) + "\n"
-
-            async with self.config.guild(ctx.guild).sus_roles() as sus_roles:
-                if not sus_roles:
-                    sus_list = "Empty"
-                else:
-                    sus_list = ""
-                    for role_id in sus_roles:
-                        role = discord.utils.get(ctx.guild.roles, id = role_id)
-                        if role:
-                            sus_list += str(role.name) + ": " + str(role.id) + "\n"
-
-            async with self.config.guild(ctx.guild).verifier_roles() as verifier_roles:
-                if not verifier_roles:
-                    verifier_list = "Empty"
-                else:
-                    verifier_list = ""
-                    for role_id in verifier_roles:
-                        role = discord.utils.get(ctx.guild.roles, id = role_id)
-                        if role:
-                            verifier_list += str(role.name) + ": " + str(role.id) + "\n"
-
-            async with self.config.guild(ctx.guild).removed_roles() as removed_roles:
-                if not removed_roles:
-                    removed_list = "Empty"
-                else:
-                    removed_list = ""
-                    for role_id in removed_roles:
-                        role = discord.utils.get(ctx.guild.roles, id = role_id)
-                        if role:
-                            removed_list += str(role.name) + ": " + str(role.id) + "\n"
-
-            approval_channel_id = await self.config.guild(ctx.guild).approval_channel()
-            verifier_channel_id = await self.config.guild(ctx.guild).verifier_channel()
-            approval_message = await self.config.guild(ctx.guild).approval_message()
-
-            if approval_channel_id is not None:
-                approval_channel = discord.utils.get(ctx.guild.channels, id = int(approval_channel_id))
+        async with self.config.guild(ctx.guild).approved_roles() as approved_roles:
+            if not approved_roles:
+                approved_list = "Empty"
             else:
-                approval_channel = "None"
+                approved_list = ""
+                for role_id in approved_roles:
+                    role = discord.utils.get(ctx.guild.roles, id=role_id)
+                    if role:
+                        approved_list += str(role.name) + ": " + str(role.id) + "\n"
 
-            if verifier_channel_id is not None:
-                verifier_channel = discord.utils.get(ctx.guild.channels, id = int(verifier_channel_id))
+        async with self.config.guild(ctx.guild).sus_roles() as sus_roles:
+            if not sus_roles:
+                sus_list = "Empty"
             else:
-                verifier_channel = "None"
+                sus_list = ""
+                for role_id in sus_roles:
+                    role = discord.utils.get(ctx.guild.roles, id=role_id)
+                    if role:
+                        sus_list += str(role.name) + ": " + str(role.id) + "\n"
 
-            if not approval_message:
-                approval_message = "None"
+        async with self.config.guild(ctx.guild).verifier_roles() as verifier_roles:
+            if not verifier_roles:
+                verifier_list = "Empty"
+            else:
+                verifier_list = ""
+                for role_id in verifier_roles:
+                    role = discord.utils.get(ctx.guild.roles, id=role_id)
+                    if role:
+                        verifier_list += str(role.name) + ": " + str(role.id) + "\n"
 
-            e.add_field(name="Verifier Channel", value=verifier_channel, inline=False)
-            e.add_field(name="Approval Channel", value=approval_channel, inline=False)
-            e.add_field(name="Approved Roles", value=approved_list, inline=False)
-            e.add_field(name="Sus Roles", value=sus_list, inline=False)
-            e.add_field(name="Removed Roles", value=removed_list, inline=False)
-            e.add_field(name="Verifier Roles", value=verifier_list, inline=False)
-            e.add_field(name="Welcome Message", value=approval_message, inline=False)
+        async with self.config.guild(ctx.guild).removed_roles() as removed_roles:
+            if not removed_roles:
+                removed_list = "Empty"
+            else:
+                removed_list = ""
+                for role_id in removed_roles:
+                    role = discord.utils.get(ctx.guild.roles, id=role_id)
+                    if role:
+                        removed_list += str(role.name) + ": " + str(role.id) + "\n"
 
-            await ctx.send(embed=e)
-            await ctx.tick()
+        approval_channel_id = await self.config.guild(ctx.guild).approval_channel()
+        verifier_channel_id = await self.config.guild(ctx.guild).verifier_channel()
+        approval_message = await self.config.guild(ctx.guild).approval_message()
+
+        if approval_channel_id is not None:
+            approval_channel = discord.utils.get(ctx.guild.channels, id=int(approval_channel_id))
+        else:
+            approval_channel = "None"
+
+        if verifier_channel_id is not None:
+            verifier_channel = discord.utils.get(ctx.guild.channels, id=int(verifier_channel_id))
+        else:
+            verifier_channel = "None"
+
+        if not approval_message:
+            approval_message = "None"
+
+        e.add_field(name="Verifier Channel", value=verifier_channel, inline=False)
+        e.add_field(name="Approval Channel", value=approval_channel, inline=False)
+        e.add_field(name="Approved Roles", value=approved_list, inline=False)
+        e.add_field(name="Sus Roles", value=sus_list, inline=False)
+        e.add_field(name="Removed Roles", value=removed_list, inline=False)
+        e.add_field(name="Verifier Roles", value=verifier_list, inline=False)
+        e.add_field(name="Welcome Message", value=approval_message, inline=False)
+
+        await ctx.send(embed=e)
+        await ctx.tick()
