@@ -49,11 +49,11 @@ class Verification(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
-        await self.verification_menu(member.guild)
+        await self.verification_menu(member)
 
     @commands.command()
     async def verification(self, ctx, member: discord.Member):
-        await self.verification_menu(member.guild)
+        await self.verification_menu(member)
 
     async def verification_menu(self, member: discord.Member):
         guild = member.guild
