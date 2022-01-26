@@ -43,13 +43,13 @@ class YetAnotherAutoRoler(commands.Cog):
         """YetAnotherAutoRoler commands"""
         pass
 
-    @yaar.group(name="role")
-    async def yaar_role(self, ctx):
+    @yaar.group(name="add")
+    async def yaar_add(self, ctx):
         """Roles for adding upon user join"""
         pass
 
-    @yaar_role.command(name="add", require_var_positional=True)
-    async def yaar_role_add(self, ctx, *roles: discord.Role):
+    @yaar_add.command(name="role", require_var_positional=True)
+    async def yaar_add_role(self, ctx, *roles: discord.Role):
         """Add role(s) to be assigned to all new joins"""
         async with self.config.guild(ctx.guild).roles() as autoroles:
             roles_added = [role.id for role in roles if role.id not in autoroles]
@@ -61,8 +61,26 @@ class YetAnotherAutoRoler(commands.Cog):
 
             await ctx.send(f"Added {humanize_list([ctx.guild.get_role(role_id).mention for role_id in roles_added])} to autorole list")
 
-    @yaar_role.command(name="remove", require_var_positional=True)
-    async def yaar_role_remove(self, ctx, *roles: discord.Role):
+    @yaar_add.command(name="circular", require_var_positional=True)
+    async def yaar_add_circular(self, ctx, *roles: discord.Role):
+        """Add circular role(s) to be distributed to new joins"""
+        async with self.config.guild(ctx.guild).circular_roles() as circular_roles:
+            roles_added = [role.id for role in roles if role.id not in circular_roles]
+            circular_roles.extend(roles_added)
+
+            if not roles_added:
+                await ctx.send("Role(s) already in circular list")
+                return
+
+            await ctx.send(f"Added {humanize_list([ctx.guild.get_role(role_id).mention for role_id in roles_added])} to circular list")
+
+    @yaar.group(name="remove")
+    async def yaar_remove(self, ctx):
+        """Roles to be distributed upon user join"""
+        pass
+
+    @yaar_remove.command(name="role", require_var_positional=True)
+    async def yaar_remove_role(self, ctx, *roles: discord.Role):
         """Remove role(s) from the autorole list"""
         async with self.config.guild(ctx.guild).roles() as autoroles:
             roles_removed = [role.id for role in roles if role.id in autoroles]
@@ -76,26 +94,8 @@ class YetAnotherAutoRoler(commands.Cog):
 
             await ctx.send(f"Removed {humanize_list([ctx.guild.get_role(role_id).mention for role_id in roles_removed])} from autorole list")
 
-    @yaar.group(name="circular")
-    async def yaar_circular(self, ctx):
-        """Roles to be distributed upon user join"""
-        pass
-
-    @yaar_circular.command(name="add", require_var_positional=True)
-    async def yaar_circular_add(self, ctx, *roles: discord.Role):
-        """Add circular role(s) to be distributed to new joins"""
-        async with self.config.guild(ctx.guild).circular_roles() as circular_roles:
-            roles_added = [role.id for role in roles if role.id not in circular_roles]
-            circular_roles.extend(roles_added)
-
-            if not roles_added:
-                await ctx.send("Role(s) already in circular list")
-                return
-
-            await ctx.send(f"Added {humanize_list([ctx.guild.get_role(role_id).mention for role_id in roles_added])} to circular list")
-
-    @yaar_circular.command(name="remove", require_var_positional=True)
-    async def yaar_circular_remove(self, ctx, *roles: discord.Role):
+    @yaar_remove.command(name="circular", require_var_positional=True)
+    async def yaar_remove_circular(self, ctx, *roles: discord.Role):
         """Remove role(s) from the circular list"""
         async with self.config.guild(ctx.guild).circular_roles() as circular_roles:
             roles_removed = [role.id for role in roles if role.id in circular_roles]
