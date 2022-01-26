@@ -257,27 +257,21 @@ class Verification(commands.Cog):
 
         await interaction.edit_origin(components=new_buttons)
 
-    @commands.group(name="verification")
+    @commands.group(name="verificationset")
     @checks.mod_or_permissions(manage_messages=True)
-    async def verification(self, ctx: commands.Context) -> None:
+    async def verificationset(self, ctx: commands.Context) -> None:
         f"Adjust or debug verification settings."
         pass
 
-    @verification.group(name="set")
+    @verificationset.group(name="add")
     @checks.mod_or_permissions(manage_messages=True)
-    async def verification_set(self, ctx: commands.Context) -> None:
-        f"Adjust or debug verification settings."
-        pass
-
-    @verification.group(name="add")
-    @checks.mod_or_permissions(manage_messages=True)
-    async def verification_add(self, ctx: commands.Context) -> None:
+    async def verificationset_add(self, ctx: commands.Context) -> None:
         f"Add roles to the verification settings."
         pass
 
-    @verification_add.command(name="approved_roles", require_var_positional=True)
+    @verificationset_add.command(name="approved_roles", require_var_positional=True)
     @checks.mod_or_permissions(manage_messages=True)
-    async def verification_add_approved_roles(self, ctx, roles: commands.Greedy[discord.Role]):
+    async def verificationset_add_approved_roles(self, ctx, roles: commands.Greedy[discord.Role]):
         async with self.config.guild(ctx.guild).approved_roles() as approved_roles:
             roles_added = 0
             for approved_role in roles:
@@ -289,9 +283,9 @@ class Verification(commands.Cog):
             await ctx.send(f"Added {roles_added} role(s) to the list of approved roles!")
         await ctx.tick()
 
-    @verification_add.command(name="sus_roles", require_var_positional=True)
+    @verificationset_add.command(name="sus_roles", require_var_positional=True)
     @checks.mod_or_permissions(manage_messages=True)
-    async def verification_add_sus_roles(self, ctx, roles: commands.Greedy[discord.Role]):
+    async def verificationset_add_sus_roles(self, ctx, roles: commands.Greedy[discord.Role]):
         async with self.config.guild(ctx.guild).sus_roles() as sus_roles:
             roles_added = 0
             for sus_role in roles:
@@ -303,9 +297,9 @@ class Verification(commands.Cog):
             await ctx.send(f"Added {roles_added} role(s) to the list of sus roles!")
         await ctx.tick()
 
-    @verification_add.command(name="removed_roles", require_var_positional=True)
+    @verificationset_add.command(name="removed_roles", require_var_positional=True)
     @checks.mod_or_permissions(manage_messages=True)
-    async def verification_add_removed_roles(self, ctx, roles: commands.Greedy[discord.Role]):
+    async def verificationset_add_removed_roles(self, ctx, roles: commands.Greedy[discord.Role]):
         async with self.config.guild(ctx.guild).removed_roles() as removed_roles:
             roles_added = 0
             for removed_role in roles:
@@ -317,9 +311,9 @@ class Verification(commands.Cog):
             await ctx.send(f"Added {roles_added} role(s) to the list of removed roles!")
         await ctx.tick()
 
-    @verification_add.command(name="verifier_roles", require_var_positional=True)
+    @verificationset_add.command(name="verifier_roles", require_var_positional=True)
     @checks.mod_or_permissions(manage_messages=True)
-    async def verification_add_verifier_roles(self, ctx, roles: commands.Greedy[discord.Role]):
+    async def verificationset_add_verifier_roles(self, ctx, roles: commands.Greedy[discord.Role]):
         async with self.config.guild(ctx.guild).verifier_roles() as verifier_roles:
             roles_added = 0
             for verifier_role in roles:
@@ -331,9 +325,9 @@ class Verification(commands.Cog):
             await ctx.send(f"Added {roles_added} role(s) to the list of verifier roles!")
         await ctx.tick()
 
-    @verification.command(name="clear")
+    @verificationset.command(name="clear")
     @checks.mod_or_permissions(manage_messages=True)
-    async def verification_clear(self, ctx: commands.Context):
+    async def verificationset_clear(self, ctx: commands.Context):
         f"Clear roles from the verification settings."
         await self.config.guild(ctx.guild).approved_roles().clear()
         await self.config.guild(ctx.guild).removed_roles().clear()
@@ -341,9 +335,9 @@ class Verification(commands.Cog):
         await self.config.guild(ctx.guild).verifier_roles().clear()
         await self.config.guild(ctx.guild).verifier_channel.set(None)
 
-    @verification_set.command(name="verifier_channel")
+    @verificationset.command(name="verifier_channel")
     @checks.mod_or_permissions(manage_messages=True)
-    async def verification_set_verifier_channel(self, ctx, channel: discord.TextChannel):
+    async def verificationset_verifier_channel(self, ctx, channel: discord.TextChannel):
         try:
             await self.config.guild(ctx.guild).verifier_channel.set(channel.id)
         except:
@@ -351,9 +345,9 @@ class Verification(commands.Cog):
         else:
             await ctx.tick()
 
-    @verification_set.command(name="approval_channel")
+    @verificationset.command(name="approval_channel")
     @checks.mod_or_permissions(manage_messages=True)
-    async def verification_set_approval_channel(self, ctx, channel: discord.TextChannel):
+    async def verificationset_approval_channel(self, ctx, channel: discord.TextChannel):
         try:
             await self.config.guild(ctx.guild).approval_channel.set(channel.id)
         except:
@@ -361,16 +355,16 @@ class Verification(commands.Cog):
         else:
             await ctx.tick()
 
-    @verification_set.command(name="approval_message", aliases=["welcome_message", "approval_string", "welcome_string"])
+    @verificationset.command(name="approval_message", aliases=["welcome_message", "approval_string", "welcome_string"])
     @checks.mod_or_permissions(manage_messages=True)
-    async def verification_set_approval_message(self, ctx, *args):
+    async def verificationset_approval_message(self, ctx, *args):
         approval_string = " ".join(args[:])
         await self.config.guild(ctx.guild).approval_message.set(approval_string)
         await ctx.tick()
 
-    @verification.command(name="show", aliases=["roles"])
+    @verificationset.command(name="show", aliases=["roles"])
     @checks.mod_or_permissions(manage_messages=True)
-    async def verification_show(self, ctx: commands.Context):
+    async def verificationset_show(self, ctx: commands.Context):
         e = discord.Embed(title="", colour=ctx.author.color)
         e.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
 
