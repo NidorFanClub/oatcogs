@@ -72,10 +72,14 @@ class Verification(commands.Cog):
 
         if invite_id:
             invite = discord.utils.get(await guild.invites(), id=invite_id)
-        elif await guild.vanity_invite():
-            invite = await guild.vanity_invite()
         else:
-            invite = None
+            if await guild.vanity_invite():
+                try:
+                    invite = await guild.vanity_invite()
+                except discord.Forbidden:
+                    invite = None
+            else:
+                invite = None
 
         await self.update_invites(guild)
 
