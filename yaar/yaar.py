@@ -112,15 +112,15 @@ class YetAnotherAutoRoler(commands.Cog):
             if not roles:
                 role_list = "Empty"
             else:
-                role_mentions = [ctx.guild.get_role(role_id).mention for role_id in roles]
-                role_list = "\n".join(role_mentions)
+                role_mentions = [ctx.guild.get_role(role_id) for role_id in roles]
+                role_list = "\n".join(role.mention for role in role_mentions if role is not None)
 
         async with self.config.guild(ctx.guild).circular_roles() as circular_roles:
             if not circular_roles:
                 circular_list = "Empty"
             else:
-                circular_mentions = [ctx.guild.get_role(role_id).mention for role_id in circular_roles]
-                circular_list = "\n".join(circular_mentions)
+                circular_mentions = [ctx.guild.get_role(role_id) for role_id in circular_roles]
+                circular_list = "\n".join(role.mention for role in circular_mentions if role is not None)
 
         e.add_field(name="Enabled", value=str(await self.config.guild(ctx.guild).enabled()), inline=False)
         e.add_field(name="Autoroles", value=role_list, inline=False)
