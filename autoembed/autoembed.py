@@ -125,14 +125,14 @@ class Autoembed(commands.Cog):
                 whitelisted_channels = "Empty"
             else:
                 channels = [ctx.guild.get_channel(channel_id) for channel_id in whitelist]
-                whitelisted_channels = "\n".join(channel.mention for channel in channels)
+                whitelisted_channels = "\n".join(channel.mention for channel in channels if channel is not None)
 
         async with self.config.guild(ctx.guild).blacklist() as blacklist:
             if not blacklist:
                 blacklisted_channels = "Empty"
             else:
                 channels = [ctx.guild.get_channel(channel_id) for channel_id in blacklist]
-                blacklisted_channels = "\n".join(channel.mention for channel in channels)
+                blacklisted_channels = "\n".join(channel.mention for channel in channels if channel is not None)
 
         e.add_field(name="Enabled", value=str(await self.config.guild(ctx.guild).enabled()), inline=False)
         e.add_field(name="All Channels", value=str(await self.config.guild(ctx.guild).all_channels()), inline=False)
