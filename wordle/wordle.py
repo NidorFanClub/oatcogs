@@ -92,7 +92,7 @@ class Wordle(commands.Cog):
 
                     old_message = message
 
-                    if guess.content.lower() != target_word:
+                    if guess.content.lower() != target_word and len(guesses) != 6:
                         message = await ctx.send(file=wordle_file)
 
                     try:
