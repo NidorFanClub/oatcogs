@@ -173,63 +173,61 @@ class Wordle(commands.Cog):
     @commands.guild_only()
     @checks.admin()
     async def wordleset(self, ctx):
-        """Commands for changing the behavior of Wordle."""
+        """Commands for changing Wordle behavior."""
         pass
 
     @wordleset.command(name="multiplier")
     async def wordleset_multiplier(self, ctx: commands.Context, toggle: bool):
-        """Choose if a bonus multiplier should be applied to the end reward.
+        """End reward bonus multiplier.
         Multipliers are based on streaks and winning in under 6 turns.
 
-        This is enabled by default."""
+        Enabled by default."""
         await self.config.guild(ctx.guild).MULTIPLIER.set(toggle)
         await ctx.send(f"Wordle multiplier has been turned {'on' if toggle else 'off'}.")
 
     @wordleset.command(name="streaks")
     async def wordleset_streaks(self, ctx: commands.Context, toggle: bool):
-        """Choose if users should get streaks for consecutive wins.
-        Multipliers are based on streaks and winning in under 6 turns.
+        """Streak multiplier for consecutive wins.
 
-        This is enabled by default."""
+        Enabled by default."""
         await self.config.guild(ctx.guild).STREAKS.set(toggle)
         await ctx.send(f"Wordle streaks have been turned {'on' if toggle else 'off'}.")
 
     @wordleset.command(name="turn_bonus")
     async def wordleset_turnbonus(self, ctx: commands.Context, toggle: bool):
-        """Choose if users should get a bonus for winning in less than 6 guesses.
+        """Bonus for winning in less than 6 guesses.
 
-        This is enabled by default."""
+        Enabled by default."""
         await self.config.guild(ctx.guild).TURN_MULTIPLIER.set(toggle)
         await ctx.send(f"Wordle turn bonus has been turned {'on' if toggle else 'off'}.")
 
     @wordleset.command(name="loss_reward")
     async def wordleset_lossreward(self, ctx: commands.Context, toggle: bool):
-        """Choose if users should get a reduced reward for losing. If disabled, users will not get anything for losing.
-
-        This is enabled by default."""
+        """Reduced reward for losing.
+        If disabled, users will not get anything for losing.
+        Enabled by default."""
         await self.config.guild(ctx.guild).AWARD_ON_LOSS.set(toggle)
         await ctx.send(f"Wordle loss reward has been turned {'on' if toggle else 'off'}.")
 
     @wordleset.command(name="reward")
-    async def wordleset_multiplier(self, ctx: commands.Context, value: int):
-        """Choose the default amount of economy credits awared per win.
+    async def wordleset_reward(self, ctx: commands.Context, value: int):
+        """Default amount of credits awarded per win.
 
-        This is set to 500 by default."""
+        Set to 500 by default."""
         await self.config.guild(ctx.guild).WIN_AMOUNT.set(value)
         await ctx.send(f"The Wordle default reward has been set to {str(value)}.")
 
     @wordleset.command(name="time_limit")
     async def wordleset_timelimit(self, ctx: commands.Context, time: int):
-        """Choose the amount of time (in seconds) before the game is timed out for inactivity.
+        """Amount of time (in seconds) before forfeiting for inactivity.
         Set to 0 to disable.
-
-        This is set to 60 seconds by default."""
+        Set to 60 seconds by default."""
         await self.config.guild(ctx.guild).TIME_LIMIT.set(time)
         await ctx.send(f"The Wordle time limit has been set to {str(time)} seconds.")
 
     @wordleset.command(name="list")
     async def wordleset_list(self, ctx):
-        """View the current Wordle settings for the guild."""
+        """View current Wordle settings for the guild."""
         e = discord.Embed(title="", colour=ctx.author.color)
         e.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
         e.add_field(name="Multiplier", value=str(await self.config.guild(ctx.guild).MULTIPLIER()), inline=False)
@@ -506,7 +504,7 @@ class Wordle(commands.Cog):
 
         return canvas
 
-    #util methods
+    # util methods
 
     async def merge_image(self, top, bottom):
         bottom.thumbnail(top.size)

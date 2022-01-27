@@ -7,6 +7,7 @@ import discord
 
 class Autoembed(commands.Cog):
     """Autoembed in channels!"""
+
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=783458793432, force_registration=True)
