@@ -1,0 +1,10 @@
+{
+    "author" : ["moosey"],
+    "install_msg" : "moose!",
+    "name" : "Autoembed",
+    "short" : "Autoembeds messages in whitelisted channels!",
+    "description" : "This cog makes the bot automatically embed users' messages in certain channels.",
+    "tags" : ["fun"],
+    "requirements" : [],
+    "hidden" : false
+}
