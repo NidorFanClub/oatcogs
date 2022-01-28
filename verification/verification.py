@@ -267,7 +267,7 @@ class Verification(commands.Cog):
             except discord.NotFound:
                 pass
             await modlog.create_case(self.bot, guild, datetime.now(tz=timezone.utc), "ban", member, interaction.user, reason="troll in verification", until=None, channel=None)
-            new_buttons = [[Button(style=ButtonStyle.red, label=f"Banned by {interaction.user.name}", custom_id="ban", disabled=True)]]
+            new_buttons = [[Button(style=ButtonStyle.red, label="Banned", custom_id="ban", disabled=True)]]
 
         elif interaction.custom_id == "lock":
             for action_bar in buttons:
