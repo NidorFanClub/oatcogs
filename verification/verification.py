@@ -46,6 +46,23 @@ class Verification(commands.Cog):
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
         await self.update_invites(member.guild)
+        channel = member.guild.get_channel(await self.config.guild(member.guild).verifier_channel())
+        async with self.config.guild(member.guild).cached_users() as cached_users:
+            if str(member.id) not in cached_users:
+                return
+            try:
+                banned = await member.guild.fetch_ban(member)
+            except discord.NotFound:
+                new_buttons = [[Button(style=ButtonStyle.red, label="Left server", custom_id="ban", disabled=True)]]
+                for message_id in cached_users[str(member.id)]:
+                    if message := await channel.fetch_message(message_id):
+                        await message.edit(components=new_buttons)
+            else:
+                new_buttons = [[Button(style=ButtonStyle.red, label="Banned", custom_id="ban", disabled=True)]]
+                for message_id in cached_users[str(member.id)]:
+                    if message := await channel.fetch_message(message_id):
+                        await message.edit(components=new_buttons)
+        return
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
