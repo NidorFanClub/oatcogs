@@ -25,8 +25,11 @@ class Verification(commands.Cog):
 
     async def update_invites(self, guild: discord.Guild):
         async with self.config.guild(guild).cached_invites() as cached_invites:
-            for invite in await guild.invites():
-                cached_invites.update({invite.id: invite.uses})
+            try:
+                for invite in await guild.invites():
+                    cached_invites.update({invite.id: invite.uses})
+            except discord.Forbidden:
+                return
 
     async def find_invite(self, guild: discord.Guild):
         invites_after_join = await guild.invites()
@@ -54,14 +57,16 @@ class Verification(commands.Cog):
                 banned = await member.guild.fetch_ban(member)
             except discord.NotFound:
                 new_buttons = [[Button(style=ButtonStyle.red, label="Left server", custom_id="ban", disabled=True)]]
-                for message_id in cached_users[str(member.id)]:
+                for message_id in list(cached_users[str(member.id)]):
                     if message := await channel.fetch_message(message_id):
                         await message.edit(components=new_buttons)
+                        cached_users[str(member.id)].remove(message_id)
             else:
                 new_buttons = [[Button(style=ButtonStyle.red, label="Banned", custom_id="ban", disabled=True)]]
-                for message_id in cached_users[str(member.id)]:
+                for message_id in list(cached_users[str(member.id)]):
                     if message := await channel.fetch_message(message_id):
                         await message.edit(components=new_buttons)
+                        cached_users[str(member.id)].remove(message_id)
         return
 
     @commands.Cog.listener()
