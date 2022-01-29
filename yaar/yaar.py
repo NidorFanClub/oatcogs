@@ -15,7 +15,7 @@ class YetAnotherAutoRoler(commands.Cog):
 
     def __init__(self):
         self.config = Config.get_conf(self, identifier=3009202134985)
-        default_guild = {"enabled": False, "roles": [], "circular_roles": [], "index": 0}
+        default_guild = {"enabled": False, "roles": [], "circular_roles": [], "user_roles": {}, "index": 0}
         self.config.register_guild(**default_guild)
 
     @commands.Cog.listener()
@@ -27,6 +27,11 @@ class YetAnotherAutoRoler(commands.Cog):
         if data["circular_roles"]:
             await member.add_roles(member.guild.get_role(data["circular_roles"][(data["index"] % len(data["circular_roles"]))]))
             await self.config.guild(member.guild).index.set(data["index"] + 1)
+
+        if data["user_roles"]:
+            for role_id, users in data["user_roles"].items():
+                if member.id in users:
+                    await member.add_roles(member.guild.get_role(int(role_id)))
 
         await member.add_roles(*[member.guild.get_role(role_id) for role_id in data["roles"]])
 
@@ -102,6 +107,47 @@ class YetAnotherAutoRoler(commands.Cog):
 
             await ctx.send(f"Removed {humanize_list([ctx.guild.get_role(role_id).mention for role_id in roles_removed])} from circular list")
 
+    @yaar.group(name="user")
+    async def yaar_user(self, ctx):
+        """Roles to be applied to certain users"""
+        pass
+
+    @yaar_user.command(name="add", require_var_positional=True)
+    async def yaar_user_add(self, ctx, role: discord.Role, *members: discord.Member):
+        """Add role(s) to be assigned to certain new joins"""
+        async with self.config.guild(ctx.guild).user_roles() as user_roles:
+            if str(role.id) not in user_roles:
+                users_added = [member.id for member in members]
+                user_roles[str(role.id)] = users_added
+            else:
+                users_added = [member.id for member in members if member.id not in user_roles[str(role.id)]]
+                user_roles[str(role.id)].extend(users_added)
+
+            if not users_added:
+                await ctx.send("Users(s) already in user role list")
+                return
+
+            await ctx.send(f"Added {humanize_list(users_added)} to {role.mention}")
+
+    @yaar_user.command(name="remove", require_var_positional=True)
+    async def yaar_user_remove(self, ctx, role: discord.Role, *members: discord.Member):
+        """Remove users(s) from being assigned a certain role"""
+        async with self.config.guild(ctx.guild).user_roles() as user_roles:
+            if str(role.id) not in user_roles:
+                await ctx.send("That role isn't in the user role list")
+                return
+
+            users_removed = [member.id for member in members if member.id in user_roles[str(role.id)]]
+
+            if not users_removed:
+                await ctx.send("User(s) not in user role list")
+                return
+
+            for user in users_removed:
+                user_roles[str(role.id)].remove(user)
+
+            await ctx.send(f"Removed {humanize_list(users_removed)} from {role.mention}")
+
     @yaar.command(name="list")
     async def yaar_list(self, ctx):
         """List all roles in the autorole list"""
@@ -122,9 +168,20 @@ class YetAnotherAutoRoler(commands.Cog):
                 circular_mentions = [ctx.guild.get_role(role_id) for role_id in circular_roles]
                 circular_list = "\n".join(role.mention for role in circular_mentions if role is not None)
 
+        async with self.config.guild(ctx.guild).user_roles() as user_roles:
+            if not user_roles:
+                user_list = "Empty"
+            else:
+                user_list = ""
+                for role_id, users in user_roles.items():
+                    role_mention = ctx.guild.get_role(int(role_id))
+                    user_list += f"{role_mention.mention}:\n"
+                    user_list += "\n".join(str(user) for user in users)
+
         e.add_field(name="Enabled", value=str(await self.config.guild(ctx.guild).enabled()), inline=False)
         e.add_field(name="Autoroles", value=role_list, inline=False)
         e.add_field(name="Circular Roles", value=circular_list, inline=False)
+        e.add_field(name="User Roles", value=user_list, inline=False)
 
         await ctx.send(embed=e)
 
