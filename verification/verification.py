@@ -370,6 +370,68 @@ class Verification(commands.Cog):
             await ctx.send(f"Added {roles_added} role(s) to the list of verifier roles!")
         await ctx.tick()
 
+    @verificationset.group(name="remove")
+    @checks.mod_or_permissions(manage_messages=True)
+    async def verificationset_remove(self, ctx: commands.Context) -> None:
+        f"Remove roles from the verification settings."
+        pass
+
+    @verificationset_remove.command(name="approved_roles", require_var_positional=True)
+    @checks.mod_or_permissions(manage_messages=True)
+    async def verificationset_remove_approved_roles(self, ctx, roles: commands.Greedy[discord.Role]):
+        async with self.config.guild(ctx.guild).approved_roles() as approved_roles:
+            roles_added = 0
+            for approved_role in roles:
+                try:
+                    roles_added += 1
+                    approved_roles.remove(approved_role.id)
+                except:
+                    pass
+            await ctx.send(f"Removed {roles_added} role(s) from the list of approved roles!")
+        await ctx.tick()
+
+    @verificationset_remove.command(name="sus_roles", require_var_positional=True)
+    @checks.mod_or_permissions(manage_messages=True)
+    async def verificationset_remove_sus_roles(self, ctx, roles: commands.Greedy[discord.Role]):
+        async with self.config.guild(ctx.guild).sus_roles() as sus_roles:
+            roles_added = 0
+            for sus_role in roles:
+                try:
+                    roles_added += 1
+                    sus_roles.remove(sus_role.id)
+                except:
+                    pass
+            await ctx.send(f"Remove {roles_added} role(s) from the list of sus roles!")
+        await ctx.tick()
+
+    @verificationset_remove.command(name="removed_roles", require_var_positional=True)
+    @checks.mod_or_permissions(manage_messages=True)
+    async def verificationset_remove_removed_roles(self, ctx, roles: commands.Greedy[discord.Role]):
+        async with self.config.guild(ctx.guild).removed_roles() as removed_roles:
+            roles_added = 0
+            for removed_role in roles:
+                try:
+                    roles_added += 1
+                    removed_roles.remove(removed_role.id)
+                except:
+                    pass
+            await ctx.send(f"Remove {roles_added} role(s) from the list of removed roles!")
+        await ctx.tick()
+
+    @verificationset_remove.command(name="verifier_roles", require_var_positional=True)
+    @checks.mod_or_permissions(manage_messages=True)
+    async def verificationset_remove_verifier_roles(self, ctx, roles: commands.Greedy[discord.Role]):
+        async with self.config.guild(ctx.guild).verifier_roles() as verifier_roles:
+            roles_added = 0
+            for verifier_role in roles:
+                try:
+                    roles_added += 1
+                    verifier_roles.remove(verifier_role.id)
+                except:
+                    pass
+            await ctx.send(f"Remove {roles_added} role(s) from the list of verifier roles!")
+        await ctx.tick()
+
     @verificationset.command(name="clear")
     @checks.mod_or_permissions(manage_messages=True)
     async def verificationset_clear(self, ctx: commands.Context):
