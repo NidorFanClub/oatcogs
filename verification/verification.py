@@ -76,14 +76,14 @@ class Verification(commands.Cog):
     @checks.mod_or_permissions(manage_messages=True)
     @commands.command()
     async def verification(self, ctx, member: discord.Member):
-        await self.verification_menu(member)
+        await self.verification_menu(member, ctx.channel)
 
-    async def verification_menu(self, member: discord.Member):
+    async def verification_menu(self, member: discord.Member, channel: discord.TextChannel = None):
         guild = member.guild
 
-        verifier_channel_id = await self.config.guild(guild).verifier_channel()
-
-        channel = discord.utils.get(guild.channels, id=verifier_channel_id)
+        if not channel:
+            verifier_channel_id = await self.config.guild(guild).verifier_channel()
+            channel = discord.utils.get(guild.channels, id=verifier_channel_id)
 
         if not channel:
             return
