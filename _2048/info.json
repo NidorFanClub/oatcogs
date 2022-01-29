@@ -1,0 +1,10 @@
+{
+    "author" : ["moosey"],
+    "install_msg" : "moose!",
+    "name" : "_2048",
+    "short" : "Play 2048 in Discord!",
+    "description" : "Gabriele Cirulli's 2048, remade in Python for Discord.",
+    "tags" : ["fun"],
+    "requirements" : [],
+    "hidden" : false
+}
