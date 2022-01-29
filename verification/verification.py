@@ -170,6 +170,11 @@ class Verification(commands.Cog):
             if role in member.roles:
                 buttons = [[Button(style=ButtonStyle.green, label="Approved", custom_id="approve_check", disabled=True)]]
 
+        for role_id in await self.config.guild(guild).sus_roles():
+            role = discord.utils.get(guild.roles, id=int(role_id))
+            if role in member.roles:
+                buttons = [[Button(style=ButtonStyle.grey, emoji=self.bot.get_emoji(929343381409255454), label=f"Sussy Baka", custom_id="sus", disabled=True)]]
+
         if not buttons:
             buttons = [[Button(style=ButtonStyle.green, label="Approve", custom_id="approve_check", disabled=False),
                         Button(style=ButtonStyle.grey, emoji=self.bot.get_emoji(929343381409255454), custom_id="sus_check", disabled=False),
