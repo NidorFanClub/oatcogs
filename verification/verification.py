@@ -252,10 +252,13 @@ class Verification(commands.Cog):
             await self.add_roles(member, await self.config.guild(guild).approved_roles())
             new_buttons = [[Button(style=ButtonStyle.green, label=f"Approved by {interaction.user.name}", custom_id="approved", disabled=True)]]
 
-            if approval_channel is not None and approval_message is not None:
-                channel = discord.utils.get(guild.channels, id=int(approval_channel))
-                msg = f"Welcome, {member.mention}! " + approval_message
-                await channel.send(msg)
+            try:
+                if approval_channel is not None and approval_message is not None:
+                    channel = discord.utils.get(guild.channels, id=int(approval_channel))
+                    msg = f"Welcome, {member.mention}! " + approval_message
+                    await channel.send(msg)
+            except Exception:
+                pass
 
         elif interaction.custom_id == "sus_check":
             new_buttons = [[Button(style=ButtonStyle.green, label="Confirm sussy baka?", custom_id="sus", disabled=False),
