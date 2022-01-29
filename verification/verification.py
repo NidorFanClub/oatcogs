@@ -163,9 +163,20 @@ class Verification(commands.Cog):
         e.set_author(name=f"{statusemoji} {member.name}", url=avatar)
         e.set_thumbnail(url=avatar)
 
-        message = await channel.send(embed=e, components=[[Button(style=ButtonStyle.green, label="Approve", custom_id="approve_check", disabled=False),
-                                                           Button(style=ButtonStyle.grey, emoji=self.bot.get_emoji(929343381409255454), custom_id="sus_check", disabled=False),
-                                                           Button(style=ButtonStyle.red, label="Ban", custom_id="ban_check", disabled=False)]])
+        for role_id in await self.config.guild(guild).removed_roles():
+            role = discord.utils.get(guild.roles, id=int(role_id))
+            if role not in member.roles:
+                buttons = [[Button(style=ButtonStyle.green, label="Approved", custom_id="approve_check", disabled=True)]]
+            else:
+                buttons = None
+                break
+
+        if not buttons:
+            buttons = [[Button(style=ButtonStyle.green, label="Approve", custom_id="approve_check", disabled=False),
+                        Button(style=ButtonStyle.grey, emoji=self.bot.get_emoji(929343381409255454), custom_id="sus_check", disabled=False),
+                        Button(style=ButtonStyle.red, label="Ban", custom_id="ban_check", disabled=False)]]
+
+        message = await channel.send(embed=e, components=buttons)
 
         async with self.config.guild(guild).cached_users() as cached_users:
             cached_users[str(member.id)].append(int(message.id))
@@ -241,7 +252,7 @@ class Verification(commands.Cog):
         elif interaction.custom_id == "approve":
             await self.remove_roles(member, await self.config.guild(guild).removed_roles())
             await self.add_roles(member, await self.config.guild(guild).approved_roles())
-            new_buttons = [[Button(style=ButtonStyle.green, label=f"Approved by {interaction.user.name}", custom_id="approve", disabled=True)]]
+            new_buttons = [[Button(style=ButtonStyle.green, label=f"Approved by {interaction.user.name}", custom_id="approved", disabled=True)]]
 
             if approval_channel is not None and approval_message is not None:
                 channel = discord.utils.get(guild.channels, id=int(approval_channel))
