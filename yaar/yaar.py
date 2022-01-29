@@ -130,8 +130,8 @@ class YetAnotherAutoRoler(commands.Cog):
 
     @yaar.command(name="enable")
     async def yaar_enable(self, ctx: commands.Context, toggle: bool):
-        """Toggle autoembedding in this guild.
+        """Toggle autoroles in this guild.
 
-        This is disabled by default."""
+        Disabled by default."""
         await self.config.guild(ctx.guild).enabled.set(toggle)
         await ctx.send(f"YetAnotherAutoRoler has been turned {'on' if toggle else 'off'}.")
