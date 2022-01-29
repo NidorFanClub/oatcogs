@@ -163,13 +163,11 @@ class Verification(commands.Cog):
         e.set_author(name=f"{statusemoji} {member.name}", url=avatar)
         e.set_thumbnail(url=avatar)
 
-        for role_id in await self.config.guild(guild).removed_roles():
+        buttons = []
+        for role_id in await self.config.guild(guild).approved_roles():
             role = discord.utils.get(guild.roles, id=int(role_id))
-            if role not in member.roles:
+            if role in member.roles:
                 buttons = [[Button(style=ButtonStyle.green, label="Approved", custom_id="approve_check", disabled=True)]]
-            else:
-                buttons = None
-                break
 
         if not buttons:
             buttons = [[Button(style=ButtonStyle.green, label="Approve", custom_id="approve_check", disabled=False),
