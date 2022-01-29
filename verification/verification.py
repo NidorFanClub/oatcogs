@@ -73,6 +73,7 @@ class Verification(commands.Cog):
     async def on_member_join(self, member: discord.Member):
         await self.verification_menu(member)
 
+    @checks.mod_or_permissions(manage_messages=True)
     @commands.command()
     async def verification(self, ctx, member: discord.Member):
         await self.verification_menu(member)
