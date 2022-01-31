@@ -6,6 +6,7 @@ import random
 
 from redbot.core import commands, Config, bank, checks
 from redbot.core.data_manager import bundled_data_path
+from redbot.core.utils.menus import start_adding_reactions
 from io import BytesIO
 
 try:
@@ -64,11 +65,7 @@ class _2048(commands.Cog):
 
         while True:
             try:
-                await message.add_reaction(self.LEFT)
-                await message.add_reaction(self.UP)
-                await message.add_reaction(self.DOWN)
-                await message.add_reaction(self.RIGHT)
-                await message.add_reaction(self.CANCEL)
+                start_adding_reactions(message, [self.LEFT, self.UP, self.DOWN, self.RIGHT, self.CANCEL])
                 reaction, user = await self.bot.wait_for("reaction_add", check=check, timeout=60)  # thanks NeuroAssassin <3
             except asyncio.TimeoutError:
                 try:
@@ -108,11 +105,14 @@ class _2048(commands.Cog):
                     if victory or not can_continue:
                         break
                     else:
+                        try:
+                            message.delete()
+                        except Exception:
+                            pass
                         board_image = await self.canvas(board, score)
                         file = discord.File(board_image, filename="2048.png")
-                        if message.attachments:
-                            help(discord.Attachment)
-                            await message.edit(attachments=[], file=file)
+                        message = await ctx.send(file=file)
+
         if victory:
             total_wins = await member.total_wins() + 1
             await member.total_wins.set(total_wins)
