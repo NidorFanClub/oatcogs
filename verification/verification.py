@@ -54,7 +54,6 @@ class Verification(commands.Cog):
         await self.member_departed_this_mortal_realm(member)
 
     async def member_departed_this_mortal_realm(self, member: discord.Member):
-        await self.member_departed_this_mortal_realm(member)
         await self.update_invites(member.guild)
         channel = member.guild.get_channel(await self.config.guild(member.guild).verifier_channel())
         async with self.config.guild(member.guild).cached_users() as cached_users:
