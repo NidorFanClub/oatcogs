@@ -208,6 +208,9 @@ class Verification(commands.Cog):
         guild = interaction.guild
 
         user = await self.get_user(interaction.message)
+        member = guild.get_member(id=user.id)
+        if not member:
+            member = user
 
         verifier = False
         verifier_roles = await self.config.guild(guild).verifier_roles()
