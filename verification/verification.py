@@ -66,7 +66,6 @@ class Verification(commands.Cog):
                 for message_id in list(cached_users[str(member.id)]):
                     if message := await channel.fetch_message(message_id):
                         await message.edit(components=new_buttons)
-                        cached_users[str(member.id)].remove(message_id)
         return
 
     @commands.Cog.listener()
