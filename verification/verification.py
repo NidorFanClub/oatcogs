@@ -205,11 +205,14 @@ class Verification(commands.Cog):
         buttons = interaction.message.components
         guild = interaction.guild
 
+        print("Clicked button", flush=True)
         user_id = int(await self.get_user(interaction.message))
         member = guild.get_member(user_id)
         if not member:
+            print("Couldn't find member", flush=True)
             member = await self.bot.fetch_user(user_id)
 
+        print("Got past member", flush=True)
         verifier = False
         verifier_roles = await self.config.guild(guild).verifier_roles()
         approved_roles = await self.config.guild(guild).approved_roles()
@@ -278,6 +281,7 @@ class Verification(commands.Cog):
                             Button(style=ButtonStyle.red, label="Unban", custom_id="unban_check", disabled=False)]]
 
         elif interaction.custom_id == "unban_check":
+            print("In unban check", flush=True)
             new_buttons = [[Button(style=ButtonStyle.green, label="Confirm unban?", custom_id="unban", disabled=False),
                             Button(style=ButtonStyle.red, label="Cancel", custom_id="cancel", disabled=False)]]
 
