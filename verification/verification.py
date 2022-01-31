@@ -208,18 +208,6 @@ class Verification(commands.Cog):
         guild = interaction.guild
 
         user = await self.get_user(interaction.message)
-
-        if user not in guild.members:
-            try:
-                banned = await guild.fetch_ban(user)
-            except discord.NotFound:
-                new_buttons = [[Button(style=ButtonStyle.red, label=f"Left server", custom_id="ban", disabled=True)]]
-            else:
-                new_buttons = [[Button(style=ButtonStyle.red, label=f"Banned", custom_id="ban", disabled=True)]]
-
-            await interaction.edit_origin(components=new_buttons)
-            return
-
         member = discord.utils.get(guild.members, id=user.id)
 
         verifier = False
