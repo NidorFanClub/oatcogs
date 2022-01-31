@@ -47,6 +47,14 @@ class Verification(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
+        await self.member_departed_this_mortal_realm(member)
+
+    @commands.Cog.listener()
+    async def on_member_ban(self, guild: discord.Guild, member: discord.Member):
+        await self.member_departed_this_mortal_realm(member)
+
+    async def member_departed_this_mortal_realm(self, member: discord.Member):
+        await self.member_departed_this_mortal_realm(member)
         await self.update_invites(member.guild)
         channel = member.guild.get_channel(await self.config.guild(member.guild).verifier_channel())
         async with self.config.guild(member.guild).cached_users() as cached_users:
