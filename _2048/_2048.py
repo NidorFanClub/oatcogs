@@ -106,7 +106,7 @@ class _2048(commands.Cog):
                         break
                     else:
                         try:
-                            message.delete()
+                            await message.delete()
                         except Exception:
                             pass
                         board_image = await self.canvas(board, score)
