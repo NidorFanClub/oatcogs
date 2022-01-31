@@ -19,8 +19,7 @@ class Verification(commands.Cog):
             for user_id, cached_messages in cached_users.items():
                 for cached_message_id in cached_messages:
                     if cached_message_id == message.id:
-                        user = await self.bot.fetch_user(int(user_id))
-                        return user
+                        return user_id
         return None
 
     async def update_invites(self, guild: discord.Guild):
@@ -207,10 +206,12 @@ class Verification(commands.Cog):
         buttons = interaction.message.components
         guild = interaction.guild
 
-        user = await self.get_user(interaction.message)
-        member = guild.get_member(user.id)
+        user_id = await self.get_user(interaction.message)
+        member = guild.get_member(user_id)
         if not member:
-            member = user
+            bans = await guild.bans()
+            bans = [be.user for be in bans]
+            member = discord.utils.get(bans, id=user_id)
 
         verifier = False
         verifier_roles = await self.config.guild(guild).verifier_roles()
@@ -284,13 +285,9 @@ class Verification(commands.Cog):
                             Button(style=ButtonStyle.red, label="Cancel", custom_id="cancel", disabled=False)]]
 
         elif interaction.custom_id == "unban":
-            try:
-                await guild.unban(user)
-            except Exception:
-                pass
-            else:
-                await modlog.create_case(self.bot, guild, datetime.now(tz=timezone.utc), "unban", member, interaction.user, reason="unbanned in verification", until=None, channel=None)
-                new_buttons = [[Button(style=ButtonStyle.red, label="Left server", custom_id="ban", disabled=True)]]
+            await guild.unban(member)
+            await modlog.create_case(self.bot, guild, datetime.now(tz=timezone.utc), "unban", member, interaction.user, reason="unbanned in verification", until=None, channel=None)
+            new_buttons = [[Button(style=ButtonStyle.red, label="Left server", custom_id="ban", disabled=True)]]
 
         elif interaction.custom_id == "lock":
             for action_bar in buttons:
