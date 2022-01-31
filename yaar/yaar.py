@@ -113,7 +113,7 @@ class YetAnotherAutoRoler(commands.Cog):
         pass
 
     @yaar_user.command(name="add", require_var_positional=True)
-    async def yaar_user_add(self, ctx, role: discord.Role, *members: discord.Member):
+    async def yaar_user_add(self, ctx, role: discord.Role, *members: discord.User):
         """Add role(s) to be assigned to certain new joins"""
         async with self.config.guild(ctx.guild).user_roles() as user_roles:
             if str(role.id) not in user_roles:
@@ -130,7 +130,7 @@ class YetAnotherAutoRoler(commands.Cog):
             await ctx.send(f"Added {humanize_list(users_added)} to {role.mention}")
 
     @yaar_user.command(name="remove", require_var_positional=True)
-    async def yaar_user_remove(self, ctx, role: discord.Role, *members: discord.Member):
+    async def yaar_user_remove(self, ctx, role: discord.Role, *members: discord.User):
         """Remove users(s) from being assigned a certain role"""
         async with self.config.guild(ctx.guild).user_roles() as user_roles:
             if str(role.id) not in user_roles:
