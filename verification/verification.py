@@ -206,7 +206,7 @@ class Verification(commands.Cog):
         buttons = interaction.message.components
         guild = interaction.guild
 
-        user_id = await self.get_user(interaction.message)
+        user_id = int(await self.get_user(interaction.message))
         member = guild.get_member(user_id)
         if not member:
             bans = await guild.bans()
