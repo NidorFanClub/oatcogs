@@ -67,7 +67,6 @@ class Verification(commands.Cog):
                 for message_id in list(cached_users[str(member.id)]):
                     if message := await channel.fetch_message(message_id):
                         await message.edit(components=new_buttons)
-                        cached_users[str(member.id)].remove(message_id)
             else:
                 new_buttons = [[Button(style=ButtonStyle.red, label="Banned", custom_id="ban", disabled=True),
                                 Button(style=ButtonStyle.red, label="Unban", custom_id="unban_check", disabled=False)]]
