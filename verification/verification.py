@@ -208,9 +208,7 @@ class Verification(commands.Cog):
         user_id = int(await self.get_user(interaction.message))
         member = guild.get_member(user_id)
         if not member:
-            bans = await guild.bans()
-            bans = [be.user for be in bans]
-            member = discord.utils.get(bans, id=user_id)
+            member = await self.bot.fetch_user(user_id)
 
         verifier = False
         verifier_roles = await self.config.guild(guild).verifier_roles()
