@@ -208,7 +208,6 @@ class Verification(commands.Cog):
         guild = interaction.guild
 
         user = await self.get_user(interaction.message)
-        member = discord.utils.get(guild.members, id=user.id)
 
         verifier = False
         verifier_roles = await self.config.guild(guild).verifier_roles()
@@ -283,7 +282,7 @@ class Verification(commands.Cog):
 
         elif interaction.custom_id == "unban":
             try:
-                await member.unban()
+                await guild.unban()
             except discord.NotFound:
                 pass
             await modlog.create_case(self.bot, guild, datetime.now(tz=timezone.utc), "unban", member, interaction.user, reason="unbanned in verification", until=None, channel=None)
