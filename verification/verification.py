@@ -62,7 +62,8 @@ class Verification(commands.Cog):
                         await message.edit(components=new_buttons)
                         cached_users[str(member.id)].remove(message_id)
             else:
-                new_buttons = [[Button(style=ButtonStyle.red, label="Banned", custom_id="ban", disabled=True)]]
+                new_buttons = [[Button(style=ButtonStyle.red, label="Banned", custom_id="ban", disabled=True),
+                                Button(style=ButtonStyle.red, label="Unban", custom_id="unban_check", disabled=True)]]
                 for message_id in list(cached_users[str(member.id)]):
                     if message := await channel.fetch_message(message_id):
                         await message.edit(components=new_buttons)
@@ -285,7 +286,20 @@ class Verification(commands.Cog):
             except discord.NotFound:
                 pass
             await modlog.create_case(self.bot, guild, datetime.now(tz=timezone.utc), "ban", member, interaction.user, reason="troll in verification", until=None, channel=None)
-            new_buttons = [[Button(style=ButtonStyle.red, label="Banned", custom_id="ban", disabled=True)]]
+            new_buttons = [[Button(style=ButtonStyle.red, label="Banned", custom_id="ban", disabled=True),
+                            Button(style=ButtonStyle.red, label="Unban", custom_id="unban_check", disabled=True)]]
+
+        elif interaction.custom_id == "unban_check":
+            new_buttons = [[Button(style=ButtonStyle.green, label="Confirm unban?", custom_id="unban", disabled=False),
+                            Button(style=ButtonStyle.red, label="Cancel", custom_id="cancel", disabled=False)]]
+
+        elif interaction.custom_id == "unban":
+            try:
+                await member.unban()
+            except discord.NotFound:
+                pass
+            await modlog.create_case(self.bot, guild, datetime.now(tz=timezone.utc), "unban", member, interaction.user, reason="unbanned in verification", until=None, channel=None)
+            new_buttons = [[Button(style=ButtonStyle.red, label="Left server", custom_id="ban", disabled=True)]]
 
         elif interaction.custom_id == "lock":
             for action_bar in buttons:
