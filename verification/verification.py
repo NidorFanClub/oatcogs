@@ -283,8 +283,8 @@ class Verification(commands.Cog):
                             Button(style=ButtonStyle.red, label="Cancel", custom_id="cancel", disabled=False)]]
 
         elif interaction.custom_id == "unban":
-            await guild.unban(member)
-            await modlog.create_case(self.bot, guild, datetime.now(tz=timezone.utc), "unban", member, interaction.user, reason="unbanned in verification", until=None, channel=None)
+            await guild.unban(user)
+            await modlog.create_case(self.bot, guild, datetime.now(tz=timezone.utc), "unban", user, interaction.user, reason="unbanned in verification", until=None, channel=None)
             new_buttons = [[Button(style=ButtonStyle.red, label="Left server", custom_id="ban", disabled=True)]]
 
         elif interaction.custom_id == "lock":
