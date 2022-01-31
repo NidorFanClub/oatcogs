@@ -208,7 +208,7 @@ class Verification(commands.Cog):
         guild = interaction.guild
 
         user = await self.get_user(interaction.message)
-        member = guild.get_member(id=user.id)
+        member = guild.get_member(user.id)
         if not member:
             member = user
 
