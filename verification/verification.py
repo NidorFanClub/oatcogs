@@ -102,7 +102,6 @@ class Verification(commands.Cog):
             return
 
         avatar = member.avatar_url_as(static_format="png")
-        roles = member.roles[-1:0:-1]
 
         invite_id = await self.find_invite(guild)
 
@@ -157,6 +156,8 @@ class Verification(commands.Cog):
                 invite_str += f" ({invite.inviter})"
         else:
             invite_str = None
+
+        roles = member.roles[-1:0:-1]
 
         if roles:
             role_str = ", ".join([x.mention for x in roles])
