@@ -62,7 +62,8 @@ class Verification(commands.Cog):
             try:
                 banned = await member.guild.fetch_ban(member)
             except discord.NotFound:
-                new_buttons = [[Button(style=ButtonStyle.red, label="Left server", custom_id="ban", disabled=True)]]
+                new_buttons = [[Button(style=ButtonStyle.grey, label="Left server", custom_id="left", disabled=True),
+                                Button(style=ButtonStyle.red, label="Ban", custom_id="ban", disabled=False)]]
                 for message_id in list(cached_users[str(member.id)]):
                     try:
                         if message := await channel.fetch_message(message_id):
@@ -72,7 +73,7 @@ class Verification(commands.Cog):
                     cached_users[str(member.id)].remove(message_id)
             else:
                 new_buttons = [[Button(style=ButtonStyle.red, label="Banned", custom_id="ban", disabled=True),
-                                Button(style=ButtonStyle.red, label="Unban", custom_id="unban_check", disabled=False)]]
+                                Button(style=ButtonStyle.green, label="Unban", custom_id="unban_check", disabled=False)]]
                 for message_id in list(cached_users[str(member.id)]):
                     try:
                         if message := await channel.fetch_message(message_id):
