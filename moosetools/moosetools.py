@@ -3,7 +3,7 @@ from redbot.core import Config
 from redbot.core import checks
 from redbot.core.utils.chat_formatting import text_to_file
 import asyncio
-import discord.utils 
+import discord.utils
 import discord.ext
 import discord
 import os
@@ -15,7 +15,7 @@ class MooseTools(commands.Cog):
     def __init__(self):
         self.config = Config.get_conf(self, identifier=13121311231233, force_registration=True)
 
-    @checks.mod_or_permissions(administrator=True)
+    @checks.mod()
     @commands.guild_only()
     @commands.command()
     async def get_member_ids(self, ctx):
@@ -29,6 +29,35 @@ class MooseTools(commands.Cog):
 
         await ctx.send(file = text_to_file(user_id_list))
         await ctx.tick()
+
+    @checks.mod()
+    @commands.guild_only()
+    @commands.command()
+    async def get_channel_activity(self, ctx):
+        """
+        Return a text file (csv) of channels sorted by their messages/activity
+        """
+        # there's definitely a more pythonic way to do all this...
+        async with ctx.channel.typing():
+            output = "channel_name,messages\n"
+            channels = {}
+            for channel in ctx.guild.text_channels:
+                counter = 0
+                try:
+                    async for message in channel.history(limit=None):
+                        counter += 1
+                except discord.Forbidden:
+                    pass
+                else:
+                    channels[f"{channel.name} ({channel.id})"] = counter
+
+
+            sorted_channels = dict(sorted(channels.items(), key=lambda item: item[1], reverse=True))
+            for channel, message_count in sorted_channels.items():
+                output += f"{channel},{message_count}\n"
+
+            await ctx.send(file=text_to_file(output))
+            await ctx.tick()
 
     @commands.command()
     @commands.guild_only()
