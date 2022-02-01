@@ -82,6 +82,7 @@ class _2048(commands.Cog):
                 old_board = board
 
                 emoji = str(reaction.emoji)
+                await message.remove_reaction(emoji, ctx.author)
 
                 # future me: please fucking fix this sometime. lmao
                 if emoji == self.UP:
