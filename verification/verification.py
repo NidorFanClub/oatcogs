@@ -72,7 +72,7 @@ class Verification(commands.Cog):
                         pass
             else:
                 new_buttons = [[Button(style=ButtonStyle.red, label="Banned", custom_id="ban", disabled=True),
-                                Button(style=ButtonStyle.green, label="Unban", custom_id="unban_check", disabled=False)]]
+                                Button(style=ButtonStyle.grey, label="Unban", custom_id="unban_check", disabled=False)]]
                 for message_id in list(cached_users[str(member.id)]):
                     try:
                         if message := await channel.fetch_message(message_id):
@@ -299,7 +299,7 @@ class Verification(commands.Cog):
                 else:
                     await modlog.create_case(self.bot, guild, datetime.now(tz=timezone.utc), "ban", user, interaction.user, reason="troll in verification", until=None, channel=None)
             new_buttons = [[Button(style=ButtonStyle.red, label="Banned", custom_id="ban", disabled=True),
-                            Button(style=ButtonStyle.red, label="Unban", custom_id="unban_check", disabled=False)]]
+                            Button(style=ButtonStyle.grey, label="Unban", custom_id="unban_check", disabled=False)]]
 
         elif interaction.custom_id == "unban_check":
             new_buttons = [[Button(style=ButtonStyle.green, label="Confirm unban?", custom_id="unban", disabled=False),
