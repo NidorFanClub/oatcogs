@@ -19,7 +19,8 @@ class _2048(commands.Cog):
     """Play 2048 in Discord!"""
 
     default_guild_settings = {"ECONOMY": True,
-                              "MULTIPLIER": 5}
+                              "MULTIPLIER": 5,
+                              "IMAGEDUMP": None}
 
     default_member_settings = {"played": 0,
                                "total_wins": 0,
@@ -55,10 +56,15 @@ class _2048(commands.Cog):
         victory = False
         score = 0
 
+        if dump_channel := ctx.guild.get_channel(int(await guild.IMAGEDUMP())):
+            channel = dump_channel
+        else:
+            channel = ctx.message.channel
+
         board = self.new_board()
         board_image = await self.canvas(board, score)
         file = discord.File(board_image, filename="2048.png")
-        link_message = await ctx.send(file=file)
+        link_message = await channel.send(file=file)
         message = await ctx.send(link_message.attachments[0].url)
         try:
             await link_message.delete()
@@ -109,11 +115,12 @@ class _2048(commands.Cog):
                         can_continue = self.check(board)
 
                     if victory or not can_continue:
+                        await message.clear_reactions()
                         break
                     else:
                         board_image = await self.canvas(board, score)
                         file = discord.File(board_image, filename="2048.png")
-                        link_message = await ctx.send(file=file)
+                        link_message = await channel.send(file=file)
 
                         try:
                             await message.edit(link_message.attachments[0].url)
@@ -139,10 +146,16 @@ class _2048(commands.Cog):
         else:
             await member.total_earnings.set(await member.total_earnings() + win_amount)
 
-        #summary_image = await self.summary(board, victory)
-        #summary_file = discord.File(summary_image, filename="summary.png")
+        summary_image = await self.canvas(board, score)
+        summary_file = discord.File(summary_image, filename="summary.png")
+        link_message = await channel.send(file=summary_file)
 
-        #return await ctx.send(file=summary_file)
+        await message.edit(link_message.attachments[0].url)
+
+        try:
+            await link_message.delete()
+        except Exception:
+            pass
 
     @commands.group(name="2048set")
     @commands.guild_only()
@@ -166,6 +179,15 @@ class _2048(commands.Cog):
         Enabled by default."""
         await self.config.guild(ctx.guild).STREAKS.set(toggle)
         await ctx.send(f"2048 economy integration been turned {'on' if toggle else 'off'}.")
+
+    @_2048set.command(name="imagedump")
+    async def _2048set_imagedump(self, ctx: commands.Context, channel: discord.TextChannel):
+        """Set a channel for image dumping.
+
+        2048 works to avoid reaction ratelimits by sending an image, retrieving the image URL before deleting it, and editing the original message. Without a channel to dump images in, players might notice the image flicker before it gets deleted.
+        Setting a channel makes the game look much smoother from the end user's perspective. It's hacky, but it works. For now."""
+        await self.config.guild(ctx.guild).IMAGEDUMP.set(channel.id)
+        await ctx.send(f"2048 image dumping has been set to {channel.mention}.")
 
     @_2048set.command(name="list")
     async def _2048set_list(self, ctx):
@@ -191,8 +213,13 @@ class _2048(commands.Cog):
         cell_row_count = 4
         cell_border_radius = 4
 
+        score_width = 110
+        score_height = 55
+        score_gap = 4
+
         canvas_bg = (0, 0, 0, 0)
-        summary_bg = (238, 228, 218, 186)
+        summary_bg = (238, 228, 218, 163)
+        score_bg = (143, 122, 102, 255)
         cell_bg = (187, 173, 160, 255)
         cell_0 = (205, 193, 180, 255)
         cell_2 = (238, 228, 218, 255)
@@ -210,11 +237,14 @@ class _2048(commands.Cog):
         text_light = (249, 246, 242, 255)
 
         ClearSansBold = f"{bundled_data_path(self)}/ClearSansBold.ttf"
+        smallbold = ImageFont.truetype(ClearSansBold, 44)
         bold = ImageFont.truetype(ClearSansBold, 55)
         summary = ImageFont.truetype(ClearSansBold, 60)
+        score_title = ImageFont.truetype(ClearSansBold, 18)
+        score_value = ImageFont.truetype(ClearSansBold, 25)
 
         canvas = Image.new("RGBA", (canvas_width, canvas_height), canvas_bg)
-        frame = ImageDraw.Draw(canvas)
+        frame = ImageDraw.Draw(canvas, "RGBA")
 
         frame.rounded_rectangle(xy=[(0, 0), (canvas_width, canvas_height)], radius=canvas_border_radius, fill=cell_bg)
 
@@ -255,15 +285,27 @@ class _2048(commands.Cog):
 
                 if number == 2 or number == 4:
                     frame.text(xy=(font_x, font_y), text=str(number), fill=text_dark, font=bold, anchor="mm")
-                elif number != 0:
+                elif number != 0 and number < 1024:
                     frame.text(xy=(font_x, font_y), text=str(number), fill=text_light, font=bold, anchor="mm")
+                elif number >= 1024:
+                    frame.text(xy=(font_x, font_y), text=str(number), fill=text_light, font=smallbold, anchor="mm")
 
-        if not self.check(board) and 2048 in (cell for row in board for cell in row):
-            frame.rounded_rectangle(xy=[(0, 0), (canvas_width, canvas_height)], radius=canvas_border_radius, fill=summary_bg)
-            frame.text(xy=(font_x, font_y + cell_gap * 2), text="Game Over!", fill=text_dark, font=summary, anchor="mm")
+        if not self.check(board) and 2048 not in (cell for row in board for cell in row):
+            overlay = Image.new("RGBA", canvas.size, summary_bg)
+            canvas = Image.alpha_composite(canvas, overlay)
+            frame = ImageDraw.Draw(canvas, "RGBA")
+            frame.text(xy=(canvas_width / 2, canvas_height / 2 - cell_gap * 3), text="Game Over!", fill=text_dark, font=summary, anchor="mm")
+            frame.rounded_rectangle(xy=[(canvas_width / 2 - score_width / 2, canvas_height / 2 + score_height / 4), (canvas_width / 2 + score_width / 2, canvas_height / 2 + score_height / 4 + score_height)], radius=cell_border_radius, fill=score_bg)
+            frame.text(xy=(canvas_width / 2, canvas_height / 2 + score_height / 2), text=f"SCORE", fill=text_light, font=score_title, anchor="mm")
+            frame.text(xy=(canvas_width / 2, canvas_height / 2 + score_height - cell_gap / 3), text=f"{score}", fill=text_dark, font=summary, anchor="mm")
         elif 2048 in (cell for row in board for cell in row):
-            frame.rounded_rectangle(xy=[(0, 0), (canvas_width, canvas_height)], radius=canvas_border_radius, fill=summary_bg)
-            frame.text(xy=(font_x, font_y + cell_gap * 2), text="You win!", fill=text_dark, font=summary, anchor="mm")
+            overlay = Image.new("RGBA", canvas.size, summary_bg)
+            canvas = Image.alpha_composite(canvas, overlay)
+            frame = ImageDraw.Draw(canvas, "RGBA")
+            frame.text(xy=(canvas_width / 2, canvas_height / 2 - cell_gap * 3), text="You win!", fill=text_dark, font=summary, anchor="mm")
+            frame.rounded_rectangle(xy=[(canvas_width / 2 - score_width / 2, canvas_height / 2 + score_height / 4), (canvas_width / 2 + score_width / 2, canvas_height / 2 + score_height / 4 + score_height)], radius=cell_border_radius, fill=score_bg)
+            frame.text(xy=(canvas_width / 2, canvas_height / 2 + score_height / 2), text=f"SCORE", fill=text_light, font=score_title, anchor="mm")
+            frame.text(xy=(canvas_width / 2, canvas_height / 2 + score_height - cell_gap / 3), text=f"{score}", fill=text_light, font=score_value, anchor="mm")
 
         return await self.save_image(canvas)
 
