@@ -49,7 +49,7 @@ class MooseTools(commands.Cog):
                 except discord.Forbidden:
                     pass
                 else:
-                    channels[f"{channel.name} ({channel.id})"] = counter
+                    channels[f"{channel.id} ({channel.name})"] = counter
 
 
             sorted_channels = dict(sorted(channels.items(), key=lambda item: item[1], reverse=True))
