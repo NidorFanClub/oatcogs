@@ -60,7 +60,7 @@ class MooseTools(commands.Cog):
                     channel_dict["messages"] = counter
                     channel_dict["unique_members"] = len(unique_members)
                     channel_dict["days_since_created"] = delta.days
-                    channel_dict["messages_per_day"] = counter / int(delta.days)
+                    channel_dict["messages_per_day"] = (counter / int(delta.days)) if int(delta.days) else 0
                     channels.append(channel_dict)
 
             sorted_channels = sorted(channels, key=lambda item: item["messages_per_day"], reverse=True)
