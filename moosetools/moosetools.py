@@ -40,7 +40,7 @@ class MooseTools(commands.Cog):
         """
         # there's definitely a more pythonic way to do all this...
         async with ctx.channel.typing():
-            output = "channel_name,messages,unique_members,days_since_created,messages_per_day\n"
+            output = "channel_name,category,messages,unique_members,days_since_created,messages_per_day\n"
             channels = []
             for channel in ctx.guild.text_channels:
                 counter = 0
@@ -56,6 +56,7 @@ class MooseTools(commands.Cog):
                     channel_dict = {}
                     delta = datetime.today() - channel.created_at
                     channel_dict["name"] = channel.name
+                    channel_dict["category"] = channel.category.name
                     channel_dict["id"] = channel.id
                     channel_dict["messages"] = counter
                     channel_dict["unique_members"] = len(unique_members)
@@ -63,8 +64,7 @@ class MooseTools(commands.Cog):
                     channel_dict["messages_per_day"] = (counter / int(delta.days)) if int(delta.days) else 0
                     channels.append(channel_dict)
 
-            sorted_channels = sorted(channels, key=lambda item: item["messages_per_day"], reverse=True)
-            for channel in sorted_channels:
+            for channel in channels:
                 output += f"{channel['name']},{channel['messages']},{channel['unique_members']},{channel['days_since_created']},{channel['messages_per_day']:.2f}\n"
 
             await ctx.send(file=text_to_file(output))
