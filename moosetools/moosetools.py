@@ -2,6 +2,7 @@ from redbot.core import commands
 from redbot.core import Config
 from redbot.core import checks
 from redbot.core.utils.chat_formatting import text_to_file
+from datetime import datetime, timedelta
 import asyncio
 import discord.utils
 import discord.ext
@@ -39,22 +40,32 @@ class MooseTools(commands.Cog):
         """
         # there's definitely a more pythonic way to do all this...
         async with ctx.channel.typing():
-            output = "channel_name,messages\n"
-            channels = {}
+            output = "channel_name,messages,unique_members,days_since_created,messages_per_day\n"
+            channels = []
             for channel in ctx.guild.text_channels:
                 counter = 0
+                unique_members = []
                 try:
                     async for message in channel.history(limit=None):
                         counter += 1
+                        if message.author.id not in unique_members:
+                            unique_members.append(message.author.id)
                 except discord.Forbidden:
                     pass
                 else:
-                    channels[f"{channel.id} ({channel.name})"] = counter
+                    channel_dict = {}
+                    delta = datetime.date.today() - channel.created_at
+                    channel_dict["name"] = channel.name
+                    channel_dict["id"] = channel.id
+                    channel_dict["messages"] = counter
+                    channel_dict["unique_members"] = unique_members
+                    channel_dict["days_since_created"] = delta.days
+                    channel_dict["messages_per_day"] = counter / int(delta.days)
+                    channels.append(channel_dict)
 
-
-            sorted_channels = dict(sorted(channels.items(), key=lambda item: item[1], reverse=True))
-            for channel, message_count in sorted_channels.items():
-                output += f"{channel},{message_count}\n"
+            sorted_channels = dict(sorted(channels, key=lambda item: item["messages_per_day"], reverse=True))
+            for channel in sorted_channels:
+                output += f"{channel['name']},{channel['messages']},{channel['unique_members']},{channel['days_since_created']},{channel['messages_per_day']}\n"
 
             await ctx.send(file=text_to_file(output))
             await ctx.tick()
