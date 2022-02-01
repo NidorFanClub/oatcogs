@@ -65,7 +65,7 @@ class MooseTools(commands.Cog):
                     channels.append(channel_dict)
 
             for channel in channels:
-                output += f"{channel['name']},{channel['messages']},{channel['unique_members']},{channel['days_since_created']},{channel['messages_per_day']:.2f}\n"
+                output += f"{channel['name']},{channel['category']},{channel['messages']},{channel['unique_members']},{channel['days_since_created']},{channel['messages_per_day']:.2f}\n"
 
             await ctx.send(file=text_to_file(output))
             await ctx.tick()
