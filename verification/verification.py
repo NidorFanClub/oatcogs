@@ -285,10 +285,10 @@ class Verification(commands.Cog):
 
         elif interaction.custom_id == "ban":
             if member:
-                await member.ban(reason="troll in verification")
+                await guild.ban(member, reason="troll in verification", delete_message_days=1)
                 await modlog.create_case(self.bot, guild, datetime.now(tz=timezone.utc), "ban", member, interaction.user, reason="troll in verification", until=None, channel=None)
             else:
-                await user.ban(reason="troll in verification")
+                await guild.ban(user, reason="troll in verification", delete_message_days=1)
                 await modlog.create_case(self.bot, guild, datetime.now(tz=timezone.utc), "ban", user, interaction.user, reason="troll in verification", until=None, channel=None)
             new_buttons = [[Button(style=ButtonStyle.red, label="Banned", custom_id="ban", disabled=True),
                             Button(style=ButtonStyle.grey, label="Unban", custom_id="unban_check", disabled=False)]]
