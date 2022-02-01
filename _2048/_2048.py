@@ -58,7 +58,12 @@ class _2048(commands.Cog):
         board = self.new_board()
         board_image = await self.canvas(board, score)
         file = discord.File(board_image, filename="2048.png")
-        message = await ctx.send(file=file)
+        link_message = await ctx.send(file=file)
+        message = await ctx.send(link_message.attachments[0].url)
+        try:
+            await link_message.delete()
+        except Exception:
+            pass
 
         def check(reaction, user):
             return ((user.id == ctx.author.id) and (str(reaction.emoji) in [self.LEFT, self.RIGHT, self.UP, self.DOWN, self.CANCEL]) and (reaction.message.id == message.id))
@@ -105,13 +110,19 @@ class _2048(commands.Cog):
                     if victory or not can_continue:
                         break
                     else:
-                        try:
-                            await message.delete()
-                        except Exception:
-                            pass
                         board_image = await self.canvas(board, score)
                         file = discord.File(board_image, filename="2048.png")
-                        message = await ctx.send(file=file)
+                        link_message = await ctx.send(file=file)
+
+                        try:
+                            await message.edit(link_message.attachments[0].url)
+                        except Exception:
+                            pass
+
+                        try:
+                            await link_message.delete()
+                        except Exception:
+                            pass
 
         if victory:
             total_wins = await member.total_wins() + 1
