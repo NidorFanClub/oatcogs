@@ -70,7 +70,6 @@ class Verification(commands.Cog):
                             await message.edit(components=new_buttons, delete_after=3600)
                     except discord.NotFound:
                         pass
-                    cached_users[str(member.id)].remove(message_id)
             else:
                 new_buttons = [[Button(style=ButtonStyle.red, label="Banned", custom_id="ban", disabled=True),
                                 Button(style=ButtonStyle.green, label="Unban", custom_id="unban_check", disabled=False)]]
@@ -79,7 +78,6 @@ class Verification(commands.Cog):
                         if message := await channel.fetch_message(message_id):
                             await message.edit(components=new_buttons, delete_after=3600)
                     except discord.NotFound:
-                        cached_users[str(member.id)].remove(message_id)
                         pass
         return
 
