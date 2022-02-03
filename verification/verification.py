@@ -198,10 +198,10 @@ class Verification(commands.Cog):
                             Button(style=ButtonStyle.red, label="Ban", custom_id="ban", disabled=False)]]
 
         if not buttons:
-            new_buttons = [[Button(style=ButtonStyle.green, label="Approve", custom_id="approve", disabled=False),
-                            Button(style=ButtonStyle.grey, emoji="🌱", custom_id="sprouts", disabled=False),
-                            Button(style=ButtonStyle.grey, emoji=self.bot.get_emoji(929343381409255454), custom_id="sus", disabled=False),
-                            Button(style=ButtonStyle.red, label="Ban", custom_id="ban", disabled=False)]]
+            buttons = [[Button(style=ButtonStyle.green, label="Approve", custom_id="approve", disabled=False),
+                        Button(style=ButtonStyle.grey, emoji="🌱", custom_id="sprouts", disabled=False),
+                        Button(style=ButtonStyle.grey, emoji=self.bot.get_emoji(929343381409255454), custom_id="sus", disabled=False),
+                        Button(style=ButtonStyle.red, label="Ban", custom_id="ban", disabled=False)]]
 
         message = await channel.send(embed=e, components=buttons)
 
