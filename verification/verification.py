@@ -181,7 +181,7 @@ class Verification(commands.Cog):
         for role_id in await self.config.guild(guild).sprout_roles():
             role = discord.utils.get(guild.roles, id=int(role_id))
             if role in member.roles:
-                buttons = [[Button(style=ButtonStyle.grey, emoji="🌱", label="Sprouted", custom_id="sprout", disabled=True),
+                buttons = [[Button(style=ButtonStyle.grey, emoji="🥕", label="Sprouted", custom_id="sprout", disabled=True),
                             Button(style=ButtonStyle.green, label="Approve", custom_id="approve", disabled=False),
                             Button(style=ButtonStyle.red, label="Ban", custom_id="ban", disabled=False)]]
 
@@ -199,7 +199,7 @@ class Verification(commands.Cog):
 
         if not buttons:
             buttons = [[Button(style=ButtonStyle.green, label="Approve", custom_id="approve", disabled=False),
-                        Button(style=ButtonStyle.grey, emoji="🌱", custom_id="sprouts", disabled=False),
+                        Button(style=ButtonStyle.grey, emoji="🥕", custom_id="sprouts", disabled=False),
                         Button(style=ButtonStyle.grey, emoji=self.bot.get_emoji(929343381409255454), custom_id="sus", disabled=False),
                         Button(style=ButtonStyle.red, label="Ban", custom_id="ban", disabled=False)]]
 
@@ -260,7 +260,7 @@ class Verification(commands.Cog):
 
         if interaction.custom_id == "cancel":
             new_buttons = [[Button(style=ButtonStyle.green, label="Approve", custom_id="approve", disabled=False),
-                            Button(style=ButtonStyle.grey, emoji="🌱", custom_id="sprouts", disabled=False),
+                            Button(style=ButtonStyle.grey, emoji="🥕", custom_id="sprouts", disabled=False),
                             Button(style=ButtonStyle.grey, emoji=self.bot.get_emoji(929343381409255454), custom_id="sus", disabled=False),
                             Button(style=ButtonStyle.red, label="Ban", custom_id="ban", disabled=False)]]
 
@@ -284,7 +284,7 @@ class Verification(commands.Cog):
         elif interaction.custom_id == "sprouts_check":
             await self.remove_roles(member, await self.config.guild(guild).removed_roles())
             await self.add_roles(member, await self.config.guild(guild).sprout_roles())
-            new_buttons = [[Button(style=ButtonStyle.grey, emoji="🌱", label="Sprouted", custom_id="sprout", disabled=True),
+            new_buttons = [[Button(style=ButtonStyle.grey, emoji="🥕", label="Sprouted", custom_id="sprout", disabled=True),
                             Button(style=ButtonStyle.green, label="Approve", custom_id="approve", disabled=False),
                             Button(style=ButtonStyle.red, label="Ban", custom_id="ban", disabled=False)]]
 
