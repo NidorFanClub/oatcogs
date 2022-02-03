@@ -12,7 +12,7 @@ class Verification(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=1312420691312, force_registration=True)
-        self.config.register_guild(verifier_channel=None, approval_channel=None, approval_message="", cached_users={}, cached_invites={}, approved_roles=[], sus_roles=[], sprout_roles=[930116602005962752], removed_roles=[], verifier_roles=[])
+        self.config.register_guild(verifier_channel=None, approval_channel=None, approval_message="", cached_users={}, cached_invites={}, approved_roles=[], sus_roles=[], sprout_roles=[938600447017640026], removed_roles=[], verifier_roles=[])
 
     async def get_user(self, message: discord.Message):
         async with self.config.guild(message.guild).cached_users() as cached_users:
