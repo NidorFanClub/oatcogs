@@ -286,7 +286,7 @@ class Verification(commands.Cog):
             await self.add_roles(member, await self.config.guild(guild).sprout_roles())
             buttons = [[Button(style=ButtonStyle.grey, emoji="🌱", label="Sprouted", custom_id="sprout", disabled=True),
                         Button(style=ButtonStyle.green, label="Approve", custom_id="approve", disabled=False),
-                        Button(style=ButtonStyle.red, label="Ban", custom_id="ban", disabled=False)]]]
+                        Button(style=ButtonStyle.red, label="Ban", custom_id="ban", disabled=False)]]
 
             try:
                 channel = discord.utils.get(guild.channels, id=int(927540656501583913))
