@@ -284,7 +284,9 @@ class Verification(commands.Cog):
         elif interaction.custom_id == "sprouts_check":
             await self.remove_roles(member, await self.config.guild(guild).removed_roles())
             await self.add_roles(member, await self.config.guild(guild).sprout_roles())
-            new_buttons = [[Button(style=ButtonStyle.green, label=f"Sprouted by {interaction.user.name}", custom_id="approved", disabled=True)]]
+            buttons = [[Button(style=ButtonStyle.grey, emoji="🌱", label="Sprouted", custom_id="sprout", disabled=True),
+                        Button(style=ButtonStyle.green, label="Approve", custom_id="approve", disabled=False),
+                        Button(style=ButtonStyle.red, label="Ban", custom_id="ban", disabled=False)]]]
 
             try:
                 channel = discord.utils.get(guild.channels, id=int(927540656501583913))
@@ -299,7 +301,9 @@ class Verification(commands.Cog):
         elif interaction.custom_id == "sus_check":
             await self.remove_roles(member, await self.config.guild(guild).removed_roles())
             await self.add_roles(member, await self.config.guild(guild).sus_roles())
-            new_buttons = [[Button(style=ButtonStyle.grey, emoji=self.bot.get_emoji(929343381409255454), label=f"Sussed by {interaction.user.name}", custom_id="sus", disabled=True)]]
+            new_buttons = [[Button(style=ButtonStyle.grey, emoji=self.bot.get_emoji(929343381409255454), label=f"Sussy Baka", custom_id="sus", disabled=True),
+                            Button(style=ButtonStyle.green, label="Approve", custom_id="approve", disabled=False),
+                            Button(style=ButtonStyle.red, label="Ban", custom_id="ban", disabled=False)]]
 
         elif interaction.custom_id == "ban_check":
             if member:
