@@ -226,7 +226,6 @@ class Verification(commands.Cog):
 
     @commands.Cog.listener()
     async def on_button_click(self, interaction):
-        buttons = interaction.message.components
         guild = interaction.guild
 
         user_id = int(await self.get_user(interaction.message))
