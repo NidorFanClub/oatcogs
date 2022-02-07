@@ -67,7 +67,7 @@ class Verification(commands.Cog):
                 for message_id in list(cached_users[str(member.id)]):
                     try:
                         if message := await channel.fetch_message(message_id):
-                            await message.edit(components=new_buttons)
+                            await message.edit(components=new_buttons, delete_after=3600)
                     except discord.NotFound:
                         pass
             else:
