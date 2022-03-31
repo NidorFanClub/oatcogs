@@ -1,0 +1,10 @@
+{
+    "author" : ["donk"],
+    "install_msg" : "donk!",
+    "name" : "Greetings",
+    "short" : "Greet peeps",
+    "description" : "Greet peeps. Seriously.",
+    "tags" : ["fun"],
+    "requirements" : [],
+    "hidden" : false
+}
