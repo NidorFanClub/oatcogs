@@ -1,4 +1,4 @@
-from .greetings import Greetings
+from .april import April
 
 def setup(bot):
-    bot.add_cog(Greetings(bot))
+    bot.add_cog(April(bot))
