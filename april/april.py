@@ -4,13 +4,12 @@ import discord.ext
 import re
 import emoji
 
-from discord.ext import commands
+from redbot.core import commands, Config, bank, checks
 
 
 class April(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self._last_member = None
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -26,7 +25,7 @@ class April(commands.Cog):
         channels = [926112975813750796,927783621794877460,926113551968526376,926113675419471972,927518938919735326,927518938919735326,927539973459169302,928689945080627201,930531314363424808]
         if message.channel.id in channels:
 
-            
+
             if len(message.attachments) == 0:
                 x = re.search(r'^<:.*>$',msg.content)
                 if not x:
@@ -40,7 +39,7 @@ class April(commands.Cog):
                 if valid == False:
                     for symbol in msg.content:
                         if symbol not in emoji.UNICODE_EMOJI['en']:
-                            
+
                             valid2 = False
                         else:
                             i = msg.content.replace(symbol,'')
@@ -48,11 +47,10 @@ class April(commands.Cog):
                             if x:
                                 valid = True
                                 valid2 = True
-                            
+
 
             if valid == False and valid2 == False:
                 try:
                     await message.delete()
                 except discord.HTTPException:
                     pass
-
