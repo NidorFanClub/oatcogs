@@ -27,7 +27,7 @@ class April(commands.Cog):
 
 
             if len(message.attachments) == 0:
-                x = re.search(r'^<:.*>$',msg.content)
+                x = re.search(r'^<a.*:|<:.*>$',msg.content)
                 if not x:
                     valid = False
                 else:
