@@ -40,32 +40,42 @@ class MooseTools(commands.Cog):
         """
         # there's definitely a more pythonic way to do all this...
         async with ctx.channel.typing():
-            output = "channel_name,category,messages,unique_members,days_since_created,messages_per_day\n"
+            output = "channel_name,category,messages,unique_members,days_since_created,messages_per_day,messages_this_week,messages_this_month\n"
             channels = []
+            now = datetime.today()
             for channel in ctx.guild.text_channels:
                 counter = 0
+                week_counter = 0
+                month_counter = 0
                 unique_members = []
                 try:
                     async for message in channel.history(limit=31500):
                         counter += 1
+                        message_delta = now - message.created_at
+                        if message_delta.days <= 7:
+                            week_counter += 1
+                        if message_delta.days <= 30:
+                            month_counter += 1
                         if message.author.id not in unique_members:
                             unique_members.append(message.author.id)
                 except discord.Forbidden:
                     pass
                 else:
                     channel_dict = {}
-                    delta = datetime.today() - channel.created_at
+                    channel_delta = now - channel.created_at
                     channel_dict["name"] = channel.name
                     channel_dict["category"] = channel.category.name
                     channel_dict["id"] = channel.id
                     channel_dict["messages"] = counter
                     channel_dict["unique_members"] = len(unique_members)
-                    channel_dict["days_since_created"] = delta.days
-                    channel_dict["messages_per_day"] = (counter / int(delta.days)) if int(delta.days) else 0
+                    channel_dict["days_since_created"] = channel_delta.days
+                    channel_dict["messages_per_day"] = (counter / int(channel_delta.days)) if int(channel_delta.days) else 0
+                    channel_dict["messages_this_week"] = week_counter
+                    channel_dict["messages_this_month"] = week_counter
                     channels.append(channel_dict)
 
             for channel in channels:
-                output += f"{channel['name']},{channel['category']},{channel['messages']},{channel['unique_members']},{channel['days_since_created']},{channel['messages_per_day']:.2f}\n"
+                output += f"{channel['name']},{channel['category']},{channel['messages']},{channel['unique_members']},{channel['days_since_created']},{channel['messages_per_day'],{channel['messages_this_week']},{channel['messages_this_month']:.2f}\n"
 
             await ctx.send(file=text_to_file(output))
             await ctx.tick()
