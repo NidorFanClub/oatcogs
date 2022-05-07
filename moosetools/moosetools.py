@@ -46,7 +46,7 @@ class MooseTools(commands.Cog):
                 counter = 0
                 unique_members = []
                 try:
-                    async for message in channel.history(limit=None):
+                    async for message in channel.history(limit=31500):
                         counter += 1
                         if message.author.id not in unique_members:
                             unique_members.append(message.author.id)
