@@ -71,7 +71,7 @@ class MooseTools(commands.Cog):
                     channel_dict["days_since_created"] = channel_delta.days
                     channel_dict["messages_per_day"] = (counter / int(channel_delta.days)) if int(channel_delta.days) else 0
                     channel_dict["messages_this_week"] = week_counter
-                    channel_dict["messages_this_month"] = week_counter
+                    channel_dict["messages_this_month"] = month_counter
                     channels.append(channel_dict)
 
             for channel in channels:
